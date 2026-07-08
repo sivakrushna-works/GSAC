@@ -186,4 +186,4 @@ Before you accept (or continue in) an architect role on a GenAI initiative:
 
 ---
 
-**Previous:** [Part 1 index](README.md) · **Next:** Chapter 1.2 — Systems Thinking & Design Thinking · **Related:** [1.4 Trade-off Analysis](README.md), [1.5 Communicating Architecture](README.md), [ADRs](../../adr/)
+**Previous:** [Part 1 index](README.md) · **Next:** [Chapter 1.2 — Systems Thinking & Design Thinking](chapter-02-systems-thinking-design-thinking.md) · **Related:** [1.4 Trade-off Analysis](chapter-04-tradeoff-analysis.md), [1.5 Communicating Architecture](chapter-05-communicating-architecture.md), [ADRs](../../adr/)

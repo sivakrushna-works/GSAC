@@ -9,13 +9,13 @@ The mindset shift from *building what you're told* to *deciding what gets built*
 | # | Chapter | Level | What you'll be able to do |
 |---|---------|-------|---------------------------|
 | 1.1 | [From Software Engineer to Solution Architect](chapter-01-from-engineer-to-architect.md) | 1 | Describe the role, its deliverables, and how it differs from senior engineering |
-| 1.2 | Systems Thinking & Design Thinking | 1 | Analyze problems as systems of incentives and feedback loops; run a design-thinking loop from empathy to prototype |
-| 1.3 | Business Understanding for Architects | 1 | Read a P&L, map a value chain, and connect any technical decision to revenue, cost, or risk |
-| 1.4 | Trade-off Analysis & Decision Making | 2 | Produce a written trade-off analysis (options, criteria, weights, decision) a CTO would sign |
-| 1.5 | Communicating Architecture | 2 | Use C4-style diagrams, ADRs, and one-page briefs to communicate the same design to engineers and executives |
-| 1.6 | Requirements Engineering & Stakeholder Management | 2 | Elicit functional and non-functional requirements; map stakeholders by power and interest |
-| 1.7 | Estimation: Time, Cost & Risk | 2 | Estimate effort and TCO with stated assumptions and confidence ranges |
-| 1.8 | Leadership & Influence Without Authority | 2 | Drive alignment across teams you don't manage; run productive architecture disagreements |
+| 1.2 | [Systems Thinking & Design Thinking](chapter-02-systems-thinking-design-thinking.md) | 1 | Analyze problems as systems of incentives and feedback loops; run a design-thinking loop from empathy to prototype |
+| 1.3 | [Business Understanding for Architects](chapter-03-business-understanding.md) | 1 | Read a P&L, map a value chain, and connect any technical decision to revenue, cost, or risk |
+| 1.4 | [Trade-off Analysis & Decision Making](chapter-04-tradeoff-analysis.md) | 2 | Produce a written trade-off analysis (options, criteria, weights, decision) a CTO would sign |
+| 1.5 | [Communicating Architecture](chapter-05-communicating-architecture.md) | 2 | Use C4-style diagrams, ADRs, and one-page briefs to communicate the same design to engineers and executives |
+| 1.6 | [Requirements Engineering & Stakeholder Management](chapter-06-requirements-stakeholders.md) | 2 | Elicit functional and non-functional requirements; map stakeholders by power and interest |
+| 1.7 | [Estimation: Time, Cost & Risk](chapter-07-estimation.md) | 2 | Estimate effort and TCO with stated assumptions and confidence ranges |
+| 1.8 | [Leadership & Influence Without Authority](chapter-08-leadership-influence.md) | 2 | Drive alignment across teams you don't manage; run productive architecture disagreements |
 
 ## Exit criteria
 
