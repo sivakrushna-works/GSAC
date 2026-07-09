@@ -8,16 +8,16 @@ A pattern language for GenAI systems. Each pattern chapter uses a consistent for
 
 | # | Chapter | Level | Patterns covered |
 |---|---------|-------|------------------|
-| 7.1 | A Pattern Language for GenAI | 3 | How to read, apply, and combine patterns; the catalog map |
-| 7.2 | RAG Patterns | 4 | Basic RAG, hybrid retrieval, reranked RAG, agentic retrieval, GraphRAG-style knowledge patterns, citation-first design |
-| 7.3 | Workflow Patterns | 4 | Prompt chaining, routing, parallelization, orchestrator–workers, evaluator–optimizer |
-| 7.4 | Agentic Patterns | 4 | Bounded agent loop, planner–executor, reflection, tool sandbox, checkpoint & resume |
-| 7.5 | Human-in-the-Loop Patterns | 4 | Approval gate, review sampling, escalation, confidence-based routing, draft-not-send |
-| 7.6 | Safety & Guardrail Patterns | 4 | Layered filters, dual-model verification, constrained decoding, output quarantine, kill switch |
-| 7.7 | Knowledge & Data Patterns | 4 | Freshness pipeline, ACL-propagated index, tenant isolation, forgetting/deletion, feedback-to-dataset loop |
-| 7.8 | Cost & Performance Patterns | 4 | Model tiering/routing, semantic caching, prompt compression, batch lanes, budget enforcement |
-| 7.9 | Platform & Multi-tenancy Patterns | 4 | GenAI gateway, shared eval service, prompt registry, usage metering & chargeback, central model governance |
-| 7.10 | Anti-patterns | 4 | Agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, unbounded autonomy |
+| 7.1 | [A Pattern Language for GenAI](chapter-01-pattern-language.md) | 3 | How to read, apply, and combine patterns; the catalog map |
+| 7.2 | [RAG Patterns](chapter-02-rag-patterns.md) | 4 | Basic RAG, hybrid retrieval, reranked RAG, agentic retrieval, GraphRAG-style knowledge patterns, citation-first design |
+| 7.3 | [Workflow Patterns](chapter-03-workflow-patterns.md) | 4 | Prompt chaining, routing, parallelization, orchestrator–workers, evaluator–optimizer |
+| 7.4 | [Agentic Patterns](chapter-04-agentic-patterns.md) | 4 | Bounded agent loop, planner–executor, reflection, tool sandbox, checkpoint & resume |
+| 7.5 | [Human-in-the-Loop Patterns](chapter-05-human-in-the-loop-patterns.md) | 4 | Approval gate, review sampling, escalation, confidence-based routing, draft-not-send |
+| 7.6 | [Safety & Guardrail Patterns](chapter-06-safety-guardrail-patterns.md) | 4 | Layered filters, dual-model verification, constrained decoding, output quarantine, kill switch |
+| 7.7 | [Knowledge & Data Patterns](chapter-07-knowledge-data-patterns.md) | 4 | Freshness pipeline, ACL-propagated index, tenant isolation, forgetting/deletion, feedback-to-dataset loop |
+| 7.8 | [Cost & Performance Patterns](chapter-08-cost-performance-patterns.md) | 4 | Model tiering/routing, semantic caching, prompt compression, batch lanes, budget enforcement |
+| 7.9 | [Platform & Multi-tenancy Patterns](chapter-09-platform-multitenancy-patterns.md) | 4 | GenAI gateway, shared eval service, prompt registry, usage metering & chargeback, central model governance |
+| 7.10 | [Anti-patterns](chapter-10-anti-patterns.md) | 4 | Agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, unbounded autonomy |
 
 ## Exit criteria
 
