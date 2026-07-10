@@ -1,0 +1,1229 @@
+{
+  "generated": "2026-07-10T09:23:21+00:00",
+  "title": "GSAC — GenAI Solution Architect Curriculum",
+  "counts": {
+    "chapters": 79,
+    "caseStudies": 50,
+    "projects": 20
+  },
+  "sections": [
+    {
+      "id": "curriculum",
+      "title": "Curriculum",
+      "groups": [
+        {
+          "id": "part-1-professional-foundation",
+          "title": "Part 1 — Professional Foundation",
+          "docs": [
+            {
+              "path": "curriculum/part-1-professional-foundation/README.md",
+              "title": "Part 1 — Professional Foundation",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-01-from-engineer-to-architect.md",
+              "title": "Chapter 1.1 — From Software Engineer to Solution Architect",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-02-systems-thinking-design-thinking.md",
+              "title": "Chapter 1.2 — Systems Thinking & Design Thinking",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-03-business-understanding.md",
+              "title": "Chapter 1.3 — Business Understanding for Architects",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-04-tradeoff-analysis.md",
+              "title": "Chapter 1.4 — Trade-off Analysis & Decision Making",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-05-communicating-architecture.md",
+              "title": "Chapter 1.5 — Communicating Architecture",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-06-requirements-stakeholders.md",
+              "title": "Chapter 1.6 — Requirements Engineering & Stakeholder Management",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-07-estimation.md",
+              "title": "Chapter 1.7 — Estimation: Time, Cost & Risk",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-1-professional-foundation/chapter-08-leadership-influence.md",
+              "title": "Chapter 1.8 — Leadership & Influence Without Authority",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-2-artificial-intelligence",
+          "title": "Part 2 — Artificial Intelligence",
+          "docs": [
+            {
+              "path": "curriculum/part-2-artificial-intelligence/README.md",
+              "title": "Part 2 — Artificial Intelligence",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-01-ai-landscape.md",
+              "title": "Chapter 2.1 — The AI Landscape: History, Waves & Vocabulary",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-02-machine-learning-fundamentals.md",
+              "title": "Chapter 2.2 — Machine Learning Fundamentals",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-03-deep-learning-fundamentals.md",
+              "title": "Chapter 2.3 — Deep Learning Fundamentals",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-04-nlp-essentials.md",
+              "title": "Chapter 2.4 — NLP Essentials",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-05-transformer-architecture.md",
+              "title": "Chapter 2.5 — The Transformer Architecture",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-06-training-finetuning-alignment.md",
+              "title": "Chapter 2.6 — Training, Fine-tuning & Alignment",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md",
+              "title": "Chapter 2.7 — Evaluating ML Systems",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-08-responsible-ai.md",
+              "title": "Chapter 2.8 — Responsible AI: Ethics, Fairness & Regulation",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-3-core-building-blocks-of-genai",
+          "title": "Part 3 — Core Building Blocks of Generative AI",
+          "docs": [
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/README.md",
+              "title": "Part 3 — Core Building Blocks of Generative AI",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-01-llm-capabilities-limits.md",
+              "title": "Chapter 3.1 — LLMs: Capabilities, Limits & Failure Modes",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-02-tokens-context-sampling.md",
+              "title": "Chapter 3.2 — Tokens, Context Windows & Sampling",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-03-prompt-engineering.md",
+              "title": "Chapter 3.3 — Prompt Engineering as an Engineering Discipline",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-04-structured-outputs.md",
+              "title": "Chapter 3.4 — Structured Outputs & Constrained Generation",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md",
+              "title": "Chapter 3.5 — Embeddings & Semantic Search",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md",
+              "title": "Chapter 3.6 — RAG Fundamentals",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-07-function-calling-tool-use.md",
+              "title": "Chapter 3.7 — Function Calling & Tool Use",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md",
+              "title": "Chapter 3.8 — Agents: Concepts & Control Flow",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-09-multimodal-models.md",
+              "title": "Chapter 3.9 — Multimodal Models",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md",
+              "title": "Chapter 3.10 — Model Selection & Benchmarking",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-4-enterprise-genai-systems",
+          "title": "Part 4 — Enterprise GenAI Systems",
+          "docs": [
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/README.md",
+              "title": "Part 4 — Enterprise GenAI Systems",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-01-production-rag.md",
+              "title": "Chapter 4.1 — Production RAG Architecture",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md",
+              "title": "Chapter 4.2 — Advanced Retrieval",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-03-document-ingestion.md",
+              "title": "Chapter 4.3 — Document Ingestion at Enterprise Scale",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md",
+              "title": "Chapter 4.4 — Agent Architectures in Production",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-05-multi-agent-systems.md",
+              "title": "Chapter 4.5 — Multi-Agent Systems",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md",
+              "title": "Chapter 4.6 — Orchestration & Workflow Design",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md",
+              "title": "Chapter 4.7 — Evaluation Systems & LLM-as-Judge",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-08-guardrails-content-safety.md",
+              "title": "Chapter 4.8 — Guardrails & Content Safety",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md",
+              "title": "Chapter 4.9 — GenAI Security & Threat Modeling",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-10-observability.md",
+              "title": "Chapter 4.10 — Observability for LLM Systems",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-11-cost-engineering.md",
+              "title": "Chapter 4.11 — Cost Engineering",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-12-latency-performance.md",
+              "title": "Chapter 4.12 — Latency & Performance Engineering",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md",
+              "title": "Chapter 4.13 — Prompting vs. RAG vs. Fine-tuning: the Decision Framework",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md",
+              "title": "Chapter 4.14 — Privacy, Compliance & AI Governance",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-5-cloud-infrastructure-platform",
+          "title": "Part 5 — Cloud, Infrastructure & Platform Engineering",
+          "docs": [
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/README.md",
+              "title": "Part 5 — Cloud, Infrastructure & Platform Engineering",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-01-cloud-fundamentals-ai.md",
+              "title": "Chapter 5.1 — Cloud Architecture Fundamentals for AI Workloads",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-02-compute-for-ai.md",
+              "title": "Chapter 5.2 — Compute for AI: GPUs, Containers & Serverless",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-03-model-serving.md",
+              "title": "Chapter 5.3 — Model Serving & Inference Infrastructure",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-04-api-integration-layer.md",
+              "title": "Chapter 5.4 — API & Integration Layer",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md",
+              "title": "Chapter 5.5 — Data Architecture for GenAI",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-06-vector-search-infrastructure.md",
+              "title": "Chapter 5.6 — Vector & Search Infrastructure",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-07-llmops.md",
+              "title": "Chapter 5.7 — LLMOps: CI/CD for AI Systems",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-08-scalability-patterns.md",
+              "title": "Chapter 5.8 — Scalability Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-09-reliability-engineering.md",
+              "title": "Chapter 5.9 — Reliability Engineering: SLOs, Failover & DR",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md",
+              "title": "Chapter 5.10 — Infrastructure as Code & Platform Engineering",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-5-cloud-infrastructure-platform/chapter-11-multicloud-hybrid-sovereignty.md",
+              "title": "Chapter 5.11 — Multi-cloud, Hybrid & Sovereignty",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-6-enterprise-architecture",
+          "title": "Part 6 — Enterprise Architecture",
+          "docs": [
+            {
+              "path": "curriculum/part-6-enterprise-architecture/README.md",
+              "title": "Part 6 — Enterprise Architecture",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-01-ea-frameworks.md",
+              "title": "Chapter 6.1 — Enterprise Architecture Frameworks in Practice",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-02-architecture-views-documentation.md",
+              "title": "Chapter 6.2 — Architecture Views & Documentation",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-03-adrs-decision-governance.md",
+              "title": "Chapter 6.3 — ADRs & Decision Governance",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-04-enterprise-integration.md",
+              "title": "Chapter 6.4 — Enterprise Integration Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-05-security-architecture-zero-trust.md",
+              "title": "Chapter 6.5 — Security Architecture & Zero Trust",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-06-iam-for-ai.md",
+              "title": "Chapter 6.6 — Identity & Access Management for AI Systems",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md",
+              "title": "Chapter 6.7 — Data Governance & Knowledge Management",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-08-legacy-modernization-ai-adoption.md",
+              "title": "Chapter 6.8 — Legacy Modernization & AI Adoption Strategy",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-09-architecture-governance.md",
+              "title": "Chapter 6.9 — Architecture Governance: Boards, Reviews & Standards",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-10-tco-business-case.md",
+              "title": "Chapter 6.10 — TCO & the Business Case for AI",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-7-enterprise-ai-architecture-patterns",
+          "title": "Part 7 — Enterprise AI Architecture Patterns",
+          "docs": [
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/README.md",
+              "title": "Part 7 — Enterprise AI Architecture Patterns",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-01-pattern-language.md",
+              "title": "Chapter 7.1 — A Pattern Language for GenAI",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-02-rag-patterns.md",
+              "title": "Chapter 7.2 — RAG Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-03-workflow-patterns.md",
+              "title": "Chapter 7.3 — Workflow Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-04-agentic-patterns.md",
+              "title": "Chapter 7.4 — Agentic Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-05-human-in-the-loop-patterns.md",
+              "title": "Chapter 7.5 — Human-in-the-Loop Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-06-safety-guardrail-patterns.md",
+              "title": "Chapter 7.6 — Safety & Guardrail Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-07-knowledge-data-patterns.md",
+              "title": "Chapter 7.7 — Knowledge & Data Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-08-cost-performance-patterns.md",
+              "title": "Chapter 7.8 — Cost & Performance Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md",
+              "title": "Chapter 7.9 — Platform & Multi-tenancy Patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-10-anti-patterns.md",
+              "title": "Chapter 7.10 — Anti-patterns",
+              "kind": "chapter"
+            }
+          ]
+        },
+        {
+          "id": "part-8-professional-excellence",
+          "title": "Part 8 — Professional Excellence & Career Development",
+          "docs": [
+            {
+              "path": "curriculum/part-8-professional-excellence/README.md",
+              "title": "Part 8 — Professional Excellence & Career Development",
+              "kind": "part-index"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-01-role-and-market.md",
+              "title": "Chapter 8.1 — The GenAI Solution Architect Role & Market",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-02-architecture-portfolio.md",
+              "title": "Chapter 8.2 — Building an Architecture Portfolio",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-03-architecture-interviews.md",
+              "title": "Chapter 8.3 — Architecture Interviews",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-04-technical-writing-speaking.md",
+              "title": "Chapter 8.4 — Technical Writing & Public Speaking",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-05-consulting-client-engagement.md",
+              "title": "Chapter 8.5 — Consulting & Client Engagement Skills",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-06-staying-current.md",
+              "title": "Chapter 8.6 — Staying Current Without Chasing Frameworks",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-07-mentoring-building-teams.md",
+              "title": "Chapter 8.7 — Mentoring & Building AI Teams",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-8-professional-excellence/chapter-08-principal-architect.md",
+              "title": "Chapter 8.8 — Operating as a Principal Architect",
+              "kind": "chapter"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "case-studies",
+      "title": "Case Studies",
+      "groups": [
+        {
+          "id": "Healthcare",
+          "title": "Healthcare",
+          "docs": [
+            {
+              "path": "case-studies/cs01-clinical-documentation-assistant.md",
+              "title": "Case Study CS01 — Clinical Documentation Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs02-patient-portal-triage-chatbot.md",
+              "title": "Case Study CS02 — Patient Portal Triage Chatbot",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs03-prior-authorization-automation.md",
+              "title": "Case Study CS03 — Prior-Authorization Automation",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs04-radiology-report-drafting.md",
+              "title": "Case Study CS04 — Radiology Report Drafting",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs05-hospital-knowledge-hub.md",
+              "title": "Case Study CS05 — Hospital Knowledge Hub for Protocols",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Banking",
+          "title": "Banking",
+          "docs": [
+            {
+              "path": "case-studies/cs06-relationship-manager-copilot.md",
+              "title": "Case Study CS06 — Relationship Manager Copilot",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs07-aml-investigation-assistant.md",
+              "title": "Case Study CS07 — AML Investigation Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs08-credit-memo-drafting.md",
+              "title": "Case Study CS08 — Credit Memo Drafting",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs09-retail-bank-support-assistant.md",
+              "title": "Case Study CS09 — Retail Bank Support Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs10-trading-floor-research-summarizer.md",
+              "title": "Case Study CS10 — Trading Floor Research Summarizer",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Retail",
+          "title": "Retail",
+          "docs": [
+            {
+              "path": "case-studies/cs11-product-catalog-enrichment.md",
+              "title": "Case Study CS11 — Product Catalog Enrichment",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs12-conversational-shopping-assistant.md",
+              "title": "Case Study CS12 — Conversational Shopping Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs13-store-operations-copilot.md",
+              "title": "Case Study CS13 — Store Operations Copilot",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs14-returns-complaints-automation.md",
+              "title": "Case Study CS14 — Returns & Complaints Automation",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Manufacturing",
+          "title": "Manufacturing",
+          "docs": [
+            {
+              "path": "case-studies/cs15-maintenance-manual-assistant.md",
+              "title": "Case Study CS15 — Maintenance Manual Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs16-supplier-document-intelligence.md",
+              "title": "Case Study CS16 — Supplier Document Intelligence",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs17-quality-incident-analysis.md",
+              "title": "Case Study CS17 — Quality Incident Analysis",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs18-sales-engineering-quote-copilot.md",
+              "title": "Case Study CS18 — Sales Engineering Quote Copilot",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Education",
+          "title": "Education",
+          "docs": [
+            {
+              "path": "case-studies/cs19-university-student-advisor.md",
+              "title": "Case Study CS19 — University Student Advisor",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs20-adaptive-tutoring-system.md",
+              "title": "Case Study CS20 — Adaptive Tutoring System",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs21-curriculum-content-pipeline.md",
+              "title": "Case Study CS21 — Curriculum Content Pipeline",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs22-admissions-document-processing.md",
+              "title": "Case Study CS22 — Admissions Document Processing",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Legal",
+          "title": "Legal",
+          "docs": [
+            {
+              "path": "case-studies/cs23-contract-review-platform.md",
+              "title": "Case Study CS23 — Contract Review Platform",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs24-ediscovery-triage.md",
+              "title": "Case Study CS24 — eDiscovery Triage",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs25-legal-research-assistant.md",
+              "title": "Case Study CS25 — Legal Research Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs26-regulatory-change-monitoring.md",
+              "title": "Case Study CS26 — Regulatory Change Monitoring",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Insurance",
+          "title": "Insurance",
+          "docs": [
+            {
+              "path": "case-studies/cs27-claims-intake-summarization.md",
+              "title": "Case Study CS27 — Claims Intake & Summarization",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs28-underwriting-copilot.md",
+              "title": "Case Study CS28 — Underwriting Copilot",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs29-policy-qa-for-agents.md",
+              "title": "Case Study CS29 — Policy Q&A for Agents",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs30-subrogation-opportunity-detection.md",
+              "title": "Case Study CS30 — Subrogation Opportunity Detection",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Telecommunications",
+          "title": "Telecommunications",
+          "docs": [
+            {
+              "path": "case-studies/cs31-network-operations-copilot.md",
+              "title": "Case Study CS31 — Network Operations Copilot",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs32-customer-care-deflection.md",
+              "title": "Case Study CS32 — Customer Care Deflection",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs33-field-technician-assistant.md",
+              "title": "Case Study CS33 — Field Technician Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs34-b2b-proposal-automation.md",
+              "title": "Case Study CS34 — B2B Proposal Automation",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Government",
+          "title": "Government",
+          "docs": [
+            {
+              "path": "case-studies/cs35-citizen-services-portal-assistant.md",
+              "title": "Case Study CS35 — Citizen Services Portal Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs36-caseworker-decision-support.md",
+              "title": "Case Study CS36 — Caseworker Decision Support",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs37-public-records-request-processing.md",
+              "title": "Case Study CS37 — Public Records Request Processing",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs38-policy-analysis-assistant.md",
+              "title": "Case Study CS38 — Policy Analysis Assistant",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Software Engineering",
+          "title": "Software Engineering",
+          "docs": [
+            {
+              "path": "case-studies/cs39-internal-developer-copilot-platform.md",
+              "title": "Case Study CS39 — Internal Developer Copilot Platform",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs40-legacy-code-modernization-factory.md",
+              "title": "Case Study CS40 — Legacy Code Modernization Factory",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs41-incident-postmortem-assistant.md",
+              "title": "Case Study CS41 — Incident Postmortem Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs42-api-documentation-automation.md",
+              "title": "Case Study CS42 — API Documentation Automation",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "HR",
+          "title": "HR",
+          "docs": [
+            {
+              "path": "case-studies/cs43-employee-policy-assistant.md",
+              "title": "Case Study CS43 — Employee Policy Assistant",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs44-recruiting-screening-support.md",
+              "title": "Case Study CS44 — Recruiting Screening Support",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs45-learning-development-recommender.md",
+              "title": "Case Study CS45 — Learning & Development Recommender",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs46-hr-case-management-copilot.md",
+              "title": "Case Study CS46 — HR Case Management Copilot",
+              "kind": "case-study"
+            }
+          ]
+        },
+        {
+          "id": "Finance (Corporate)",
+          "title": "Finance (Corporate)",
+          "docs": [
+            {
+              "path": "case-studies/cs47-financial-close-acceleration.md",
+              "title": "Case Study CS47 — Financial Close Acceleration",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs48-fpa-narrative-reporting.md",
+              "title": "Case Study CS48 — FP&A Narrative Reporting",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs49-procurement-contract-intelligence.md",
+              "title": "Case Study CS49 — Procurement Contract Intelligence",
+              "kind": "case-study"
+            },
+            {
+              "path": "case-studies/cs50-audit-evidence-assistant.md",
+              "title": "Case Study CS50 — Audit Evidence Assistant",
+              "kind": "case-study"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "title": "Projects",
+      "groups": [
+        {
+          "id": "Beginner",
+          "title": "Beginner Tier",
+          "docs": [
+            {
+              "path": "projects/p01-document-qa-assistant/README.md",
+              "title": "Project P01 — Document Q&A Assistant",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p02-support-email-triage/README.md",
+              "title": "Project P02 — Support Email Triage & Draft",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p03-meeting-intelligence-pipeline/README.md",
+              "title": "Project P03 — Meeting Intelligence Pipeline",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p04-report-generator/README.md",
+              "title": "Project P04 — Report Generator",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p05-internal-knowledge-search/README.md",
+              "title": "Project P05 — Internal Knowledge Search",
+              "kind": "project"
+            }
+          ]
+        },
+        {
+          "id": "Intermediate",
+          "title": "Intermediate Tier",
+          "docs": [
+            {
+              "path": "projects/p06-production-rag-service/README.md",
+              "title": "Project P06 — Production RAG Service",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p07-it-helpdesk-agent/README.md",
+              "title": "Project P07 — IT Helpdesk Agent",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p08-contract-analysis-pipeline/README.md",
+              "title": "Project P08 — Contract Analysis Pipeline",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p09-multilingual-support-assistant/README.md",
+              "title": "Project P09 — Multilingual Support Assistant",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p10-evaluation-harness/README.md",
+              "title": "Project P10 — Evaluation Harness",
+              "kind": "project"
+            }
+          ]
+        },
+        {
+          "id": "Advanced",
+          "title": "Advanced Tier",
+          "docs": [
+            {
+              "path": "projects/p11-multi-agent-research-assistant/README.md",
+              "title": "Project P11 — Multi-agent Research Assistant",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p12-enterprise-ingestion-platform/README.md",
+              "title": "Project P12 — Enterprise Ingestion Platform",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p13-genai-gateway/README.md",
+              "title": "Project P13 — GenAI Gateway",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p14-compliance-aware-rag/README.md",
+              "title": "Project P14 — Compliance-aware RAG",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p15-real-time-voice-assistant/README.md",
+              "title": "Project P15 — Real-time Voice Assistant",
+              "kind": "project"
+            }
+          ]
+        },
+        {
+          "id": "Architect",
+          "title": "Architect Tier",
+          "docs": [
+            {
+              "path": "projects/p16-multi-tenant-genai-platform/README.md",
+              "title": "Project P16 — Multi-tenant GenAI Platform",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p17-regulated-industry-assistant/README.md",
+              "title": "Project P17 — Regulated-industry Assistant (Banking)",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p18-sovereign-hybrid-rag/README.md",
+              "title": "Project P18 — Sovereign / Hybrid RAG",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p19-agent-orchestration-platform/README.md",
+              "title": "Project P19 — Agent Orchestration Platform",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p20-ai-coe-reference-architecture/README.md",
+              "title": "Project P20 — AI Center of Excellence Reference Architecture",
+              "kind": "project"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "title": "Reference",
+      "groups": [
+        {
+          "id": "overview",
+          "title": "Overview",
+          "docs": [
+            {
+              "path": "README.md",
+              "title": "GSAC — GenAI Solution Architect Curriculum",
+              "kind": "overview"
+            },
+            {
+              "path": "ROADMAP.md",
+              "title": "GSAC Learning Roadmap",
+              "kind": "overview"
+            },
+            {
+              "path": "PROGRESS.md",
+              "title": "Progress Tracker",
+              "kind": "overview"
+            },
+            {
+              "path": "GLOSSARY.md",
+              "title": "Glossary",
+              "kind": "overview"
+            }
+          ]
+        },
+        {
+          "id": "checklists",
+          "title": "Checklists",
+          "docs": [
+            {
+              "path": "checklists/agent-design-checklist.md",
+              "title": "Agent Design Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/architecture-review-checklist.md",
+              "title": "Architecture Review Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/deployment-checklist.md",
+              "title": "Deployment Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/evaluation-checklist.md",
+              "title": "Evaluation Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/rag-design-checklist.md",
+              "title": "RAG Design Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/security-checklist.md",
+              "title": "GenAI Security Checklist",
+              "kind": "checklist"
+            }
+          ]
+        },
+        {
+          "id": "adr",
+          "title": "Decision Records",
+          "docs": [
+            {
+              "path": "adr/README.md",
+              "title": "Architecture Decision Records",
+              "kind": "adr"
+            },
+            {
+              "path": "adr/ADR-0001-concepts-over-frameworks.md",
+              "title": "ADR-0001: Organize around timeless concepts, not tools or frameworks",
+              "kind": "adr"
+            },
+            {
+              "path": "adr/ADR-0002-eight-part-structure.md",
+              "title": "ADR-0002: Eight-part structure ordered mindset → fundamentals → systems → enterprise → career",
+              "kind": "adr"
+            },
+            {
+              "path": "adr/ADR-0003-mandatory-chapter-template.md",
+              "title": "ADR-0003: Every chapter uses one mandatory template",
+              "kind": "adr"
+            }
+          ]
+        },
+        {
+          "id": "templates",
+          "title": "Templates",
+          "docs": [
+            {
+              "path": "templates/adr-template.md",
+              "title": "ADR-NNNN: {Decision title, stated as a decision}",
+              "kind": "template"
+            },
+            {
+              "path": "templates/case-study-template.md",
+              "title": "Case Study CSXX — {Title}",
+              "kind": "template"
+            },
+            {
+              "path": "templates/chapter-template.md",
+              "title": "Chapter X.Y — {Title}",
+              "kind": "template"
+            },
+            {
+              "path": "templates/project-template.md",
+              "title": "Project PXX — {Title}",
+              "kind": "template"
+            }
+          ]
+        },
+        {
+          "id": "prompt-library",
+          "title": "Prompt Library",
+          "docs": [
+            {
+              "path": "prompt-library/README.md",
+              "title": "Prompt Library",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/agents/agent-system-prompt/prompt.md",
+              "title": "agents/agent-system-prompt — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/agents/agent-system-prompt/README.md",
+              "title": "agents/agent-system-prompt — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/agents/agent-system-prompt/examples.md",
+              "title": "agents/agent-system-prompt — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/agents/agent-system-prompt/CHANGELOG.md",
+              "title": "agents/agent-system-prompt — CHANGELOG",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/evaluation/faithfulness-judge/prompt.md",
+              "title": "evaluation/faithfulness-judge — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/evaluation/faithfulness-judge/README.md",
+              "title": "evaluation/faithfulness-judge — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/evaluation/faithfulness-judge/examples.md",
+              "title": "evaluation/faithfulness-judge — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/evaluation/faithfulness-judge/CHANGELOG.md",
+              "title": "evaluation/faithfulness-judge — CHANGELOG",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/extraction/structured-extraction/prompt.md",
+              "title": "extraction/structured-extraction — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/extraction/structured-extraction/README.md",
+              "title": "extraction/structured-extraction — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/extraction/structured-extraction/examples.md",
+              "title": "extraction/structured-extraction — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/extraction/structured-extraction/CHANGELOG.md",
+              "title": "extraction/structured-extraction — CHANGELOG",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/rag/grounded-answering/prompt.md",
+              "title": "rag/grounded-answering — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/rag/grounded-answering/README.md",
+              "title": "rag/grounded-answering — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/rag/grounded-answering/examples.md",
+              "title": "rag/grounded-answering — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/rag/grounded-answering/CHANGELOG.md",
+              "title": "rag/grounded-answering — CHANGELOG",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/safety/input-screening/prompt.md",
+              "title": "safety/input-screening — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/safety/input-screening/README.md",
+              "title": "safety/input-screening — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/safety/input-screening/examples.md",
+              "title": "safety/input-screening — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/safety/input-screening/CHANGELOG.md",
+              "title": "safety/input-screening — CHANGELOG",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/summarization/meeting-minutes/prompt.md",
+              "title": "summarization/meeting-minutes — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/summarization/meeting-minutes/README.md",
+              "title": "summarization/meeting-minutes — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/summarization/meeting-minutes/examples.md",
+              "title": "summarization/meeting-minutes — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/summarization/meeting-minutes/CHANGELOG.md",
+              "title": "summarization/meeting-minutes — CHANGELOG",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/writing/report-generation/prompt.md",
+              "title": "writing/report-generation — prompt",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/writing/report-generation/README.md",
+              "title": "writing/report-generation — README",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/writing/report-generation/examples.md",
+              "title": "writing/report-generation — examples",
+              "kind": "prompt"
+            },
+            {
+              "path": "prompt-library/writing/report-generation/CHANGELOG.md",
+              "title": "writing/report-generation — CHANGELOG",
+              "kind": "prompt"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

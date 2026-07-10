@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GSAC — GenAI Solution Architect Curriculum</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Rendering libraries (CDN; the reader is served, so these load online) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark" disabled />
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <button id="menu-toggle" class="icon-btn" title="Toggle navigation" aria-label="Toggle navigation">☰</button>
+    <a href="#README.md" class="brand">GSAC</a>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search the curriculum…  (press /)" autocomplete="off" />
+      <div id="search-results" class="search-results" hidden></div>
+    </div>
+    <span id="search-status" class="search-status" title="Full-text indexing status"></span>
+    <button id="theme-toggle" class="icon-btn" title="Toggle light/dark">◐</button>
+  </header>
+
+  <div class="layout">
+    <nav id="sidebar" class="sidebar" aria-label="Document navigation">
+      <input id="filter" type="search" class="filter" placeholder="Filter navigation…" autocomplete="off" />
+      <div id="nav-tree" class="nav-tree"></div>
+    </nav>
+
+    <main class="main">
+      <article id="content" class="content markdown-body">
+        <p class="loading">Loading…</p>
+      </article>
+      <footer class="doc-footer">
+        <div class="prev-next">
+          <a id="prev-link" class="nav-link" hidden>‹ Previous</a>
+          <a id="next-link" class="nav-link" hidden>Next ›</a>
+        </div>
+        <label class="read-toggle">
+          <input type="checkbox" id="read-checkbox" /> Mark as read
+        </label>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
