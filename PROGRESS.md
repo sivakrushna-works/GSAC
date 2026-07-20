@@ -23,6 +23,9 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] 2.6 Training, Fine-tuning & Alignment
 - [ ] 2.7 Evaluating ML Systems
 - [ ] 2.8 Responsible AI: Ethics, Fairness & Regulation
+- [ ] 2.9 Classical ML System Design
+- [ ] 2.10 MLOps and LLMOps: One Discipline, Two Lifecycles
+- [ ] 2.11 Choosing the Right AI Approach
 
 ## Part 3 — Core Building Blocks of Generative AI
 - [ ] 3.1 LLMs: Capabilities, Limits & Failure Modes
@@ -104,6 +107,8 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] P06 Production RAG Service · [ ] P07 IT Helpdesk Agent · [ ] P08 Contract Analysis · [ ] P09 Multilingual Support · [ ] P10 Evaluation Harness
 - [ ] P11 Multi-agent Research · [ ] P12 Ingestion Platform · [ ] P13 GenAI Gateway · [ ] P14 Compliance-aware RAG · [ ] P15 Voice Assistant
 - [ ] P16 Multi-tenant Platform · [ ] P17 Banking Assistant · [ ] P18 Sovereign/Hybrid RAG · [ ] P19 Agent Orchestration Platform · [ ] P20 AI CoE Reference Architecture
+- [ ] P21 Churn Prediction Service (Classical ML Track)
+- [ ] P22 Hybrid Claims Intake (Vision + Classical ML + GenAI)
 
 ## Case studies (log the date + one takeaway)
 
