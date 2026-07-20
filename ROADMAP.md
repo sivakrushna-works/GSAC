@@ -15,7 +15,7 @@ flowchart LR
 **Parts 1 & 2.** The architect mindset and the AI fundamentals everything else stands on.
 
 - Part 1: Professional Foundation (all chapters)
-- Part 2: Artificial Intelligence (all chapters)
+- Part 2: Artificial Intelligence (2.1–2.8; return for 2.9–2.11 in Phase 3)
 - Projects: P01–P02
 - *Skip/skim if:* you already hold an architect role (skim Part 1) or have an ML background (skim Part 2, but read 2.5–2.8).
 
@@ -34,10 +34,10 @@ flowchart LR
 ## Phase 3 — Production Systems (10–12 weeks) · Level 3
 
 **Parts 4 & 5.** Where prototypes become systems: evaluation, security, observability, cost, and the infrastructure underneath.
-
+- Part 2 classical track: 2.9–2.11
 - Part 4: Enterprise GenAI Systems (all chapters)
 - Part 5: Cloud, Infrastructure & Platform Engineering (all chapters)
-- Projects: P06–P12 (at least four of seven)
+- Projects: P06–P12 plus P21(at least four of Eight)
 - Checklists: begin applying [RAG design](checklists/rag-design-checklist.md), [security](checklists/security-checklist.md), and [evaluation](checklists/evaluation-checklist.md) checklists to every project
 
 **Exit criteria:** you can take a demo to production: evals in CI, monitoring dashboards, threat model, cost model, and an on-call runbook.
@@ -48,7 +48,7 @@ flowchart LR
 
 - Part 6: Enterprise Architecture (all chapters)
 - Part 7: Enterprise AI Architecture Patterns (all chapters)
-- Projects: P13–P16 (at least two)
+- Projects: P13–P16 and P22 (at least two)
 - Case studies: 2/week, across industries you *don't* know
 
 **Exit criteria:** you can run an architecture review, write ADRs stakeholders sign off on, and design a multi-tenant GenAI platform on a whiteboard.
