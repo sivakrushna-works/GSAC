@@ -1,4 +1,4 @@
-# Projects — 20 Enterprise-grade Builds
+# Projects — Twenty-two projects across four tiers.
 
 Twenty projects across four tiers. Every project uses the [project template](../templates/project-template.md) and must satisfy its **Definition of Done** — including evals, threat model, monitoring, and a cost estimate. Do them in tier order; within a tier, pick by interest.
 
@@ -27,6 +27,7 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 | P08 | **Contract Analysis Pipeline** — clause extraction, risk flags, comparison against playbook | Document ingestion, structured extraction, review UX | 4.3 |
 | P09 | **Multilingual Support Assistant** — customer-facing bot with language detection, guardrails, escalation | Guardrails, safety, multilingual evals | 4.8 |
 | P10 | **Evaluation Harness** — reusable eval service: golden sets, LLM-as-judge, CI gate, dashboards | Eval design, judge validation, regression detection | 4.7 |
+| P21 | **Churn Prediction Service** — classical ML end-to-end: point-in-time features, GBT, batch scoring, drift, champion–challenger | Classical ML systems, MLOps, drift monitoring | 2.9, 2.10 |
 
 ## Tier 3 — Advanced (Level 3: Engineer)
 
@@ -39,6 +40,7 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 | P13 | **GenAI Gateway** — routing, semantic caching, quotas, cost metering, and failover across model providers | Model tiering, caching, resilience, metering | 4.11, 5.4 |
 | P14 | **Compliance-aware RAG** — PII redaction, audit trail, retention, right-to-be-forgotten | Privacy engineering, governance evidence | 4.14 |
 | P15 | **Real-time Voice Assistant** — speech in/out with latency budget, barge-in, and graceful degradation | Streaming, latency engineering, multimodal | 3.9, 4.12 |
+| P22 | **Hybrid Claims Intake** — vision extraction → rules → classical risk scoring → routing → grounded letters with human approval | Per-stage approach assignment, hybrid architecture, per-stage evals | 2.11, 2.9, 4.3 |
 
 ## Tier 4 — Architect (Level 4: Architect)
 
