@@ -28,7 +28,7 @@ This curriculum emphasizes **timeless concepts over frameworks**. Tools change e
 | Part | Title | Focus |
 |------|-------|-------|
 | [1](curriculum/part-1-professional-foundation/) | Professional Foundation | Architect mindset, design thinking, business fluency, trade-offs, leadership |
-| [2](curriculum/part-2-artificial-intelligence/) | Artificial Intelligence | ML/DL/NLP fundamentals, transformers, training, evaluation, responsible AI |
+| [2](curriculum/part-2-artificial-intelligence/) | Artificial Intelligence | ML/DL/NLP fundamentals, transformers, training, evaluation, responsible AI, classical ML systems, MLOps/LLMOps, approach selection |
 | [3](curriculum/part-3-core-building-blocks-of-genai/) | Core Building Blocks of Generative AI | LLMs, prompting, embeddings, RAG, tool use, agents, multimodal |
 | [4](curriculum/part-4-enterprise-genai-systems/) | Enterprise GenAI Systems | Production RAG, agents at scale, evaluation, security, observability, cost |
 | [5](curriculum/part-5-cloud-infrastructure-platform/) | Cloud, Infrastructure & Platform Engineering | Compute, serving, data architecture, scalability, reliability, LLMOps |
