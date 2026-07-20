@@ -2,7 +2,9 @@
 
 The fundamentals under GenAI. You don't need to train models to architect with them — but you do need to know what they can and cannot do, why, and what the failure modes are. Depth is calibrated to an architect: enough math to reason, not to publish.
 
-**Maturity target:** Level 1→2 · **Estimated effort:** 3–4 weeks
+This part closes with the classical-ML track (2.9–2.11) that turns a GenAI specialist into a full **AI** Solution Architect: designing the systems LLMs are wrong for, running both operational lifecycles, and — the defining skill — choosing the right approach per problem.
+
+**Maturity target:** Level 1→2 (2.1–2.8), Level 2→4 (2.9–2.11) · **Estimated effort:** 4–6 weeks
 
 ## Chapters
 
@@ -16,10 +18,14 @@ The fundamentals under GenAI. You don't need to train models to architect with t
 | 2.6 | [Training, Fine-tuning & Alignment](chapter-06-training-finetuning-alignment.md) | 2 | Distinguish pre-training, supervised fine-tuning, and preference alignment (RLHF); know what each changes and costs |
 | 2.7 | [Evaluating ML Systems](chapter-07-evaluating-ml-systems.md) | 2 | Choose metrics for classification/generation tasks; explain benchmark contamination and why leaderboards mislead |
 | 2.8 | [Responsible AI: Ethics, Fairness & Regulation](chapter-08-responsible-ai.md) | 2 | Identify bias sources, apply fairness lenses, and map the regulatory landscape (EU AI Act–style obligations) to system design |
+| 2.9 | [Classical ML System Design](chapter-09-classical-ml-system-design.md) | 2→3 | Design prediction/classification/forecasting systems end-to-end: point-in-time features, batch vs online serving, drift, and the label loop |
+| 2.10 | [MLOps and LLMOps: One Discipline, Two Lifecycles](chapter-10-mlops-vs-llmops.md) | 3 | Run both operational lifecycles; version the right artifacts, gate promotions, and govern both lanes with one platform discipline |
+| 2.11 | [Choosing the Right AI Approach](chapter-11-choosing-the-right-ai-approach.md) | 4 | Run the five-question triage; assign rules / classical ML / deep learning / GenAI / hybrid per problem stage, and defend it in a one-page memo |
 
 ## Exit criteria
 
 - Explain transformers and fine-tuning to a non-technical stakeholder in 5 minutes (record yourself)
 - A one-page memo: "What our model can't do and why" for a chosen model
+- Five approach-decision memos from the 2.11 exercise, at least one hybrid and one "no AI"
 
 **Previous:** [Part 1](../part-1-professional-foundation/) · **Next:** [Part 3 — Core Building Blocks of Generative AI](../part-3-core-building-blocks-of-genai/)
