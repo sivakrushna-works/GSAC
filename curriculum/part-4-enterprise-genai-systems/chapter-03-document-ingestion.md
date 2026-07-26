@@ -169,4 +169,4 @@ For any ingestion pipeline feeding retrieval:
 
 ---
 
-**Previous:** [Chapter 4.2 — Advanced Retrieval](chapter-02-advanced-retrieval.md) · **Next:** [Chapter 4.4 — Agent Architectures in Production](chapter-04-agent-architectures-production.md) · **Related:** [3.9 Multimodal Models](../part-3-core-building-blocks-of-genai/chapter-09-multimodal-models.md), [4.1 Production RAG](chapter-01-production-rag.md), [6.7 Data Governance](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 4.2 — Advanced Retrieval](chapter-02-advanced-retrieval.md) · **Next:** [Chapter 4.4 — Agent Architectures in Production](chapter-04-agent-architectures-production.md) · **Related:** [3.9 Multimodal Models](../part-3-core-building-blocks-of-genai/chapter-09-multimodal-models.md), [4.1 Production RAG](chapter-01-production-rag.md), [6.7 Data Governance](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md)

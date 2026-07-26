@@ -159,4 +159,4 @@ Before any "add AI" initiative:
 
 ---
 
-**Previous:** [Part 2 index](README.md) · **Next:** [Chapter 2.2 — Machine Learning Fundamentals](chapter-02-machine-learning-fundamentals.md) · **Related:** [1.3 Business Understanding](../part-1-professional-foundation/chapter-03-business-understanding.md), [3.1 LLMs: Capabilities & Limits](../part-3-core-building-blocks-of-genai/README.md), [4.13 Prompting vs. RAG vs. Fine-tuning](../part-4-enterprise-genai-systems/README.md)
+**Previous:** [Part 2 index](README.md) · **Next:** [Chapter 2.2 — Machine Learning Fundamentals](chapter-02-machine-learning-fundamentals.md) · **Related:** [1.3 Business Understanding](../part-1-professional-foundation/chapter-03-business-understanding.md), [3.1 LLMs: Capabilities & Limits](../part-3-core-building-blocks-of-genai/chapter-01-llm-capabilities-limits.md), [4.13 Prompting vs. RAG vs. Fine-tuning](../part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md)

@@ -165,4 +165,4 @@ For any cross-boundary GenAI architecture decision:
 
 ---
 
-**Previous:** [Chapter 5.10 — Infrastructure as Code & Platform Engineering](chapter-10-iac-platform-engineering.md) · **Next:** [Part 6 — Enterprise Architecture](../part-6-enterprise-architecture/) · **Related:** [5.1 Cloud Architecture Fundamentals](chapter-01-cloud-fundamentals-ai.md), [4.14 Privacy, Compliance & Governance](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 5.10 — Infrastructure as Code & Platform Engineering](chapter-10-iac-platform-engineering.md) · **Next:** [Part 6 — Enterprise Architecture](../part-6-enterprise-architecture/) · **Related:** [5.1 Cloud Architecture Fundamentals](chapter-01-cloud-fundamentals-ai.md), [4.14 Privacy, Compliance & Governance](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)

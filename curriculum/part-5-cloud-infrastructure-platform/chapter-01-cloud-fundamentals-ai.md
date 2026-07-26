@@ -165,4 +165,4 @@ For the cloud foundation of any GenAI program:
 
 ---
 
-**Previous:** [Part 5 index](README.md) · **Next:** [Chapter 5.2 — Compute for AI: GPUs, Containers & Serverless](chapter-02-compute-for-ai.md) · **Related:** [2.3 Deep Learning Fundamentals](../part-2-artificial-intelligence/chapter-03-deep-learning-fundamentals.md), [4.14 Privacy, Compliance & Governance](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Part 5 index](README.md) · **Next:** [Chapter 5.2 — Compute for AI: GPUs, Containers & Serverless](chapter-02-compute-for-ai.md) · **Related:** [2.3 Deep Learning Fundamentals](../part-2-artificial-intelligence/chapter-03-deep-learning-fundamentals.md), [4.14 Privacy, Compliance & Governance](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md)

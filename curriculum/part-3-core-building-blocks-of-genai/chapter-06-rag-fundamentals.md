@@ -178,4 +178,4 @@ For any RAG deployment:
 
 ---
 
-**Previous:** [Chapter 3.5 — Embeddings & Semantic Search](chapter-05-embeddings-semantic-search.md) · **Next:** [Chapter 3.7 — Function Calling & Tool Use](chapter-07-function-calling-tool-use.md) · **Related:** [4.1 Production RAG Architecture](../part-4-enterprise-genai-systems/README.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/README.md), [RAG design checklist](../../checklists/rag-design-checklist.md)
+**Previous:** [Chapter 3.5 — Embeddings & Semantic Search](chapter-05-embeddings-semantic-search.md) · **Next:** [Chapter 3.7 — Function Calling & Tool Use](chapter-07-function-calling-tool-use.md) · **Related:** [4.1 Production RAG Architecture](../part-4-enterprise-genai-systems/chapter-01-production-rag.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md), [RAG design checklist](../../checklists/rag-design-checklist.md)

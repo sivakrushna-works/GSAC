@@ -158,4 +158,4 @@ For any system with a neural model in the path:
 
 ---
 
-**Previous:** [Chapter 2.2 — Machine Learning Fundamentals](chapter-02-machine-learning-fundamentals.md) · **Next:** [Chapter 2.4 — NLP Essentials](chapter-04-nlp-essentials.md) · **Related:** [2.5 The Transformer Architecture](chapter-05-transformer-architecture.md), [5.2 Compute for AI](../part-5-cloud-infrastructure-platform/README.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/README.md)
+**Previous:** [Chapter 2.2 — Machine Learning Fundamentals](chapter-02-machine-learning-fundamentals.md) · **Next:** [Chapter 2.4 — NLP Essentials](chapter-04-nlp-essentials.md) · **Related:** [2.5 The Transformer Architecture](chapter-05-transformer-architecture.md), [5.2 Compute for AI](../part-5-cloud-infrastructure-platform/chapter-02-compute-for-ai.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md)

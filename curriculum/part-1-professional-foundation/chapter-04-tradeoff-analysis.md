@@ -173,4 +173,4 @@ For any consequential decision on your project right now:
 
 ---
 
-**Previous:** [1.3 Business Understanding for Architects](chapter-03-business-understanding.md) · **Next:** [Chapter 1.5 — Communicating Architecture](chapter-05-communicating-architecture.md) · **Related:** [4.13 Prompting vs. RAG vs. Fine-tuning](../part-4-enterprise-genai-systems/README.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/README.md), [ADR template](../../templates/adr-template.md)
+**Previous:** [1.3 Business Understanding for Architects](chapter-03-business-understanding.md) · **Next:** [Chapter 1.5 — Communicating Architecture](chapter-05-communicating-architecture.md) · **Related:** [4.13 Prompting vs. RAG vs. Fine-tuning](../part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [ADR template](../../templates/adr-template.md)

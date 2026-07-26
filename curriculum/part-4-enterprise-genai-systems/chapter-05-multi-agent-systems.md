@@ -157,7 +157,7 @@ For any system with more than one agent:
 - Anthropic's multi-agent research system engineering post (anthropic.com/engineering) — the production orchestrator–workers account this chapter's pattern section reflects; note the summarize-before-merge and scoped-brief disciplines.
 - Classical distributed-systems literature (Kleppmann, *Designing Data-Intensive Applications* — the consistency and partial-failure chapters) — the substrate discipline; multi-agent systems are distributed systems first.
 - The [agent design checklist](../../checklists/agent-design-checklist.md) — its multi-agent lines ("coordination pattern named, shared-state contract defined") are this chapter's checklist hooks.
-- 7.4 Agentic Patterns (when written) — the pattern-form treatment of orchestrator–workers, handoff, and their consequences.
+- [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-04-agentic-patterns.md) — the pattern-form treatment of orchestrator–workers, handoff, and their consequences.
 
 ## Summary
 
@@ -169,4 +169,4 @@ For any system with more than one agent:
 
 ---
 
-**Previous:** [Chapter 4.4 — Agent Architectures in Production](chapter-04-agent-architectures-production.md) · **Next:** [Chapter 4.6 — Orchestration & Workflow Design](chapter-06-orchestration-workflows.md) · **Related:** [3.8 Agents](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md), [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/README.md), [Agent design checklist](../../checklists/agent-design-checklist.md)
+**Previous:** [Chapter 4.4 — Agent Architectures in Production](chapter-04-agent-architectures-production.md) · **Next:** [Chapter 4.6 — Orchestration & Workflow Design](chapter-06-orchestration-workflows.md) · **Related:** [3.8 Agents](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md), [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-04-agentic-patterns.md), [Agent design checklist](../../checklists/agent-design-checklist.md)

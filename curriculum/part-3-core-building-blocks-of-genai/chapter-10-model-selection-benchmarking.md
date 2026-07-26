@@ -173,4 +173,4 @@ For any organization consuming foundation models (all of them):
 
 ---
 
-**Previous:** [Chapter 3.9 — Multimodal Models](chapter-09-multimodal-models.md) · **Next:** [Part 4 — Enterprise GenAI Systems](../part-4-enterprise-genai-systems/) · **Related:** [2.7 Evaluating ML Systems](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md), [1.4 Trade-off Analysis](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md), [7.8 Cost & Performance Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Chapter 3.9 — Multimodal Models](chapter-09-multimodal-models.md) · **Next:** [Part 4 — Enterprise GenAI Systems](../part-4-enterprise-genai-systems/) · **Related:** [2.7 Evaluating ML Systems](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md), [1.4 Trade-off Analysis](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md), [7.8 Cost & Performance Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-08-cost-performance-patterns.md)

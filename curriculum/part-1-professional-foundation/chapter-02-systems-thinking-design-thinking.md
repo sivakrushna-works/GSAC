@@ -166,4 +166,4 @@ Before committing to a design touching user workflows and metrics:
 
 ---
 
-**Previous:** [1.1 From Software Engineer to Solution Architect](chapter-01-from-engineer-to-architect.md) · **Next:** [Chapter 1.3 — Business Understanding for Architects](chapter-03-business-understanding.md) · **Related:** [1.4 Trade-off Analysis](chapter-04-tradeoff-analysis.md), [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/README.md), [7.10 Anti-patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [1.1 From Software Engineer to Solution Architect](chapter-01-from-engineer-to-architect.md) · **Next:** [Chapter 1.3 — Business Understanding for Architects](chapter-03-business-understanding.md) · **Related:** [1.4 Trade-off Analysis](chapter-04-tradeoff-analysis.md), [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md), [7.10 Anti-patterns](../part-7-enterprise-ai-architecture-patterns/chapter-10-anti-patterns.md)

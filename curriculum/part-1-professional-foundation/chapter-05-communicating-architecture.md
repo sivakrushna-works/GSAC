@@ -167,4 +167,4 @@ Before any review or kickoff on your current system:
 
 ---
 
-**Previous:** [1.4 Trade-off Analysis & Decision Making](chapter-04-tradeoff-analysis.md) · **Next:** [Chapter 1.6 — Requirements Engineering & Stakeholder Management](chapter-06-requirements-stakeholders.md) · **Related:** [6.2 Architecture Views & Documentation](../part-6-enterprise-architecture/README.md), [4.9 GenAI Security & Threat Modeling](../part-4-enterprise-genai-systems/README.md), [ADR template](../../templates/adr-template.md)
+**Previous:** [1.4 Trade-off Analysis & Decision Making](chapter-04-tradeoff-analysis.md) · **Next:** [Chapter 1.6 — Requirements Engineering & Stakeholder Management](chapter-06-requirements-stakeholders.md) · **Related:** [6.2 Architecture Views & Documentation](../part-6-enterprise-architecture/chapter-02-architecture-views-documentation.md), [4.9 GenAI Security & Threat Modeling](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md), [ADR template](../../templates/adr-template.md)

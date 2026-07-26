@@ -187,4 +187,4 @@ Before funding, and refreshed at each phase gate:
 
 ---
 
-**Previous:** [1.6 Requirements Engineering & Stakeholder Management](chapter-06-requirements-stakeholders.md) · **Next:** [Chapter 1.8 — Leadership & Influence Without Authority](chapter-08-leadership-influence.md) · **Related:** [4.11 Cost Engineering](../part-4-enterprise-genai-systems/README.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/README.md), [Architecture review checklist](../../checklists/architecture-review-checklist.md)
+**Previous:** [1.6 Requirements Engineering & Stakeholder Management](chapter-06-requirements-stakeholders.md) · **Next:** [Chapter 1.8 — Leadership & Influence Without Authority](chapter-08-leadership-influence.md) · **Related:** [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/chapter-10-tco-business-case.md), [Architecture review checklist](../../checklists/architecture-review-checklist.md)

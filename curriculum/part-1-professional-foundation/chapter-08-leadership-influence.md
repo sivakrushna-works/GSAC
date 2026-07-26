@@ -181,4 +181,4 @@ Before launching any change you cannot mandate:
 
 ---
 
-**Previous:** [1.7 Estimation: Time, Cost & Risk](chapter-07-estimation.md) · **Next:** [Part 2 — Artificial Intelligence](../part-2-artificial-intelligence/) · **Related:** [6.9 Architecture Governance](../part-6-enterprise-architecture/README.md), [8.7 Mentoring & Building AI Teams](../part-8-professional-excellence/README.md), [8.8 Operating as a Principal Architect](../part-8-professional-excellence/README.md)
+**Previous:** [1.7 Estimation: Time, Cost & Risk](chapter-07-estimation.md) · **Next:** [Part 2 — Artificial Intelligence](../part-2-artificial-intelligence/) · **Related:** [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md), [8.7 Mentoring & Building AI Teams](../part-8-professional-excellence/chapter-07-mentoring-building-teams.md), [8.8 Operating as a Principal Architect](../part-8-professional-excellence/chapter-08-principal-architect.md)

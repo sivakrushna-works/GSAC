@@ -173,4 +173,4 @@ For any LLM system at production scale:
 
 ---
 
-**Previous:** [Chapter 4.10 — Observability for LLM Systems](chapter-10-observability.md) · **Next:** [Chapter 4.12 — Latency & Performance Engineering](chapter-12-latency-performance.md) · **Related:** [1.7 Estimation](../part-1-professional-foundation/chapter-07-estimation.md), [3.10 Model Selection](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [7.8 Cost & Performance Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Chapter 4.10 — Observability for LLM Systems](chapter-10-observability.md) · **Next:** [Chapter 4.12 — Latency & Performance Engineering](chapter-12-latency-performance.md) · **Related:** [1.7 Estimation](../part-1-professional-foundation/chapter-07-estimation.md), [3.10 Model Selection](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [7.8 Cost & Performance Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-08-cost-performance-patterns.md)

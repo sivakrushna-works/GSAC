@@ -183,4 +183,4 @@ For any system where the model owns any control flow:
 
 ---
 
-**Previous:** [Chapter 3.7 — Function Calling & Tool Use](chapter-07-function-calling-tool-use.md) · **Next:** [Chapter 3.9 — Multimodal Models](chapter-09-multimodal-models.md) · **Related:** [4.4 Agent Architectures in Production](../part-4-enterprise-genai-systems/README.md), [4.5 Multi-Agent Systems](../part-4-enterprise-genai-systems/README.md), [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/README.md), [Agent design checklist](../../checklists/agent-design-checklist.md)
+**Previous:** [Chapter 3.7 — Function Calling & Tool Use](chapter-07-function-calling-tool-use.md) · **Next:** [Chapter 3.9 — Multimodal Models](chapter-09-multimodal-models.md) · **Related:** [4.4 Agent Architectures in Production](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md), [4.5 Multi-Agent Systems](../part-4-enterprise-genai-systems/chapter-05-multi-agent-systems.md), [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-04-agentic-patterns.md), [Agent design checklist](../../checklists/agent-design-checklist.md)

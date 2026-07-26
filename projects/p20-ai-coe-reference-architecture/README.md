@@ -15,7 +15,7 @@ A 5,000-person enterprise needs an AI strategy — not more pilots, but a target
 ## Requirements
 
 ### Functional
-- FR-1: Capability-mapped AI portfolio (6.1) with target-state and roadmap (6.1/6.8).
+- FR-1: Capability-mapped AI portfolio (6.1) with target-state and roadmap (6.1/6.8) — spanning both the GenAI lane and the classical-ML lane (2.11's ladder; P21/P22 as reference implementations).
 - FR-2: The platform reference (P16 — gateway, eval, observability, governance — 5.10/7.9).
 - FR-3: Governance (enabling — 6.9): standards, review boards, golden paths.
 - FR-4: The business case (TCO, risk-adjusted ROI, portfolio prioritization — 6.10).
@@ -82,4 +82,4 @@ The reference includes its own evolution: the roadmap phases (6.8), the target-s
 - [ ] The document survives a mock architecture-review-board and executive presentation
 - [ ] **Portfolio centerpiece**: presents the architect's judgment at principal level (8.2/8.8)
 
-**Related case study:** [CS39 Internal Developer Copilot Platform](../../case-studies/cs39-internal-developer-copilot-platform.md) · **Synthesizes:** the entire curriculum (Parts 1–8) and all prior projects (P01–P19).
+**Related case study:** [CS39 Internal Developer Copilot Platform](../../case-studies/cs39-internal-developer-copilot-platform.md) · **Synthesizes:** the entire curriculum (Parts 1–8) and all prior projects (P01–P22), including the classical-ML track (P21) and the hybrid track (P22).

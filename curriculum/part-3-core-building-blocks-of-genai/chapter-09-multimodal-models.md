@@ -165,4 +165,4 @@ For any system ingesting non-text media:
 
 ---
 
-**Previous:** [Chapter 3.8 — Agents: Concepts & Control Flow](chapter-08-agents-concepts.md) · **Next:** [Chapter 3.10 — Model Selection & Benchmarking](chapter-10-model-selection-benchmarking.md) · **Related:** [4.3 Document Ingestion at Enterprise Scale](../part-4-enterprise-genai-systems/README.md), [4.12 Latency & Performance](../part-4-enterprise-genai-systems/README.md), [2.8 Responsible AI](../part-2-artificial-intelligence/chapter-08-responsible-ai.md)
+**Previous:** [Chapter 3.8 — Agents: Concepts & Control Flow](chapter-08-agents-concepts.md) · **Next:** [Chapter 3.10 — Model Selection & Benchmarking](chapter-10-model-selection-benchmarking.md) · **Related:** [4.3 Document Ingestion at Enterprise Scale](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md), [4.12 Latency & Performance](../part-4-enterprise-genai-systems/chapter-12-latency-performance.md), [2.8 Responsible AI](../part-2-artificial-intelligence/chapter-08-responsible-ai.md)

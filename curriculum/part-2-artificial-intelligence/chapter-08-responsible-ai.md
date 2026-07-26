@@ -178,4 +178,4 @@ For any system making or informing decisions about people (and as a screen for a
 
 ---
 
-**Previous:** [Chapter 2.7 — Evaluating ML Systems](chapter-07-evaluating-ml-systems.md) · **Next:** [Part 3 — Core Building Blocks of Generative AI](../part-3-core-building-blocks-of-genai/) · **Related:** [4.14 Privacy, Compliance & AI Governance](../part-4-enterprise-genai-systems/README.md), [7.5 Human-in-the-Loop Patterns](../part-7-enterprise-ai-architecture-patterns/README.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 2.7 — Evaluating ML Systems](chapter-07-evaluating-ml-systems.md) · **Next:** [Part 3 — Core Building Blocks of Generative AI](../part-3-core-building-blocks-of-genai/) · **Related:** [4.14 Privacy, Compliance & AI Governance](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md), [7.5 Human-in-the-Loop Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-05-human-in-the-loop-patterns.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)

@@ -177,4 +177,4 @@ For any system whose behavior depends on prompts (all of them):
 
 ---
 
-**Previous:** [Chapter 3.2 — Tokens, Context Windows & Sampling](chapter-02-tokens-context-sampling.md) · **Next:** [Chapter 3.4 — Structured Outputs & Constrained Generation](chapter-04-structured-outputs.md) · **Related:** [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/README.md), [4.9 GenAI Security](../part-4-enterprise-genai-systems/README.md), [Prompt library](../../prompt-library/README.md)
+**Previous:** [Chapter 3.2 — Tokens, Context Windows & Sampling](chapter-02-tokens-context-sampling.md) · **Next:** [Chapter 3.4 — Structured Outputs & Constrained Generation](chapter-04-structured-outputs.md) · **Related:** [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md), [4.9 GenAI Security](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md), [Prompt library](../../prompt-library/README.md)

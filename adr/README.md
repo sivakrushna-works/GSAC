@@ -7,5 +7,6 @@ Decisions that shape this curriculum itself — recorded in the same [ADR format
 | [0001](ADR-0001-concepts-over-frameworks.md) | Organize around timeless concepts, not tools or frameworks | Accepted |
 | [0002](ADR-0002-eight-part-structure.md) | Eight-part structure ordered mindset → fundamentals → systems → enterprise → career | Accepted |
 | [0003](ADR-0003-mandatory-chapter-template.md) | Every chapter uses one mandatory template | Accepted |
+| [0004](ADR-0004-reposition-to-ai-solution-architect.md) | Reposition from GenAI Solution Architect to AI Solution Architect — content before branding | Accepted |
 
 New ADRs: copy the template, number sequentially, add a row here.

@@ -171,4 +171,4 @@ For any system where the model can invoke tools:
 
 ---
 
-**Previous:** [Chapter 3.6 — RAG Fundamentals](chapter-06-rag-fundamentals.md) · **Next:** [Chapter 3.8 — Agents: Concepts & Control Flow](chapter-08-agents-concepts.md) · **Related:** [3.4 Structured Outputs](chapter-04-structured-outputs.md), [4.9 GenAI Security](../part-4-enterprise-genai-systems/README.md), [6.6 IAM for AI Systems](../part-6-enterprise-architecture/README.md), [Agent design checklist](../../checklists/agent-design-checklist.md)
+**Previous:** [Chapter 3.6 — RAG Fundamentals](chapter-06-rag-fundamentals.md) · **Next:** [Chapter 3.8 — Agents: Concepts & Control Flow](chapter-08-agents-concepts.md) · **Related:** [3.4 Structured Outputs](chapter-04-structured-outputs.md), [4.9 GenAI Security](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md), [6.6 IAM for AI Systems](../part-6-enterprise-architecture/chapter-06-iam-for-ai.md), [Agent design checklist](../../checklists/agent-design-checklist.md)

@@ -169,4 +169,4 @@ For any adaptation decision (and standing, for any system on managed models):
 
 ---
 
-**Previous:** [Chapter 2.5 — The Transformer Architecture](chapter-05-transformer-architecture.md) · **Next:** [Chapter 2.7 — Evaluating ML Systems](chapter-07-evaluating-ml-systems.md) · **Related:** [4.13 Prompting vs. RAG vs. Fine-tuning](../part-4-enterprise-genai-systems/README.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/README.md), [5.7 LLMOps](../part-5-cloud-infrastructure-platform/README.md)
+**Previous:** [Chapter 2.5 — The Transformer Architecture](chapter-05-transformer-architecture.md) · **Next:** [Chapter 2.7 — Evaluating ML Systems](chapter-07-evaluating-ml-systems.md) · **Related:** [4.13 Prompting vs. RAG vs. Fine-tuning](../part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [5.7 LLMOps](../part-5-cloud-infrastructure-platform/chapter-07-llmops.md)

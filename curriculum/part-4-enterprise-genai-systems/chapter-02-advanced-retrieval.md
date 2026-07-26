@@ -162,4 +162,4 @@ For any retrieval stack beyond first-order:
 
 ---
 
-**Previous:** [Chapter 4.1 — Production RAG Architecture](chapter-01-production-rag.md) · **Next:** [Chapter 4.3 — Document Ingestion at Enterprise Scale](chapter-03-document-ingestion.md) · **Related:** [3.5 Embeddings & Semantic Search](../part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md), [2.4 NLP Essentials](../part-2-artificial-intelligence/chapter-04-nlp-essentials.md), [7.7 Knowledge & Data Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Chapter 4.1 — Production RAG Architecture](chapter-01-production-rag.md) · **Next:** [Chapter 4.3 — Document Ingestion at Enterprise Scale](chapter-03-document-ingestion.md) · **Related:** [3.5 Embeddings & Semantic Search](../part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md), [2.4 NLP Essentials](../part-2-artificial-intelligence/chapter-04-nlp-essentials.md), [7.7 Knowledge & Data Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-07-knowledge-data-patterns.md)

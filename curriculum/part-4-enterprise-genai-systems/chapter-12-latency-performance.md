@@ -182,4 +182,4 @@ For any latency-sensitive LLM system:
 
 ---
 
-**Previous:** [Chapter 4.11 — Cost Engineering](chapter-11-cost-engineering.md) · **Next:** [Chapter 4.13 — Prompting vs. RAG vs. Fine-tuning: the Decision Framework](chapter-13-prompting-rag-finetuning.md) · **Related:** [2.5 The Transformer](../part-2-artificial-intelligence/chapter-05-transformer-architecture.md), [4.10 Observability](chapter-10-observability.md), [7.8 Cost & Performance Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Chapter 4.11 — Cost Engineering](chapter-11-cost-engineering.md) · **Next:** [Chapter 4.13 — Prompting vs. RAG vs. Fine-tuning: the Decision Framework](chapter-13-prompting-rag-finetuning.md) · **Related:** [2.5 The Transformer](../part-2-artificial-intelligence/chapter-05-transformer-architecture.md), [4.10 Observability](chapter-10-observability.md), [7.8 Cost & Performance Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-08-cost-performance-patterns.md)

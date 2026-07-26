@@ -175,4 +175,4 @@ For the data architecture of any GenAI program:
 
 ---
 
-**Previous:** [Chapter 5.4 — API & Integration Layer](chapter-04-api-integration-layer.md) · **Next:** [Chapter 5.6 — Vector & Search Infrastructure](chapter-06-vector-search-infrastructure.md) · **Related:** [2.2 ML Fundamentals](../part-2-artificial-intelligence/chapter-02-machine-learning-fundamentals.md), [4.3 Document Ingestion](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md), [6.7 Data Governance](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 5.4 — API & Integration Layer](chapter-04-api-integration-layer.md) · **Next:** [Chapter 5.6 — Vector & Search Infrastructure](chapter-06-vector-search-infrastructure.md) · **Related:** [2.2 ML Fundamentals](../part-2-artificial-intelligence/chapter-02-machine-learning-fundamentals.md), [4.3 Document Ingestion](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md), [6.7 Data Governance](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md)

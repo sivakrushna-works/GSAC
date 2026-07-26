@@ -172,4 +172,4 @@ For any system with a learned component heading to production:
 
 ---
 
-**Previous:** [Chapter 2.6 — Training, Fine-tuning & Alignment](chapter-06-training-finetuning-alignment.md) · **Next:** [Chapter 2.8 — Responsible AI: Ethics, Fairness & Regulation](chapter-08-responsible-ai.md) · **Related:** [4.7 Evaluation Systems & LLM-as-Judge](../part-4-enterprise-genai-systems/README.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/README.md), [Evaluation checklist](../../checklists/evaluation-checklist.md)
+**Previous:** [Chapter 2.6 — Training, Fine-tuning & Alignment](chapter-06-training-finetuning-alignment.md) · **Next:** [Chapter 2.8 — Responsible AI: Ethics, Fairness & Regulation](chapter-08-responsible-ai.md) · **Related:** [4.7 Evaluation Systems & LLM-as-Judge](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [Evaluation checklist](../../checklists/evaluation-checklist.md)

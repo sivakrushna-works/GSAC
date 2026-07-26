@@ -155,7 +155,7 @@ For the GenAI gateway / API layer:
 - API gateway and service mesh patterns (general architecture references) — the classical gateway discipline this chapter specializes for GenAI; rate limiting, circuit breaking, and the gateway-as-control-point pattern.
 - Your model providers' rate-limit, provisioned-throughput, and streaming documentation (official docs) — the provider-capacity reality the gateway manages; the API shapes it normalizes.
 - LLM gateway / proxy open-source projects and products (evaluate several) — the build-vs-buy landscape, assessed against this chapter's requirements and 7.10's lock-in concerns.
-- 7.9 Platform & Multi-tenancy Patterns (when written) — the pattern-form treatment of the gateway as the platform keystone; this chapter is its infrastructure detail.
+- [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md) — the pattern-form treatment of the gateway as the platform keystone; this chapter is its infrastructure detail.
 
 ## Summary
 
@@ -167,4 +167,4 @@ For the GenAI gateway / API layer:
 
 ---
 
-**Previous:** [Chapter 5.3 — Model Serving & Inference Infrastructure](chapter-03-model-serving.md) · **Next:** [Chapter 5.5 — Data Architecture for GenAI](chapter-05-data-architecture.md) · **Related:** [3.10 Model Selection](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Chapter 5.3 — Model Serving & Inference Infrastructure](chapter-03-model-serving.md) · **Next:** [Chapter 5.5 — Data Architecture for GenAI](chapter-05-data-architecture.md) · **Related:** [3.10 Model Selection](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md)

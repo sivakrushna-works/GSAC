@@ -174,4 +174,4 @@ For any conversational or context-assembled LLM system:
 
 ---
 
-**Previous:** [Chapter 3.1 — LLMs: Capabilities, Limits & Failure Modes](chapter-01-llm-capabilities-limits.md) · **Next:** [Chapter 3.3 — Prompt Engineering as an Engineering Discipline](chapter-03-prompt-engineering.md) · **Related:** [2.5 The Transformer](../part-2-artificial-intelligence/chapter-05-transformer-architecture.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/README.md), [4.12 Latency & Performance](../part-4-enterprise-genai-systems/README.md)
+**Previous:** [Chapter 3.1 — LLMs: Capabilities, Limits & Failure Modes](chapter-01-llm-capabilities-limits.md) · **Next:** [Chapter 3.3 — Prompt Engineering as an Engineering Discipline](chapter-03-prompt-engineering.md) · **Related:** [2.5 The Transformer](../part-2-artificial-intelligence/chapter-05-transformer-architecture.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md), [4.12 Latency & Performance](../part-4-enterprise-genai-systems/chapter-12-latency-performance.md)

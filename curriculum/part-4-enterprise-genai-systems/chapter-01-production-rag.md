@@ -175,4 +175,4 @@ For any RAG system serving more than one team or any external user:
 
 ---
 
-**Previous:** [Part 4 index](README.md) · **Next:** [Chapter 4.2 — Advanced Retrieval](chapter-02-advanced-retrieval.md) · **Related:** [3.5 Embeddings & Semantic Search](../part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md), [3.6 RAG Fundamentals](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Part 4 index](README.md) · **Next:** [Chapter 4.2 — Advanced Retrieval](chapter-02-advanced-retrieval.md) · **Related:** [3.5 Embeddings & Semantic Search](../part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md), [3.6 RAG Fundamentals](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md)

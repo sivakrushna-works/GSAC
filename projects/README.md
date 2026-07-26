@@ -1,6 +1,6 @@
 # Projects — Twenty-two projects across four tiers.
 
-Twenty projects across four tiers. Every project uses the [project template](../templates/project-template.md) and must satisfy its **Definition of Done** — including evals, threat model, monitoring, and a cost estimate. Do them in tier order; within a tier, pick by interest.
+Twenty-two projects across four tiers. Every project uses the [project template](../templates/project-template.md) and must satisfy its **Definition of Done** — including evals, threat model, monitoring, and a cost estimate. Do them in tier order; within a tier, pick by interest.
 
 Each project gets its own directory (`p01-document-qa-assistant/`, …) containing the filled template plus source code.
 
@@ -18,7 +18,7 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 
 ## Tier 2 — Intermediate (Level 2→3: Build → Engineer)
 
-*After Part 3 complete + Part 4 chapters 4.1–4.7. Goal: quality you can measure.*
+*After Part 3 complete + Part 4 chapters 4.1–4.7. Goal: quality you can measure. P21 additionally requires the classical track (chapters 2.9–2.10) — complete those first.*
 
 | # | Project | Core skills | Anchor chapters |
 |---|---------|-------------|-----------------|

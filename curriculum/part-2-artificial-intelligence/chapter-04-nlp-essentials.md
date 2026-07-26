@@ -160,4 +160,4 @@ For any system that reads or generates natural language:
 
 ---
 
-**Previous:** [Chapter 2.3 — Deep Learning Fundamentals](chapter-03-deep-learning-fundamentals.md) · **Next:** [Chapter 2.5 — The Transformer Architecture](chapter-05-transformer-architecture.md) · **Related:** [3.2 Tokens, Context Windows & Sampling](../part-3-core-building-blocks-of-genai/README.md), [3.5 Embeddings & Semantic Search](../part-3-core-building-blocks-of-genai/README.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/README.md)
+**Previous:** [Chapter 2.3 — Deep Learning Fundamentals](chapter-03-deep-learning-fundamentals.md) · **Next:** [Chapter 2.5 — The Transformer Architecture](chapter-05-transformer-architecture.md) · **Related:** [3.2 Tokens, Context Windows & Sampling](../part-3-core-building-blocks-of-genai/chapter-02-tokens-context-sampling.md), [3.5 Embeddings & Semantic Search](../part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md)

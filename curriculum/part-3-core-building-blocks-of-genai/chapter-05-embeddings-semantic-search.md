@@ -177,4 +177,4 @@ For any semantic search or retrieval layer:
 
 ---
 
-**Previous:** [Chapter 3.4 — Structured Outputs](chapter-04-structured-outputs.md) · **Next:** [Chapter 3.6 — RAG Fundamentals](chapter-06-rag-fundamentals.md) · **Related:** [2.4 NLP Essentials](../part-2-artificial-intelligence/chapter-04-nlp-essentials.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/README.md), [5.6 Vector & Search Infrastructure](../part-5-cloud-infrastructure-platform/README.md)
+**Previous:** [Chapter 3.4 — Structured Outputs](chapter-04-structured-outputs.md) · **Next:** [Chapter 3.6 — RAG Fundamentals](chapter-06-rag-fundamentals.md) · **Related:** [2.4 NLP Essentials](../part-2-artificial-intelligence/chapter-04-nlp-essentials.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md), [5.6 Vector & Search Infrastructure](../part-5-cloud-infrastructure-platform/chapter-06-vector-search-infrastructure.md)

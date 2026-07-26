@@ -167,4 +167,4 @@ For any system with a learned component (classical or LLM-based):
 
 ---
 
-**Previous:** [Chapter 2.1 — The AI Landscape](chapter-01-ai-landscape.md) · **Next:** [Chapter 2.3 — Deep Learning Fundamentals](chapter-03-deep-learning-fundamentals.md) · **Related:** [2.7 Evaluating ML Systems](chapter-07-evaluating-ml-systems.md), [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/README.md), [6.7 Data Governance](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 2.1 — The AI Landscape](chapter-01-ai-landscape.md) · **Next:** [Chapter 2.3 — Deep Learning Fundamentals](chapter-03-deep-learning-fundamentals.md) · **Related:** [2.7 Evaluating ML Systems](chapter-07-evaluating-ml-systems.md), [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md), [6.7 Data Governance](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md)

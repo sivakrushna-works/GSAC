@@ -180,4 +180,4 @@ Before design begins (and re-checked at review):
 
 ---
 
-**Previous:** [1.5 Communicating Architecture](chapter-05-communicating-architecture.md) · **Next:** [Chapter 1.7 — Estimation: Time, Cost & Risk](chapter-07-estimation.md) · **Related:** [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/README.md), [7.5 Human-in-the-Loop Patterns](../part-7-enterprise-ai-architecture-patterns/README.md), [Evaluation checklist](../../checklists/evaluation-checklist.md)
+**Previous:** [1.5 Communicating Architecture](chapter-05-communicating-architecture.md) · **Next:** [Chapter 1.7 — Estimation: Time, Cost & Risk](chapter-07-estimation.md) · **Related:** [4.7 Evaluation Systems](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md), [7.5 Human-in-the-Loop Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-05-human-in-the-loop-patterns.md), [Evaluation checklist](../../checklists/evaluation-checklist.md)

@@ -169,4 +169,4 @@ For any LLM output consumed by software:
 
 ---
 
-**Previous:** [Chapter 3.3 — Prompt Engineering](chapter-03-prompt-engineering.md) · **Next:** [Chapter 3.5 — Embeddings & Semantic Search](chapter-05-embeddings-semantic-search.md) · **Related:** [3.7 Function Calling & Tool Use](chapter-07-function-calling-tool-use.md), [2.7 Evaluating ML Systems](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md), [6.7 Data Governance](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 3.3 — Prompt Engineering](chapter-03-prompt-engineering.md) · **Next:** [Chapter 3.5 — Embeddings & Semantic Search](chapter-05-embeddings-semantic-search.md) · **Related:** [3.7 Function Calling & Tool Use](chapter-07-function-calling-tool-use.md), [2.7 Evaluating ML Systems](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md), [6.7 Data Governance](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md)

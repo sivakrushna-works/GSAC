@@ -170,4 +170,4 @@ For any agent system beyond a single bounded prototype:
 
 ---
 
-**Previous:** [Chapter 4.3 — Document Ingestion at Enterprise Scale](chapter-03-document-ingestion.md) · **Next:** [Chapter 4.5 — Multi-Agent Systems](chapter-05-multi-agent-systems.md) · **Related:** [3.8 Agents: Concepts & Control Flow](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md), [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/README.md), [Agent design checklist](../../checklists/agent-design-checklist.md)
+**Previous:** [Chapter 4.3 — Document Ingestion at Enterprise Scale](chapter-03-document-ingestion.md) · **Next:** [Chapter 4.5 — Multi-Agent Systems](chapter-05-multi-agent-systems.md) · **Related:** [3.8 Agents: Concepts & Control Flow](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md), [7.4 Agentic Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-04-agentic-patterns.md), [Agent design checklist](../../checklists/agent-design-checklist.md)

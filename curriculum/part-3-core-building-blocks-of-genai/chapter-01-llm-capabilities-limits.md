@@ -170,4 +170,4 @@ For any feature with an LLM in the path:
 
 ---
 
-**Previous:** [Part 3 index](README.md) · **Next:** [Chapter 3.2 — Tokens, Context Windows & Sampling](chapter-02-tokens-context-sampling.md) · **Related:** [2.4 NLP Essentials](../part-2-artificial-intelligence/chapter-04-nlp-essentials.md), [2.6 Training, Fine-tuning & Alignment](../part-2-artificial-intelligence/chapter-06-training-finetuning-alignment.md), [7.5 Human-in-the-Loop Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Part 3 index](README.md) · **Next:** [Chapter 3.2 — Tokens, Context Windows & Sampling](chapter-02-tokens-context-sampling.md) · **Related:** [2.4 NLP Essentials](../part-2-artificial-intelligence/chapter-04-nlp-essentials.md), [2.6 Training, Fine-tuning & Alignment](../part-2-artificial-intelligence/chapter-06-training-finetuning-alignment.md), [7.5 Human-in-the-Loop Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-05-human-in-the-loop-patterns.md)

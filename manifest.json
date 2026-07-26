@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T09:23:21+00:00",
+  "generated": "2026-07-26T06:15:38+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
     "chapters": 82,
@@ -109,6 +109,21 @@
             {
               "path": "curriculum/part-2-artificial-intelligence/chapter-08-responsible-ai.md",
               "title": "Chapter 2.8 — Responsible AI: Ethics, Fairness & Regulation",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md",
+              "title": "Chapter 2.9 — Classical ML System Design",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-10-mlops-vs-llmops.md",
+              "title": "Chapter 2.10 — MLOps and LLMOps: One Discipline, Two Lifecycles",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md",
+              "title": "Chapter 2.11 — Choosing the Right AI Approach",
               "kind": "chapter"
             }
           ]
@@ -887,6 +902,11 @@
               "path": "projects/p10-evaluation-harness/README.md",
               "title": "Project P10 — Evaluation Harness",
               "kind": "project"
+            },
+            {
+              "path": "projects/p21-churn-prediction-service/README.md",
+              "title": "Project P21 — Churn Prediction Service (Classical ML Track)",
+              "kind": "project"
             }
           ]
         },
@@ -917,6 +937,11 @@
             {
               "path": "projects/p15-real-time-voice-assistant/README.md",
               "title": "Project P15 — Real-time Voice Assistant",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p22-hybrid-claims-intake/README.md",
+              "title": "Project P22 — Hybrid Claims Intake (Vision + Classical ML + GenAI)",
               "kind": "project"
             }
           ]
@@ -1042,6 +1067,11 @@
             {
               "path": "adr/ADR-0003-mandatory-chapter-template.md",
               "title": "ADR-0003: Every chapter uses one mandatory template",
+              "kind": "adr"
+            },
+            {
+              "path": "adr/ADR-0004-reposition-to-ai-solution-architect.md",
+              "title": "ADR-0004: Reposition the curriculum from GenAI Solution Architect to AI Solution Architect",
               "kind": "adr"
             }
           ]

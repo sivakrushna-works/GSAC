@@ -156,4 +156,4 @@ For any LLM-serving design:
 
 ---
 
-**Previous:** [Chapter 2.4 — NLP Essentials](chapter-04-nlp-essentials.md) · **Next:** [Chapter 2.6 — Training, Fine-tuning & Alignment](chapter-06-training-finetuning-alignment.md) · **Related:** [3.2 Tokens, Context Windows & Sampling](../part-3-core-building-blocks-of-genai/README.md), [4.12 Latency & Performance](../part-4-enterprise-genai-systems/README.md), [5.3 Model Serving](../part-5-cloud-infrastructure-platform/README.md)
+**Previous:** [Chapter 2.4 — NLP Essentials](chapter-04-nlp-essentials.md) · **Next:** [Chapter 2.6 — Training, Fine-tuning & Alignment](chapter-06-training-finetuning-alignment.md) · **Related:** [3.2 Tokens, Context Windows & Sampling](../part-3-core-building-blocks-of-genai/chapter-02-tokens-context-sampling.md), [4.12 Latency & Performance](../part-4-enterprise-genai-systems/chapter-12-latency-performance.md), [5.3 Model Serving](../part-5-cloud-infrastructure-platform/chapter-03-model-serving.md)

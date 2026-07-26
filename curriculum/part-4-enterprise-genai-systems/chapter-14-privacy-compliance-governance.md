@@ -182,4 +182,4 @@ For any GenAI system touching personal data or regulated decisions:
 
 ---
 
-**Previous:** [Chapter 4.13 — Prompting vs. RAG vs. Fine-tuning](chapter-13-prompting-rag-finetuning.md) · **Next:** [Part 5 — Cloud, Infrastructure & Platform Engineering](../part-5-cloud-infrastructure-platform/) · **Related:** [2.8 Responsible AI](../part-2-artificial-intelligence/chapter-08-responsible-ai.md), [4.1 Production RAG](chapter-01-production-rag.md), [4.10 Observability](chapter-10-observability.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/README.md)
+**Previous:** [Chapter 4.13 — Prompting vs. RAG vs. Fine-tuning](chapter-13-prompting-rag-finetuning.md) · **Next:** [Part 5 — Cloud, Infrastructure & Platform Engineering](../part-5-cloud-infrastructure-platform/) · **Related:** [2.8 Responsible AI](../part-2-artificial-intelligence/chapter-08-responsible-ai.md), [4.1 Production RAG](chapter-01-production-rag.md), [4.10 Observability](chapter-10-observability.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)

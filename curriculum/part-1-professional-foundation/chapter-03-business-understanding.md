@@ -174,4 +174,4 @@ Before design work begins on any AI initiative:
 
 ---
 
-**Previous:** [1.2 Systems Thinking & Design Thinking](chapter-02-systems-thinking-design-thinking.md) · **Next:** [Chapter 1.4 — Trade-off Analysis & Decision Making](chapter-04-tradeoff-analysis.md) · **Related:** [1.7 Estimation](chapter-07-estimation.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/README.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/README.md)
+**Previous:** [1.2 Systems Thinking & Design Thinking](chapter-02-systems-thinking-design-thinking.md) · **Next:** [Chapter 1.4 — Trade-off Analysis & Decision Making](chapter-04-tradeoff-analysis.md) · **Related:** [1.7 Estimation](chapter-07-estimation.md), [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)

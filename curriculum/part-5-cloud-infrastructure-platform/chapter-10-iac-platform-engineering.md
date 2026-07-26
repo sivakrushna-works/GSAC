@@ -158,7 +158,7 @@ For the internal GenAI platform:
 - Team Topologies (Skelton & Pais) — the platform-team and stream-aligned-team model this chapter's platform/product split draws on; the organizational structure of platform engineering.
 - Your IaC tool's documentation (Terraform, Pulumi, or your cloud's native — official) — the infrastructure-as-code mechanics; the policy-as-code capabilities (OPA, cloud policy engines) for the guardrails.
 - Internal developer platform / platform engineering references (the platform-engineering literature and your enterprise's IDP if it exists) — the self-service-and-golden-paths discipline this chapter applies to GenAI.
-- 7.9 Platform & Multi-tenancy Patterns (when written) — the pattern-form treatment of the platform; this chapter is its infrastructure-and-engineering detail, and P16 builds it.
+- [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md) — the pattern-form treatment of the platform; this chapter is its infrastructure-and-engineering detail, and P16 builds it.
 
 ## Summary
 
@@ -170,4 +170,4 @@ For the internal GenAI platform:
 
 ---
 
-**Previous:** [Chapter 5.9 — Reliability Engineering](chapter-09-reliability-engineering.md) · **Next:** [Chapter 5.11 — Multi-cloud, Hybrid & Sovereignty](chapter-11-multicloud-hybrid-sovereignty.md) · **Related:** [5.1 Cloud Architecture Fundamentals](chapter-01-cloud-fundamentals-ai.md), [5.4 API & Integration Layer](chapter-04-api-integration-layer.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/README.md)
+**Previous:** [Chapter 5.9 — Reliability Engineering](chapter-09-reliability-engineering.md) · **Next:** [Chapter 5.11 — Multi-cloud, Hybrid & Sovereignty](chapter-11-multicloud-hybrid-sovereignty.md) · **Related:** [5.1 Cloud Architecture Fundamentals](chapter-01-cloud-fundamentals-ai.md), [5.4 API & Integration Layer](chapter-04-api-integration-layer.md), [7.9 Platform & Multi-tenancy Patterns](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md)
