@@ -164,4 +164,4 @@ Before signing off a design touching this topic:
 
 ---
 
-**Previous:** [2.12 Data Engineering & Feature Platforms for ML](chapter-12-data-engineering-feature-platforms.md) · **Next:** [Part 3 — Core Building Blocks of Generative AI](../part-3-core-building-blocks-of-genai/) · **Related:** [2.9 Classical ML System Design](chapter-09-classical-ml-system-design.md), [2.7 Evaluating ML Systems](chapter-07-evaluating-ml-systems.md), [CS51 Demand Forecasting](../../case-studies/cs51-demand-forecasting-replenishment.md), [2.11 Choosing the Right AI Approach](chapter-11-choosing-the-right-ai-approach.md)
+**Previous:** [2.12 Data Engineering & Feature Platforms for ML](chapter-12-data-engineering-feature-platforms.md) · **Next:** [2.14 Ranking, Recommenders & Anomaly Detection](chapter-14-ranking-recommenders-anomaly-detection.md) · **Related:** [2.9 Classical ML System Design](chapter-09-classical-ml-system-design.md), [2.7 Evaluating ML Systems](chapter-07-evaluating-ml-systems.md), [CS51 Demand Forecasting](../../case-studies/cs51-demand-forecasting-replenishment.md), [2.11 Choosing the Right AI Approach](chapter-11-choosing-the-right-ai-approach.md)

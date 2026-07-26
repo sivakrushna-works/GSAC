@@ -28,6 +28,8 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] 2.11 Choosing the Right AI Approach
 - [ ] 2.12 Data Engineering & Feature Platforms for ML
 - [ ] 2.13 Forecasting Systems
+- [ ] 2.14 Ranking, Recommenders & Anomaly Detection
+- [ ] 2.15 MLOps Engineering
 
 ## Part 3 — Core Building Blocks of Generative AI
 - [ ] 3.1 LLMs: Capabilities, Limits & Failure Modes

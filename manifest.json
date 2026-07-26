@@ -1,8 +1,8 @@
 {
-  "generated": "2026-07-26T06:47:26+00:00",
+  "generated": "2026-07-26T06:55:04+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
-    "chapters": 84,
+    "chapters": 86,
     "caseStudies": 56,
     "projects": 22
   },
@@ -134,6 +134,16 @@
             {
               "path": "curriculum/part-2-artificial-intelligence/chapter-13-forecasting-systems.md",
               "title": "Chapter 2.13 — Forecasting Systems",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-14-ranking-recommenders-anomaly-detection.md",
+              "title": "Chapter 2.14 — Ranking, Recommenders & Anomaly Detection",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-15-mlops-engineering.md",
+              "title": "Chapter 2.15 — MLOps Engineering",
               "kind": "chapter"
             }
           ]

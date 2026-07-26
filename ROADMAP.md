@@ -34,7 +34,7 @@ flowchart LR
 ## Phase 3 — Production Systems (10–12 weeks) · Level 3
 
 **Parts 4 & 5.** Where prototypes become systems: evaluation, security, observability, cost, and the infrastructure underneath.
-- Part 2 classical track: 2.9–2.13
+- Part 2 classical track: 2.9–2.15
 - Part 4: Enterprise GenAI Systems (all chapters)
 - Part 5: Cloud, Infrastructure & Platform Engineering (all chapters)
 - Projects: P06–P12 plus P21 (at least four of the eight; P21 requires 2.9–2.10 above)

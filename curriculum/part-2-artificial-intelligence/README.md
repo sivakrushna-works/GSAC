@@ -2,9 +2,9 @@
 
 The fundamentals under GenAI. You don't need to train models to architect with them — but you do need to know what they can and cannot do, why, and what the failure modes are. Depth is calibrated to an architect: enough math to reason, not to publish.
 
-This part closes with the classical-ML track (2.9–2.13) that turns a GenAI specialist into a full **AI** Solution Architect: designing the systems LLMs are wrong for, engineering the data estate they run on, running both operational lifecycles, and — the defining skill — choosing the right approach per problem. Suggested track order: 2.9 → 2.10 → 2.11 → 2.12 → 2.13 (2.11's triage stands on 2.9–2.10; 2.12–2.13 deepen the engineering).
+This part closes with the classical-ML track (2.9–2.15) that turns a GenAI specialist into a full **AI** Solution Architect: designing the systems LLMs are wrong for, engineering the data estate they run on, running both operational lifecycles, and — the defining skill — choosing the right approach per problem. Suggested track order: 2.9 → 2.10 → 2.11 → 2.12 → 2.13 → 2.14 → 2.15 (2.11's triage stands on 2.9–2.10; 2.12–2.15 deepen the engineering).
 
-**Maturity target:** Level 1→2 (2.1–2.8), Level 2→4 (2.9–2.13) · **Estimated effort:** 5–7 weeks
+**Maturity target:** Level 1→2 (2.1–2.8), Level 2→4 (2.9–2.15) · **Estimated effort:** 6–8 weeks
 
 ## Chapters
 
@@ -23,6 +23,8 @@ This part closes with the classical-ML track (2.9–2.13) that turns a GenAI spe
 | 2.11 | [Choosing the Right AI Approach](chapter-11-choosing-the-right-ai-approach.md) | 4 | Run the five-question triage; assign rules / classical ML / deep learning / GenAI / hybrid per problem stage, and defend it in a one-page memo |
 | 2.12 | [Data Engineering & Feature Platforms for ML](chapter-12-data-engineering-feature-platforms.md) | 3 | Design the ML data estate: point-in-time feature pipelines, the feature-store decision, label pipelines, data contracts, and quality gates |
 | 2.13 | [Forecasting Systems](chapter-13-forecasting-systems.md) | 3 | Design forecasting end-to-end: the methods ladder baseline-first, rolling-origin backtesting, probabilistic outputs, reconciliation, and FVA-governed overrides |
+| 2.14 | [Ranking, Recommenders & Anomaly Detection](chapter-14-ranking-recommenders-anomaly-detection.md) | 3 | Design two-stage rankers on implicit feedback and label-scarce anomaly detection; manage the feedback loops both share |
+| 2.15 | [MLOps Engineering](chapter-15-mlops-engineering.md) | 3 | Engineer the training pipeline, registry, gated promotion, and continuous training — with risk-scaled autonomy per model |
 
 ## Exit criteria
 
