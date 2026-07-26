@@ -137,7 +137,7 @@ For building the architecture portfolio:
 
 ## Interview Questions
 
-1. *"What should a GenAI architect's portfolio contain?"* — Strong answers give the judgment (the decisions — 1.4, the trade-offs — 1.4, the outcomes — 1.3/6.10), not the code (the architect's evidence is the judgment — 1.1's decisions-not-code), structured for the audiences (1.5), built on the projects and case studies (the curriculum's foundation).
+1. *"What should an AI architect's portfolio contain?"* — Strong answers give the judgment (the decisions — 1.4, the trade-offs — 1.4, the outcomes — 1.3/6.10), not the code (the architect's evidence is the judgment — 1.1's decisions-not-code), structured for the audiences (1.5), built on the projects and case studies (the curriculum's foundation).
 2. *"How do you present an architecture project in a portfolio?"* — Strong answers give the judgment presentation (the business problem — 1.3, the architecture — the decisions and trade-offs — 1.4, the outcomes — 1.3/6.10), the compelling narrative (1.5's SCQA), the judgment (not the code), anonymized for confidentiality (4.14).
 3. *"How do you demonstrate architectural judgment to a hiring manager?"* — Strong answers give the portfolio's judgment evidence (the decisions with rationale — 1.4, the trade-offs with sacrifices named — 1.4, the outcomes with business value — 1.3/6.10), structured for the hiring manager's question ("can this architect deliver?" — 1.5), the deep case studies (the thorough judgment).
 4. *"How do you build a portfolio without exposing confidential work?"* — Strong answers give the anonymize/abstract (4.14 — the judgment presented without the confidential details, the fictional-companies approach — the curriculum's), the judgment (the decisions, trade-offs, outcomes) abstracted from the specifics.
@@ -159,4 +159,4 @@ For building the architecture portfolio:
 
 ---
 
-**Previous:** [Chapter 8.1 — The GenAI Solution Architect Role & Market](chapter-01-role-and-market.md) · **Next:** [Chapter 8.3 — Architecture Interviews](chapter-03-architecture-interviews.md) · **Related:** [1.5 Communicating Architecture](../part-1-professional-foundation/chapter-05-communicating-architecture.md), [1.4 Trade-off Analysis](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md), [8.4 Technical Writing & Public Speaking](chapter-04-technical-writing-speaking.md)
+**Previous:** [Chapter 8.1 — The AI Solution Architect Role & Market](chapter-01-role-and-market.md) · **Next:** [Chapter 8.3 — Architecture Interviews](chapter-03-architecture-interviews.md) · **Related:** [1.5 Communicating Architecture](../part-1-professional-foundation/chapter-05-communicating-architecture.md), [1.4 Trade-off Analysis](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md), [8.4 Technical Writing & Public Speaking](chapter-04-technical-writing-speaking.md)

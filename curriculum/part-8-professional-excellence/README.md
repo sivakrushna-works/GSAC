@@ -8,7 +8,7 @@ Turning competence into a career. The market rewards architects who can be *foun
 
 | # | Chapter | Level | What you'll be able to do |
 |---|---------|-------|---------------------------|
-| 8.1 | [The GenAI Solution Architect Role & Market](chapter-01-role-and-market.md) | 3 | Map role variants (solution/enterprise/platform/principal), seniority ladders, and compensation drivers |
+| 8.1 | [The AI Solution Architect Role & Market](chapter-01-role-and-market.md) | 3 | Map role variants (solution/enterprise/platform/principal), seniority ladders, and compensation drivers |
 | 8.2 | [Building an Architecture Portfolio](chapter-02-architecture-portfolio.md) | 4 | Present projects and case studies as evidence of judgment, not just code |
 | 8.3 | [Architecture Interviews](chapter-03-architecture-interviews.md) | 4 | Perform in system-design and architecture loops: whiteboarding method, trade-off narration, handling pushback |
 | 8.4 | [Technical Writing & Public Speaking](chapter-04-technical-writing-speaking.md) | 4 | Write design docs and give talks that change decisions; build a public voice |

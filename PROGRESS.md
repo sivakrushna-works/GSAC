@@ -101,7 +101,7 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] 7.11 Predictive & Scoring Patterns
 
 ## Part 8 — Professional Excellence & Career Development
-- [ ] 8.1 The GenAI Solution Architect Role & Market
+- [ ] 8.1 The AI Solution Architect Role & Market
 - [ ] 8.2 Building an Architecture Portfolio
 - [ ] 8.3 Architecture Interviews
 - [ ] 8.4 Technical Writing & Public Speaking

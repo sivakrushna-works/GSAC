@@ -1,6 +1,6 @@
 {
-  "generated": "2026-07-26T07:15:42+00:00",
-  "title": "GSAC — GenAI Solution Architect Curriculum",
+  "generated": "2026-07-26T07:19:52+00:00",
+  "title": "GSAC — AI Solution Architect Curriculum",
   "counts": {
     "chapters": 90,
     "caseStudies": 56,
@@ -509,7 +509,7 @@
             },
             {
               "path": "curriculum/part-8-professional-excellence/chapter-01-role-and-market.md",
-              "title": "Chapter 8.1 — The GenAI Solution Architect Role & Market",
+              "title": "Chapter 8.1 — The AI Solution Architect Role & Market",
               "kind": "chapter"
             },
             {
@@ -1074,7 +1074,7 @@
           "docs": [
             {
               "path": "README.md",
-              "title": "GSAC — GenAI Solution Architect Curriculum",
+              "title": "GSAC — AI Solution Architect Curriculum",
               "kind": "overview"
             },
             {

@@ -12,7 +12,7 @@
 
 After this chapter you will be able to:
 
-1. Describe what a GenAI Solution Architect owns, produces, and is accountable for — and how each differs from a senior engineer's scope.
+1. Describe what an AI Solution Architect owns, produces, and is accountable for — and how each differs from a senior engineer's scope.
 2. Identify the three currencies of the role — trade-offs, communication, and trust — and give a concrete example of each.
 3. Audit your own engineer-to-architect gap against a competency map and pick your two highest-leverage development areas.
 4. Recognize the failure pattern of "engineering harder" at architecture problems, in yourself and others.
@@ -35,7 +35,7 @@ The asymmetry generalizes: architecture decisions are cheap to make and ruinous 
 
 ### What the role owns
 
-A GenAI Solution Architect is accountable for four things:
+An AI Solution Architect is accountable for four things:
 
 1. **Problem framing** — translating a business intent ("reduce support cost") into a solvable technical problem with success criteria ("deflect 30% of tier-1 tickets at CSAT ≥ current baseline, ≤ $0.40/conversation").
 2. **The decision record** — the set of consequential choices (model strategy, retrieval design, tenancy, human-in-the-loop points) each made from explicit options with explicit trade-offs, written down (see [ADRs](../../adr/)).

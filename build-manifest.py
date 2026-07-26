@@ -165,7 +165,7 @@ def main() -> None:
     }
     manifest = {
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
-        "title": "GSAC — GenAI Solution Architect Curriculum",
+        "title": "GSAC — AI Solution Architect Curriculum",
         "counts": counts,
         "sections": sections,
     }

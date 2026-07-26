@@ -137,7 +137,7 @@ For technical writing and public speaking:
 
 ## Interview Questions
 
-1. *"How do you build a reputation as a GenAI architect?"* — Strong answers give the public voice (the writing — the articles, the speaking — the talks, the contributions), the distinctive voice (the perspective — the judgment shared — 1.1, the point of view), the communication discipline (1.5), the public presence (the reputation asset — 8.1's market visibility).
+1. *"How do you build a reputation as an AI architect?"* — Strong answers give the public voice (the writing — the articles, the speaking — the talks, the contributions), the distinctive voice (the perspective — the judgment shared — 1.1, the point of view), the communication discipline (1.5), the public presence (the reputation asset — 8.1's market visibility).
 2. *"How do you write a design doc that changes decisions?"* — Strong answers give the writing discipline (1.5 — the SCQA, the conclusion-first, the compelling case, the audience-matching), the design doc that changes the decision (the compelling case — 1.5), the clarity (1.5).
 3. *"How do you handle confidentiality in public writing?"* — Strong answers give the anonymize/abstract (4.14/8.2 — the judgment shared without the confidential details, the fictional-companies approach), the judgment (the concepts, the decisions, the trade-offs) abstracted from the confidential specifics.
 4. *"Why does public speaking matter for an architect?"* — Strong answers give the reputation (the talks building the reputation — 8.1's market visibility, the reach — the broad audience), the influence (the talks changing decisions — the spoken influence), the community (the peers — the amplification — 8.7), the public voice (the reputation asset).

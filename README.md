@@ -1,6 +1,8 @@
-# GSAC — GenAI Solution Architect Curriculum
+# GSAC — AI Solution Architect Curriculum
 
-> A complete, production-oriented learning system that takes you from **experienced software engineer** (5–15 years) to **enterprise GenAI Solution Architect**.
+> A complete, production-oriented learning system that takes you from **experienced software engineer** (5–15 years) to **enterprise AI Solution Architect** — across both lanes of the discipline: generative AI (the curriculum's deepest specialization) and classical machine learning (prediction, forecasting, ranking, perception, and the MLOps that operates them).
+
+*GSAC began life as the "GenAI Solution Architect Curriculum" and was repositioned to the broader role by [ADR-0004](adr/ADR-0004-reposition-to-ai-solution-architect.md) — content first, branding after. The acronym stays; the scope grew.*
 
 This curriculum emphasizes **timeless concepts over frameworks**. Tools change every quarter; architecture judgment compounds for a career. Every chapter, project, and case study is written from the perspective of an architect who must defend decisions in front of a CTO, a security review board, and a finance team.
 
@@ -10,8 +12,8 @@ This curriculum emphasizes **timeless concepts over frameworks**. Tools change e
 
 - Software engineers (5–15 years) transitioning into AI solution architecture
 - Tech leads and staff engineers asked to "own the AI strategy"
-- Cloud/enterprise architects adding GenAI to their portfolio
-- Consultants who must scope, price, and deliver GenAI systems
+- Cloud/enterprise architects adding AI (generative and classical) to their portfolio
+- Consultants who must scope, price, and deliver AI systems
 
 **Prerequisites:** professional programming experience, basic cloud familiarity, comfort reading system designs. No ML background required — Part 2 builds it.
 

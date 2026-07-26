@@ -1,4 +1,4 @@
-# Chapter 8.1 — The GenAI Solution Architect Role & Market
+# Chapter 8.1 — The AI Solution Architect Role & Market
 
 | | |
 |---|---|
@@ -12,16 +12,16 @@
 
 After this chapter you will be able to:
 
-1. Map the GenAI Solution Architect role variants (solution, enterprise, platform, principal), their seniority ladders, and their scope differences.
+1. Map the AI Solution Architect role variants (solution, enterprise, platform, principal), their seniority ladders, and their scope differences.
 2. Understand the market: what the role is worth, what drives compensation, and how the role is evolving.
 3. Position yourself in the role landscape: which variant fits your strengths, and how to grow into the seniority you're targeting.
 4. Read the role behind the title, since titles vary wildly and scope tells the real story.
 
 ## Introduction
 
-Part 8 closes the curriculum by turning the competence Parts 1–7 built into a career — the professional machinery around the technical judgment. This first chapter maps the role itself: the GenAI Solution Architect role, its variants, its market, and how to position within it. 1.1 defined what the role *is* (the architect's job — decisions, not code); this chapter maps the role's *variants and market* — the landscape of the role as it exists in the industry, so you can position yourself within it.
+Part 8 closes the curriculum by turning the competence Parts 1–7 built into a career — the professional machinery around the technical judgment. This first chapter maps the role itself: the AI Solution Architect role — spanning the GenAI and classical-ML lanes the curriculum teaches — its variants, its market, and how to position within it. 1.1 defined what the role *is* (the architect's job — decisions, not code); this chapter maps the role's *variants and market* — the landscape of the role as it exists in the industry, so you can position yourself within it.
 
-The framing: **the GenAI Solution Architect role has variants and a market, and the title hides the scope** — the role variants (solution, enterprise, platform, principal), the seniority ladders, the compensation drivers, and the reality that the titles vary wildly (1.1's title inflation/deflation) so the scope tells the real story, and this chapter is the map of the role landscape.
+The framing: **the AI Solution Architect role has variants and a market, and the title hides the scope** — the role variants (solution, enterprise, platform, principal), the seniority ladders, the compensation drivers, and the reality that the titles vary wildly (1.1's title inflation/deflation) so the scope tells the real story, and this chapter is the map of the role landscape.
 
 ## Business Motivation
 
@@ -31,11 +31,11 @@ Understanding the role and market is the foundation of the career — the map th
 
 ### The role variants
 
-The GenAI Solution Architect role has variants, differing by scope:
+The AI Solution Architect role has variants, differing by scope:
 
 - **Solution Architect** — the architect of a *solution* (a specific system or set of systems — the solution to a business problem); the scope is the solution (the system architecture — Parts 3–5, the business problem — 1.3). The most common variant, the system-level architect.
 - **Enterprise Architect** — the architect of the *enterprise* (the portfolio, the target-state, the standards — Part 6); the scope is the enterprise (the portfolio — 6.1, the governance — 6.9, the strategy — 6.10). The strategic variant, the portfolio-level architect.
-- **Platform Architect** — the architect of the *platform* (the internal GenAI platform — 5.10, 7.9); the scope is the platform (the shared capabilities — 7.9, the platform engineering — 5.10). The platform variant, the shared-infrastructure architect.
+- **Platform Architect** — the architect of the *platform* (the internal AI platform — GenAI gateway and eval services, 5.10/7.9, and the ML delivery machinery, 2.15/P25); the scope is the platform (the shared capabilities — 7.9, the platform engineering — 5.10). The platform variant, the shared-infrastructure architect.
 - **Principal Architect** — the *principal* (the standards, the portfolio stewardship, the organizational leadership — 8.8); the scope is the organization (the standards — 6.9, the strategy — 6.10, the leadership — 8.8). The most senior variant, the organizational-leadership architect (8.8).
 
 The variants differ by scope (the solution, the enterprise, the platform, the organization), and they overlap (the solution architect doing enterprise work, the platform architect doing principal work) — the variants as a landscape, not rigid categories (the scope tells the variant).
@@ -146,10 +146,10 @@ For positioning in the role landscape:
 
 ## Interview Questions
 
-1. *"What are the variants of the GenAI Solution Architect role?"* — Strong answers give the variants by scope (solution — the system, enterprise — the portfolio/strategy, platform — the shared infrastructure, principal — the organizational leadership — 8.8), noting they overlap (the scope tells the variant) and the titles vary (the scope tells the story — 1.1).
+1. *"What are the variants of the AI Solution Architect role?"* — Strong answers give the variants by scope (solution — the system, enterprise — the portfolio/strategy, platform — the shared infrastructure, principal — the organizational leadership — 8.8), noting they overlap (the scope tells the variant) and the titles vary (the scope tells the story — 1.1).
 2. *"How do you read the role behind a job title?"* — Strong answers give the title-vs-scope (1.1's inflation/deflation — the titles vary wildly), the scope as the reliable signal (the decisions owned, the responsibility), reading the actual role by the scope (not the title).
 3. *"What drives compensation for the role?"* — Strong answers give the drivers (the seniority — the level, the scope — the solution to the organization, the impact — the business value — 1.3/6.10, the scarcity — the AI-capable architect is scarce), the compensation as a function of these.
-4. *"How would you plan your growth as a GenAI architect?"* — Strong answers give the deliberate growth (the maturity ladder mapped — the Engineer to Principal, the target variant and seniority identified, the scope broadening — the system to the enterprise/organization), the targeted ladder climb (not purely opportunistic).
+4. *"How would you plan your growth as an AI architect?"* — Strong answers give the deliberate growth (the maturity ladder mapped — the Engineer to Principal, the target variant and seniority identified, the scope broadening — the system to the enterprise/organization), the targeted ladder climb (not purely opportunistic).
 
 ## Further Reading
 
@@ -160,7 +160,7 @@ For positioning in the role landscape:
 
 ## Summary
 
-- The **GenAI Solution Architect role has variants** — solution (the system — Parts 3-5), enterprise (the portfolio — Part 6), platform (the shared capabilities — 5.10/7.9), principal (the organization — 8.8) — differing by scope, overlapping (the scope tells the variant).
+- The **AI Solution Architect role has variants** — solution (the system — Parts 2–5, both lanes), enterprise (the portfolio — Part 6), platform (the shared capabilities — 5.10/7.9/2.15), principal (the organization — 8.8) — differing by scope, overlapping (the scope tells the variant).
 - The **seniority ladder climbs the maturity levels** — Engineer (building) → Architect (designing) → Principal (leading — 8.8), each a broader scope (the system → the enterprise → the organization) — the curriculum's maturity levels as the career ladder.
 - The **market** values the role by seniority × scope × impact × scarcity — the compensation drivers, driven by the AI adoption (6.8) and the scarcity (the AI-capable architect), evolving as the role matures.
 - **The title hides the scope** (1.1's inflation/deflation) — the titles vary wildly, so the scope (the decisions owned, the responsibility) tells the real story; **position by the scope, not the title**.

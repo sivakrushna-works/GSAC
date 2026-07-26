@@ -1,6 +1,6 @@
 # GSAC Learning Roadmap
 
-From software engineer to enterprise GenAI Solution Architect. Total estimated effort: **10–15 months** at 8–10 hours/week. Adjust to your background — the phases below note what you can skip. The journey runs on two lanes from Phase 3 onward: the GenAI lane (Parts 3–5) and the classical-ML lane (Part 2's 2.9–2.17 track, projects P21–P25, case studies CS51–CS56) — an AI Solution Architect completes both.
+From software engineer to enterprise AI Solution Architect. Total estimated effort: **10–15 months** at 8–10 hours/week. Adjust to your background — the phases below note what you can skip. The journey runs on two lanes from Phase 3 onward: the GenAI lane (Parts 3–5) and the classical-ML lane (Part 2's 2.9–2.17 track, projects P21–P25, case studies CS51–CS56) — an AI Solution Architect completes both.
 
 ```mermaid
 flowchart LR
