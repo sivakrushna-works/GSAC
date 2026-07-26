@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-26T06:35:32+00:00",
+  "generated": "2026-07-26T06:39:17+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
     "chapters": 82,
@@ -1054,13 +1054,33 @@
               "kind": "checklist"
             },
             {
+              "path": "checklists/data-quality-labeling-checklist.md",
+              "title": "Data Quality & Labeling Checklist",
+              "kind": "checklist"
+            },
+            {
               "path": "checklists/deployment-checklist.md",
               "title": "Deployment Checklist",
               "kind": "checklist"
             },
             {
+              "path": "checklists/drift-model-monitoring-checklist.md",
+              "title": "Drift & Model Monitoring Checklist",
+              "kind": "checklist"
+            },
+            {
               "path": "checklists/evaluation-checklist.md",
               "title": "Evaluation Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/ml-model-validation-checklist.md",
+              "title": "ML Model Validation Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/mrm-fairness-checklist.md",
+              "title": "Model Risk Management & Fairness Checklist",
               "kind": "checklist"
             },
             {

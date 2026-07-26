@@ -62,7 +62,7 @@ Every chapter and project is tagged with the level it targets. The [ROADMAP](ROA
 | [Glossary](GLOSSARY.md) | Single source of truth for terminology (used consistently everywhere) |
 | [Architecture Decision Records](adr/) | Why this curriculum is built the way it is — and a model for your own ADRs |
 | [Templates](templates/) | Chapter, project, case study, and ADR templates |
-| [Checklists](checklists/) | Architecture review, RAG design, agent design, security, deployment, evaluation |
+| [Checklists](checklists/) | Architecture review, RAG design, agent design, security, deployment, evaluation — plus the classical-ML family: model validation, data quality & labeling, drift & monitoring, MRM & fairness |
 | [Prompt Library](prompt-library/) | Curated, versioned prompts with usage notes |
 
 ## How to use this repository

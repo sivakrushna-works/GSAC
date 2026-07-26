@@ -38,7 +38,7 @@ flowchart LR
 - Part 4: Enterprise GenAI Systems (all chapters)
 - Part 5: Cloud, Infrastructure & Platform Engineering (all chapters)
 - Projects: P06–P12 plus P21 (at least four of the eight; P21 requires 2.9–2.10 above)
-- Checklists: begin applying [RAG design](checklists/rag-design-checklist.md), [security](checklists/security-checklist.md), and [evaluation](checklists/evaluation-checklist.md) checklists to every project
+- Checklists: begin applying [RAG design](checklists/rag-design-checklist.md), [security](checklists/security-checklist.md), and [evaluation](checklists/evaluation-checklist.md) checklists to every project; on P21, apply the classical family — [model validation](checklists/ml-model-validation-checklist.md), [data quality & labeling](checklists/data-quality-labeling-checklist.md), [drift & monitoring](checklists/drift-model-monitoring-checklist.md)
 
 **Exit criteria:** you can take a demo to production: evals in CI, monitoring dashboards, threat model, cost model, and an on-call runbook.
 
