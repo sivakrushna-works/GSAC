@@ -12,146 +12,162 @@
 
 After this chapter you will be able to:
 
-1. Build a filtering system for the AI firehose anchored in timeless concepts.
-2. Distinguish the signal (the durable concepts, the genuine shifts) from the noise (the framework churn, the hype).
-3. Stay current on the genuine developments without chasing every framework.
-4. Apply the concepts-over-frameworks discipline (the curriculum's) to the ongoing learning.
+1. Apply the three-question filter that separates concept shifts (which change your architecture) from framework churn (which changes your `import` statements).
+2. Run a sustainable information diet — roughly three hours a week, from named source classes — that keeps an architect current without becoming a full-time reader.
+3. Maintain the build cadence and re-evaluation triggers that keep judgment attached to reality as the field moves.
+4. Run the filter honestly on live cases, including ones where this curriculum itself was slow.
 
 ## Introduction
 
-This chapter is staying current — the discipline of keeping the competence fresh without drowning in the AI firehose. The AI field moves fast (the models, the frameworks, the techniques — the constant churn), and the architect must stay current — but *current* means the genuine developments (the durable concepts, the real shifts), not the framework churn (the hype, the noise). The curriculum's founding discipline (concepts over frameworks — 2.1, ADR-0001) is the filtering discipline, and this chapter applies it to the ongoing learning.
-
-The framing: **stay current on the timeless concepts and genuine shifts, not the framework churn** — the filtering system anchored in the timeless concepts (2.1's concepts-over-frameworks — the durable), distinguishing the signal (the durable concepts, the genuine shifts) from the noise (the framework churn, the hype), and this chapter is how to build it.
+The AI field produces more novelty per quarter than any architect can absorb, and the punishment for filtering badly runs in both directions. Chase everything and you become a survey of abandoned frameworks; filter too aggressively and you wake up defending an architecture the field moved past. This chapter is the discipline for filtering well — and it practices what it preaches by running the filter on recent history, including a case where the conservative instinct this curriculum teaches produced a wrong call. Staying current is not a virtue of temperament; it is a process with a time budget, source hygiene, and written revisit triggers, exactly like every other architecture concern in this book.
 
 ## Business Motivation
 
-Staying current is the architect's ongoing competence — the freshness that keeps the judgment relevant. But the AI firehose is a trap: chasing every framework (the framework churn — the constant new frameworks) wastes the architect's time (the churn — the un-durable) and misses the genuine developments (the signal lost in the noise). The filtering discipline matters: the signal (the durable concepts, the genuine shifts — 2.1's wave-level shifts) kept, the noise (the framework churn, the hype) filtered. Without it: the architect drowns (the firehose — the churn) or falls behind (the genuine shifts missed); with it: the architect stays current (the genuine developments) without drowning (the churn filtered). The business case is the ongoing-competence one: staying current on the genuine developments (the durable concepts, the genuine shifts) keeps the architect's judgment relevant (the freshness — the competence), and the filtering discipline (the concepts-over-frameworks — 2.1) is how — the signal kept, the noise filtered, and this chapter is how to build it.
+Both failure modes carry price tags. Chasing: a team that rebuilt its orchestration layer on each year's fashionable framework paid the migration tax repeatedly — industry postmortems of framework-hopping teams routinely attribute 15–25% of engineering capacity to self-inflicted migration work, none of it visible in any feature. Ossifying: an architect who missed the reasoning-model shift (below) in 2025 kept designing chain-of-thought scaffolding and multi-call verification pipelines that the new model class did natively, at different economics — proposals priced 2–5× over the achievable, and lost credibility when a competitor's design came in under. The asymmetry worth knowing: churn-chasing costs are paid continuously and visibly; ossification costs arrive suddenly, in a lost deal or a failed review, and are attributed to you personally. Three disciplined hours a week is the insurance premium against both, and it is among the cheapest line items in a professional's calendar.
 
 ## Theory
 
-### The signal vs. the noise
+### The filter: three questions
 
-The signal-vs-noise distinction (2.1's wave-level vs. framework churn):
+For any new thing — model class, protocol, framework, technique — ask:
 
-- **The signal** — the signal (the durable concepts — the timeless — 2.1, the genuine shifts — the wave-level — 2.1, the real capability changes — 3.10's model improvements); the signal (the durable concepts, the genuine shifts — 2.1).
-- **The noise** — the noise (the framework churn — the constant new frameworks — 2.1's tools-not-timeless, the hype — 2.1's hype cycle, the un-durable); the noise (the framework churn, the hype — 2.1).
-- **The distinction** — the distinction (the durable vs. the churning — 2.1's concepts-over-frameworks, the wave-level vs. the framework-level — 2.1), the signal from the noise (the durable — the signal, the churning — the noise); the distinction (the concepts-over-frameworks — 2.1).
+1. **Does it change what is *possible*?** New capability class (a model that plans reliably, context that got 10× cheaper, a modality that works now) → concept shift. New packaging of existing capability → churn.
+2. **Does it change what is *economical*?** Order-of-magnitude cost or latency moves redraw the [2.11](../part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md) ladder's rungs even when capability is unchanged. Price cuts within a tier are procurement news, not architecture news.
+3. **Does it change what you would *draw*?** If your container diagram, your trade-off tables, or your triage answers change, it is architectural. If only the box's vendor label changes, it is not.
 
-### The filtering system
+One "yes" earns study time; two or more earn hands-on time and a written note. Zero yeses earns a bookmark and nothing else, whatever the volume of discourse around it.
 
-The filtering system (anchored in the concepts):
+**The filter on history** (calibration cases): transformers vs. RNNs — yes/yes/yes, the canonical shift ([2.5](../part-2-artificial-intelligence/chapter-05-transformer-architecture.md)). LangChain vs. its successors — no/no/no: orchestration frameworks repackage control flow you could always write; [ADR-0001](../../adr/ADR-0001-concepts-over-frameworks.md)'s bet, correct to date. Vector databases 2021–2024 — capability no, economics briefly yes, drawing no: a component war inside one box; the concept ([3.5](../part-3-core-building-blocks-of-genai/chapter-05-embeddings-semantic-search.md)) outlived every market-share chart.
 
-- **The concept anchor** (2.1) — the filtering anchored in the concepts (2.1's timeless — the durable concepts as the anchor, the new development filtered by "is this a concept-level shift or a framework-level churn?"), the concept anchor (2.1 — the durable); the concept anchor (the concepts — 2.1).
-- **The wave-level attention** (2.1) — the attention on the wave-level (2.1's waves — the genuine shifts, the wave-level developments — the transformer-level shifts — 2.5, not the framework-level churn), the wave-level (2.1 — the genuine shifts); the wave-level attention (the waves — 2.1).
-- **The evaluation** (3.10) — the development evaluated (3.10's model selection — the genuine capability changes evaluated, the eval-driven — 3.10, not the hype-driven), the evaluation (3.10 — the eval-driven); the evaluation (the eval-driven — 3.10).
+**The filter on live cases (early 2026):**
 
-### The ongoing learning
+- **Reasoning / inference-time-compute models: shift.** Yes on capability (planning and multi-step reliability moved a class), yes on economics (thinking tokens billed as output invert prompt-heavy cost intuitions; latency becomes variable and budgetable), yes on drawing (verification scaffolding shrinks; the model-selection axis gains a reasoning-budget dimension that [3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)'s procedure must now include). An architect who filtered this as vendor noise in 2025 mis-priced a year of designs.
+- **MCP and agent-interoperability protocols: a shift this curriculum initially filtered as churn — the honest correction.** Question 1 is arguably no (tool calling existed). But question 3 turned yes as adoption compounded: a standard protocol boundary creates *governance surfaces* — tool registries, permission models, supply-chain review of third-party servers ([security checklist](../../checklists/security-checklist.md)) — and enterprise architecture is made of exactly such boundaries. The lesson generalizes: **protocols earn re-filtering at adoption thresholds even when they add no capability**, because ubiquity itself changes what you must draw. An earlier edition of this curriculum dismissed MCP in a footnote; the filter, honestly run a year later, disagrees.
+- **Small/edge language models: economics-led shift in progress.** Capability per parameter keeps climbing; when the on-device rung becomes viable for your workload class, sovereignty and latency designs redraw ([2.16](../part-2-artificial-intelligence/chapter-16-perception-systems.md)'s edge logic extends to language). Watch with a named trigger, not continuously.
 
-The ongoing learning (the concepts-over-frameworks discipline):
+### The information diet: three hours, five source classes
 
-- **The concepts-first learning** (2.1) — the learning concepts-first (2.1 — the durable concepts learned deeply, the frameworks as the illustrations — 2.1's frameworks-as-examples), the concepts-first (2.1 — the durable); the concepts-first learning (the concepts — 2.1).
-- **The framework-as-needed** — the frameworks learned as needed (the framework when it's needed — the just-in-time, not the chase-every-framework), the framework-as-needed (the just-in-time); the framework-as-needed (the just-in-time).
-- **The genuine-shift tracking** — the genuine shifts tracked (the wave-level developments — 2.1, the model capability changes — 3.10, the real shifts), the genuine shifts (the wave-level — 2.1); the genuine-shift tracking (the wave-level — 2.1).
+Volume is the enemy; source hygiene is the defense. The weekly budget that sustains, by source class rather than by name (names churn too):
+
+| Class | Weekly time | What it's for |
+|---|---|---|
+| **Primary releases** — model cards, provider changelogs and pricing pages, papers behind headline claims | 60 min | The only sources that constrain speculation; pricing pages are architecture documents ([1.7](../part-1-professional-foundation/chapter-07-estimation.md)) |
+| **Practitioner engineering blogs** — teams reporting measured production results | 45 min | The reality check on claims; measured beats announced |
+| **One curated aggregator** you have validated for taste | 30 min | Coverage insurance; exactly one, or the diet becomes discourse |
+| **Peer conversation** — a standing exchange with 2–3 practitioners you trust | 30 min | The fastest churn filter available; "did this survive contact with your production?" |
+| **The discourse** (social feeds, hot takes) | ≤15 min, optional | Sentiment sensing only; nothing here earns build time without a primary source behind it |
+
+Two rules make the diet compound. **Write a two-line note on anything that passes the filter** (what changed, what it would redraw) — a year of these is your personal landscape document, and the raw material for [8.4](chapter-04-technical-writing-speaking.md)'s articles. **Let one strong claim per month drive a small experiment** — which is the next section.
+
+### The build cadence and written triggers
+
+Judgment decays faster than knowledge: you can *know* about reasoning models and still misprice them if you have never watched one burn thinking tokens against your own eval set. The cadence: **one small build a month** — an afternoon to two days, always against something you already have (rerun a P10-class eval suite on the new model class; point the P23 backtest at a time-series foundation model; wire one MCP server into a sandboxed tool loop and read its permission surface). The existing-harness rule is what makes the cadence cheap: you are measuring novelty against known baselines, not building from zero ([3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)'s private-evals discipline, applied to your own currency).
+
+And the closing loop: **every consequential design carries a written revisit trigger** ([ADR](../../templates/adr-template.md) discipline, [2.11](../part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)'s date-stamped verdicts) — "revisit the buy decision when a generic model passes 95% on our holdout" ([2.16](../part-2-artificial-intelligence/chapter-16-perception-systems.md)'s Ironvale clause), "re-run the tiering bake-off when a model class changes the reasoning-cost curve." Staying current is not re-litigating everything continuously; it is having named, in writing, what would change your mind — and then noticing when it happens.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    FIREHOSE[The AI firehose<br/>models, frameworks, techniques] --> FILTER{Filter — 2.1<br/>concept-level or framework-level?}
-    FILTER -->|signal: durable concept / genuine shift| SIGNAL[Keep<br/>concepts — 2.1, waves — 2.1, capability — 3.10]
-    FILTER -->|noise: framework churn / hype| NOISE[Filter<br/>the churn, the hype]
-    SIGNAL --> LEARNING[Ongoing learning<br/>concepts-first, framework-as-needed]
-    ANCHOR[The concept anchor — 2.1<br/>the timeless] -.filters.-> FILTER
+flowchart LR
+    FLOW[The field's output<br/>models, protocols, frameworks, papers] --> FILTER{Three questions:<br/>possible? economical? drawn?}
+    FILTER -->|0 yes| BOOKMARK[Bookmark. Nothing else.]
+    FILTER -->|1 yes| STUDY[Study time<br/>primary sources, 2-line note]
+    FILTER -->|2–3 yes| BUILD[Monthly build slot<br/>against existing harnesses]
+    BUILD --> NOTE[(Notes file<br/>your landscape document)]
+    NOTE --> TRIG[Written revisit triggers<br/>in ADRs and designs]
+    TRIG -->|trigger fires| REDESIGN[Re-open the decision<br/>with evidence in hand]
+    PEERS[Peer exchange<br/>fastest churn filter] -.calibrates.-> FILTER
+    ADOPT[Adoption thresholds<br/>re-filter protocols at ubiquity] -.re-queues.-> FILTER
 ```
 
-Readings. **The filtering is anchored in the concepts** — the AI firehose filtered by the concept anchor (2.1's timeless — the concept-level shift vs. the framework-level churn), the signal (the durable concepts, the genuine shifts — 2.1) kept, the noise (the framework churn, the hype — 2.1) filtered — the concepts-over-frameworks (2.1) as the filtering discipline. **The attention is on the wave-level** — the genuine shifts (2.1's waves — the wave-level developments, the transformer-level — 2.5, the model capability — 3.10), the wave-level attention (the genuine shifts — 2.1), not the framework-level churn. **And the learning is concepts-first, framework-as-needed** — the concepts learned deeply (2.1's concepts-first — the durable), the frameworks learned just-in-time (the framework-as-needed — not the chase-every-framework), the genuine shifts tracked (the wave-level — 2.1) — the concepts-over-frameworks discipline (2.1) applied to the ongoing learning.
+The system is a funnel with a memory: most novelty exits at the bookmark stage, the filter's survivors get measured against your own baselines, and the notes-plus-triggers store is what converts three weekly hours into decisions that reopen themselves at the right time. The adoption-threshold loop is the MCP lesson, institutionalized.
 
 ## Real-world Example
 
-The curriculum embodies the staying-current discipline — the concepts-over-frameworks (2.1's ADR-0001) as the filtering discipline. Consider the curriculum's discipline (2.1's ADR-0001 — concepts over frameworks): the concepts-first (the durable concepts — the retrieval, the grounding, the evaluation, the trade-offs — the timeless — 2.1), the frameworks-as-illustrations (the frameworks in the examples/exercises — 2.1, not the subject), the wave-level attention (the genuine shifts — the transformer — 2.5, the foundation models — 2.1, not the framework churn). And the filtering (the curriculum's durability — the concepts durable, the frameworks churning): the curriculum built on the concepts (the durable — the timeless), surviving the framework churn (the concepts durable — 2.1's ADR-0001 rationale). The staying-current note (the curriculum's framing, echoing 2.1's ADR-0001): *"The curriculum embodies the staying-current discipline — concepts over frameworks (2.1's ADR-0001). The concepts-first (the durable concepts — retrieval, grounding, evaluation, trade-offs — the timeless), the frameworks-as-illustrations (in the examples, not the subject), the wave-level attention (the genuine shifts — the transformer, the foundation models — not the framework churn). The filtering is anchored in the concepts — the AI firehose filtered by 'is this a concept-level shift or a framework-level churn?', the signal (the durable, the genuine) kept, the noise (the churn, the hype) filtered. Stay current on the timeless concepts and the genuine shifts, not the framework churn — the concepts-over-frameworks discipline (2.1) as the filtering, the architect's ongoing competence kept fresh without drowning in the firehose."*
+**Lena** (fictional), a platform architect at a healthcare software firm, ran this system through 2025's reasoning-model wave. Her filter note in March (two lines, as prescribed): "reasoning models — yes/yes/yes; our clinical-summary verification pipeline (two extra model calls per summary) may be native now; April build slot." The April build: four hours re-running her existing faithfulness eval suite (a P10-descendant) against a reasoning-class model with the verification calls *removed* — quality held within noise, per-summary cost dropped 31%, but p95 latency doubled and, worse, *varied* 4× run-to-run. Her two-line follow-up: "adopt for batch summaries now; interactive lane blocked on latency variance; revisit trigger: variance under 1.5× or an SLA-priced reasoning tier." She shipped the batch migration in May (a real 31% on that lane's bill), and — because the trigger was written — reopened the interactive question in September when provider-side changes moved the variance, instead of either jumping in April or forgetting by fall. Her team lead's review note captured the method's value better than the savings did: "Lena's April memo was four hours of work and it made three later decisions trivial." The counterfactual colleagues existed at the same firm: one had rebuilt the pipeline on a new agent framework that spring (filter score: zero yeses; migration cost, six weeks; capability delta, none), and one was still pricing verification pipelines into proposals in October.
 
 ## Hands-on Exercise
 
-**Build the filtering system.** ~60 minutes. For your ongoing learning.
+Install the system, sized to one hour of setup and three hours a week of operation:
 
-1. **The signal-vs-noise audit (20 min).** Audit your current AI-learning inputs (the sources — the newsletters, the feeds, the frameworks): which are signal (the durable concepts, the genuine shifts — 2.1), which are noise (the framework churn, the hype — 2.1)? Categorize.
-2. **The concept anchor (15 min).** List the durable concepts (the timeless — 2.1, the curriculum's — retrieval, grounding, evaluation, trade-offs, etc.) that anchor your filtering. Use them to filter (the concept-level vs. framework-level).
-3. **The wave-level tracking (15 min).** Identify how you'll track the genuine shifts (the wave-level — 2.1, the model capability — 3.10 — the sources for the genuine developments, the eval-driven — 3.10), the wave-level tracking.
-4. **The learning plan (10 min).** Plan the ongoing learning: the concepts-first (the durable — deeply), the frameworks-as-needed (the just-in-time), the genuine-shift tracking (the wave-level).
+1. **Run the filter retroactively (30 min):** take the last three AI developments you spent real attention on; score each against the three questions in writing. At least one will score zero — name what that attention cost.
+2. **Design your diet (15 min):** pick your five sources — one per class — and put the weekly hours in your actual calendar. Delete (not demote: delete) two sources the exercise reveals as discourse.
+3. **Write your first two-line notes (15 min):** run the filter on reasoning models and on MCP *for your context* — your systems, your drawings. Your conclusions may differ from this chapter's; the filter, not the conclusion, is the skill.
+4. **Book the build slot:** one calendar block this month, against an existing harness of yours, targeting your highest-scoring filter survivor. Write the two-line result note afterward.
+5. **Add one revisit trigger** to a real current design (or a portfolio project's ADR): the named observation that would reopen the decision.
 
 **Acceptance criteria:**
-- [ ] The signal-vs-noise audit categorizes the inputs (durable vs. churning — 2.1)
-- [ ] The concept anchor listed (the durable concepts — 2.1), used to filter
-- [ ] The wave-level tracking identified (the genuine shifts — 2.1/3.10, the eval-driven)
-- [ ] The learning plan (concepts-first, framework-as-needed, genuine-shift tracking)
+- [ ] Three retroactive filter scores written; the zero-score's cost named
+- [ ] Diet on the calendar; two sources deleted
+- [ ] Two live filter notes written for *your* context, each ≤2 lines + a consequence
+- [ ] Build slot booked against a named existing harness
+- [ ] One revisit trigger added to a real ADR, specific enough that a stranger could notice it firing
 
 ## Enterprise Considerations
 
-Staying current is shaped by the enterprise's technology strategy and the market. **The enterprise's technology radar is a filtering aid** (6.1): the enterprise's technology radar/strategy (6.1 — the technology assessment, the standards) is a filtering aid (the enterprise's assessment of the genuine developments), so the staying-current connects to the technology strategy (6.1). **The model-selection re-evaluation is the genuine-shift tracking** (3.10): the model-selection re-evaluation triggers (3.10 — the new model generation, the capability change) are the genuine-shift tracking (3.10 — the eval-driven capability tracking), so the staying-current connects to the model selection (3.10). **The framework-lock-in is the anti-pattern** (7.10): the framework-chasing (the framework churn — 8.6) connects to the framework-lock-in anti-pattern (7.10 — the framework adopted by hype), so the staying-current avoids the framework-lock-in (7.10). **And the staying-current is a team-and-culture concern** (8.7): the staying-current (the team's learning — 8.7's team-building) is a team-and-culture concern (8.7 — the team's ongoing learning, the culture), so the staying-current connects to the team-building (8.7).
+At team scale, currency is an architecture concern with an owner: rotate a lightweight radar duty (one person, one hour, a shared two-line-notes file) rather than assuming osmosis; convert the monthly build slot into a team ritual with a demo (the cheapest internal training that exists); and encode the adoption-threshold rule into governance — protocols and standards get re-filtered at ubiquity milestones, on the calendar, so the MCP-class miss can't hide in anyone's priors ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)'s enabling shape). Vendor-driven currency deserves explicit distrust hygiene: provider roadmap briefings are marketing with an NDA on top; the pricing page and the changelog are the honest documents, and your own harness is the only benchmark that owes you nothing ([3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)). Budget reality: the three weekly hours and the monthly build slot are, for a team of eight, roughly 2% of capacity — write it into the plan or it will be the first thing delivery pressure deletes, and the deletion's cost will arrive as an ossification surprise with someone's name on it.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Learning focus | Concepts-first (durable) | Frameworks-first (churning) | Always — the concepts durable (2.1) | Never frameworks-first; the churn (2.1) |
-| Framework learning | As-needed (just-in-time) | Chase-every | The framework is needed (the just-in-time) | Never chase-every; the churn (2.1) |
-| Attention | Wave-level (genuine shifts) | Framework-level (churn) | Always — the wave-level genuine (2.1) | Never framework-level-only; the churn (2.1) |
-| Development evaluation | Eval-driven (3.10) | Hype-driven | Always — the eval-driven (3.10) | Never hype-driven; the un-evaluated (3.10) |
+| Filter posture | Conservative (demand two yeses for build time) | Aggressive early adoption | Default for production estates; churn tax is continuous | A capability shift lands squarely on your differentiator; then move fast *with* the harness |
+| Diet breadth | Five sources, ruthlessly few | Broad monitoring | Always for individuals; attention is the scarce asset | You hold an explicit radar role for an organization, with hours budgeted for it |
+| Build slot target | Filter's highest scorer | The loud thing stakeholders keep asking about | The slot is scarce and the filter has a clear winner | Executive questions about the loud thing are imminent — a measured answer beats a filtered silence, and it usually takes one afternoon |
+| Protocol adoption | Wait for the ubiquity threshold | Adopt at announcement | Standards with network effects and no capability delta — most of them | You are placing a deliberate early bet and pricing the re-work if the standard loses |
 
 ## Common Mistakes
 
-1. **Chasing every framework** — the framework churn chased (2.1's tools-not-timeless — the churn); the framework-as-needed (the just-in-time).
-2. **The frameworks-first learning** — the learning frameworks-first (the churning), not concepts-first (the durable — 2.1); the concepts-first (2.1).
-3. **The hype-driven** — the developments hype-driven (the un-evaluated — 3.10); the eval-driven (3.10).
-4. **Missing the genuine shifts** — the genuine shifts missed (the wave-level un-tracked — 2.1); the wave-level tracking (2.1).
-5. **Drowning in the firehose** — the firehose un-filtered (the churn — the drowning); the filtering (the concept anchor — 2.1).
-6. **The framework-lock-in** — the framework adopted by hype (7.10's framework-lock-in); the concepts-over-frameworks (2.1), the framework evaluated (1.4).
-7. **The un-anchored filtering** — the filtering un-anchored (no concept anchor — 2.1); the concept anchor (the durable concepts — 2.1).
+1. **Filtering by volume of discourse.** Loudness measures marketing budgets and controversy, not architectural significance; the three questions don't have a loudness term.
+2. **Reading without building.** Knowledge of the new model class plus untouched intuitions equals confidently wrong pricing; the monthly slot exists because judgment is a muscle, not a cache.
+3. **The permanent verdict.** "MCP is plumbing" was a defensible 2024 filter result and a wrong 2026 one; verdicts without revisit triggers become identity, and identity doesn't update.
+4. **Diet creep.** The sixth source, the second aggregator, the "just fifteen more minutes" of discourse — attention leaks until the primary-source hour is the one that gets cut.
+5. **Notes in your head.** Unwritten filter results can't be reviewed, can't be handed to a team, and silently rewrite themselves to have always been right.
+6. **Confusing procurement news with architecture news.** A price cut within a tier changes a spreadsheet; only order-of-magnitude moves change the ladder ([2.11](../part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)).
 
 ## Best Practices
 
-1. **Learn concepts-first** — the durable concepts (2.1's timeless — deeply), the frameworks as the illustrations (2.1).
-2. **Learn frameworks as-needed** — the just-in-time (the framework when needed), not the chase-every.
-3. **Anchor the filtering in the concepts** — the concept anchor (2.1 — the concept-level vs. framework-level), the signal from the noise.
-4. **Attend to the wave-level** — the genuine shifts (2.1's waves — the wave-level, the model capability — 3.10), not the framework churn.
-5. **Evaluate the developments** — the eval-driven (3.10 — the genuine capability, the eval), not the hype-driven.
-6. **Track the genuine shifts** — the wave-level developments (2.1), the model capability (3.10), the eval-driven.
-7. **Avoid the framework-lock-in** — the framework evaluated (1.4), not adopted by hype (7.10).
+1. **Score in writing, two lines, every time** — the filter's value is the accumulating notes file, not any single verdict.
+2. **Anchor builds to existing harnesses** — your eval suites and backtests make novelty measurable in an afternoon; that cheapness is what makes the cadence survivable.
+3. **Name the trigger in the ADR while the decision is fresh** — future-you will not re-derive what would have changed present-you's mind.
+4. **Re-filter protocols at adoption milestones** — capability-free standards still redraw governance surfaces at ubiquity; put the milestone check on the calendar.
+5. **Keep one deliberate contrarian bet visible** — a filter that never disagrees with the discourse in either direction isn't filtering; review the bet annually with evidence.
+6. **Audit the diet quarterly** — sources decay; the aggregator that was signal in spring is a content farm by winter.
 
 ## Architecture Checklist
 
-For staying current:
+For your currency system (review quarterly):
 
-- [ ] The learning is concepts-first (the durable — 2.1), the frameworks as-needed (the just-in-time)
-- [ ] The filtering anchored in the concepts (the concept anchor — 2.1, the concept-level vs. framework-level)
-- [ ] The attention on the wave-level (the genuine shifts — 2.1, the model capability — 3.10)
-- [ ] The developments eval-driven (3.10 — not hype-driven)
-- [ ] The genuine shifts tracked (the wave-level — 2.1/3.10)
-- [ ] The framework-lock-in avoided (the framework evaluated — 1.4/7.10)
-- [ ] The staying-current connected to the technology strategy (6.1) and the team (8.7)
+- [ ] The three-question filter applied in writing to anything that got more than an hour of attention
+- [ ] Diet: five named sources, one per class, hours actually on the calendar
+- [ ] Monthly build slot executed, against an existing harness, with a two-line result note
+- [ ] Notes file alive and reviewed; last quarter's verdicts re-checked against what happened
+- [ ] Every consequential design ADR carries a revisit trigger specific enough to notice firing
+- [ ] Protocol/standard adoption milestones calendared for re-filtering
+- [ ] At least one currency-driven decision (adopt, defer, or drop) made on evidence this quarter
 
 ## Interview Questions
 
-1. *"How do you stay current in a fast-moving field without chasing every framework?"* — Strong answers give the concepts-over-frameworks (2.1 — the concepts-first, the durable, the frameworks-as-needed), the filtering anchored in the concepts (the concept-level vs. framework-level), the wave-level attention (the genuine shifts — 2.1), the eval-driven (3.10) — the signal from the noise.
-2. *"How do you distinguish a genuine AI development from hype?"* — Strong answers give the signal-vs-noise (2.1 — the wave-level genuine shift vs. the framework-level churn, the durable concept vs. the hype), the eval-driven (3.10 — the genuine capability evaluated, not the hype-driven), the concept anchor (2.1 — the durable).
-3. *"How do you decide whether to learn a new framework?"* — Strong answers give the framework-as-needed (the just-in-time — the framework when it's needed, not the chase-every), the framework evaluated (1.4 — the trade-off, the lock-in — 7.10), the concepts-first (2.1 — the framework as the illustration of the concept).
-4. *"What's your filtering system for the AI firehose?"* — Strong answers give the concept anchor (2.1 — the durable concepts as the anchor, the concept-level vs. framework-level filter), the wave-level tracking (the genuine shifts — 2.1), the eval-driven (3.10), the concepts-first learning (2.1) — the filtering discipline.
+1. *"How do you decide what new AI developments to invest time in?"* — Strong answers produce a *system*: filter questions, a time-budgeted diet, builds against existing baselines, written triggers. Weak answers name newsletters.
+2. *"Tell me about something you correctly ignored, and something you were late on."* — Strong answers have both, with the filter scores and what the miss taught (the both-directions honesty is the senior tell; candidates with only correct calls are editing).
+3. *"Reasoning-heavy models: what did they actually change for a system you know well?"* — Strong answers are concrete about all three filter axes — capability, the thinking-token economics, and what got deleted from the drawing (verification scaffolding, retry loops) — ideally with measured before/after from their own harness.
+4. *"A protocol adds no new capability but everyone is adopting it. Architecture concern or not?"* — Strong answers know ubiquity itself redraws governance surfaces (registries, permissions, supply chains) and name the adoption-threshold rule; the answer "no capability, no concern" is the exact miss this decade keeps punishing.
 
 ## Further Reading
 
-- 2.1 The AI Landscape (the waves, the hype cycle, the concepts-over-frameworks) and the [ADR-0001](../../adr/ADR-0001-concepts-over-frameworks.md) — the concepts-over-frameworks discipline this chapter applies to the ongoing learning.
-- 3.10 Model Selection (the eval-driven, the re-evaluation triggers) — the genuine-shift tracking.
-- Rich Sutton, *The Bitter Lesson* (re-linked from 2.1) — the durable direction (scale-plus-learning), the signal.
-- 7.10 Anti-patterns (the framework-lock-in) and 8.7 Mentoring & Building AI Teams (the team's learning) — the connected chapters.
+- Provider changelogs, model cards, and pricing pages for the two or three platforms you actually run — the primary sources this chapter keeps insisting on; read them like architecture documents.
+- *Technology Strategy Patterns* (Hewitt) — the mapping and horizon vocabulary for reasoning about when to move, useful beyond its examples.
+- The M-competition literature trail (2.13's Further Reading) — a worked, decades-long case study in claims meeting measurement, and the habit of mind this chapter generalizes.
+- Your own notes file, twelve months from now — the only reading on this list personalized to your judgment; write it and it will teach you where your filter runs hot or cold.
 
 ## Summary
 
-- **Stay current on the timeless concepts and genuine shifts, not the framework churn** — the filtering anchored in the timeless concepts (2.1's concepts-over-frameworks — the durable), distinguishing the signal (the durable concepts, the genuine shifts) from the noise (the framework churn, the hype).
-- The **filtering is anchored in the concepts** (2.1's concept anchor — the concept-level shift vs. the framework-level churn), the signal kept, the noise filtered — the concepts-over-frameworks (2.1) as the filtering discipline.
-- The **attention is on the wave-level** (2.1's waves — the genuine shifts, the model capability — 3.10, the eval-driven — 3.10), not the framework-level churn.
-- The **learning is concepts-first, framework-as-needed** — the concepts learned deeply (2.1's concepts-first — the durable), the frameworks learned just-in-time (not the chase-every), the genuine shifts tracked (the wave-level — 2.1).
-- The staying-current discipline is the **curriculum's founding discipline** (2.1's ADR-0001, concepts over frameworks) applied to the ongoing learning — the architect's competence kept fresh without drowning in the firehose. Growing others through mentoring and team-building is next: **mentoring & building AI teams** (8.7).
+- Filter with three questions — does it change what's possible, what's economical, what you'd draw — and let the yes-count allocate attention: bookmark, study, or build.
+- Run a five-source, three-hour diet anchored on primary sources, with peer exchange as the fastest churn filter and discourse capped at sentiment-sensing.
+- Keep judgment attached to reality with a monthly build against your existing harnesses, and close every verdict with a written revisit trigger — including adoption-threshold re-filters for capability-free protocols, the lesson of the MCP miss.
+- Both failure modes are priced: churn-chasing taxes capacity continuously; ossification arrives as a lost deal with your name on it. Three hours a week is the premium for both.
+- The system's output is a notes file that becomes your landscape document, your article pipeline, and the evidence trail that your filter — not your temperament — is making the calls.
 
 ---
 
-**Previous:** [Chapter 8.5 — Consulting & Client Engagement Skills](chapter-05-consulting-client-engagement.md) · **Next:** [Chapter 8.7 — Mentoring & Building AI Teams](chapter-07-mentoring-building-teams.md) · **Related:** [2.1 The AI Landscape](../part-2-artificial-intelligence/chapter-01-ai-landscape.md), [3.10 Model Selection](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [ADR-0001 Concepts over Frameworks](../../adr/ADR-0001-concepts-over-frameworks.md)
+**Previous:** [8.5 Consulting & Client Engagement Skills](chapter-05-consulting-client-engagement.md) · **Next:** [8.7 Mentoring & Building AI Teams](chapter-07-mentoring-building-teams.md) · **Related:** [2.11 Choosing the Right AI Approach](../part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md), [3.10 Model Selection & Benchmarking](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [ADR-0001](../../adr/ADR-0001-concepts-over-frameworks.md)

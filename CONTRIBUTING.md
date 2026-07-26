@@ -21,7 +21,7 @@ Corrections, improvements, and new material are welcome. This file is the short 
 ## Mechanical checklist before any PR
 
 - [ ] `py build-manifest.py` re-run if you added, renamed, or removed any document (the site navigation is generated from `manifest.json`)
-- [ ] All relative links resolve (a quick check: every `[text](path)` target exists; link-target paths are case-sensitive on GitHub Pages)
+- [ ] All relative links resolve (every markdown link's target file exists; link-target paths are case-sensitive on GitHub Pages)
 - [ ] New chapters follow the template's 15 sections in order
 - [ ] Counts in README/PROGRESS/catalogs updated if you changed the number of chapters, projects, or case studies
 

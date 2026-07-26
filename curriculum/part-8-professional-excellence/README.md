@@ -9,7 +9,7 @@ Turning competence into a career. The market rewards architects who can be *foun
 | # | Chapter | Level | What you'll be able to do |
 |---|---------|-------|---------------------------|
 | 8.1 | [The AI Solution Architect Role & Market](chapter-01-role-and-market.md) | 3 | Map role variants (solution/enterprise/platform/principal), seniority ladders, and compensation drivers |
-| 8.2 | [Building an Architecture Portfolio](chapter-02-architecture-portfolio.md) | 4 | Present projects and case studies as evidence of judgment, not just code |
+| 8.2 | [Building an Architecture Portfolio](chapter-02-architecture-portfolio.md) | 4 | Build the three-layer portfolio — running systems, decision records, wrong-memos — with the credibility rules that make it verifiable |
 | 8.3 | [Architecture Interviews](chapter-03-architecture-interviews.md) | 4 | Perform in system-design and architecture loops: whiteboarding method, trade-off narration, handling pushback |
 | 8.4 | [Technical Writing & Public Speaking](chapter-04-technical-writing-speaking.md) | 4 | Write design docs and give talks that change decisions; build a public voice |
 | 8.5 | [Consulting & Client Engagement Skills](chapter-05-consulting-client-engagement.md) | 4 | Scope, price, and de-risk engagements; run discovery; say no profitably |
@@ -19,8 +19,9 @@ Turning competence into a career. The market rewards architects who can be *foun
 
 ## Exit criteria
 
-- Public portfolio with two capstone projects (P17–P20) documented to this repo's standards
-- One long-form article or recorded talk
-- A mock architecture interview passed with a peer or mentor
+- Public portfolio meeting 8.2's checklist: 2–4 runnable projects with named datasets, decision memos, at least one wrong-memo and one reachable demo
+- One long-form article or recorded talk from your own measured work (8.4's shapes)
+- A mock architecture interview passed with a peer or mentor, including the depth-probe round against your own repo
+- The 8.1 positioning file written, with dated market data and a 12-month plan
 
 **Previous:** [Part 7](../part-7-enterprise-ai-architecture-patterns/) · **Back to:** [Curriculum home](../../README.md)

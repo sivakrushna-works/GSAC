@@ -3,169 +3,178 @@
 | | |
 |---|---|
 | **Part** | 8 — Professional Excellence & Career Development |
-| **Maturity level** | 3 — Engineer |
+| **Maturity level** | 3 — Engineer (career planning starts before Level 4 arrives) |
 | **Difficulty** | Intermediate |
-| **Estimated study time** | 2–3 hours (reading 90 min, exercise 60 min) |
-| **Prerequisites** | [1.1 From Software Engineer to Solution Architect](../part-1-professional-foundation/chapter-01-from-engineer-to-architect.md) |
+| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Prerequisites** | [1.1 From Engineer to Architect](../part-1-professional-foundation/chapter-01-from-engineer-to-architect.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Map the AI Solution Architect role variants (solution, enterprise, platform, principal), their seniority ladders, and their scope differences.
-2. Understand the market: what the role is worth, what drives compensation, and how the role is evolving.
-3. Position yourself in the role landscape: which variant fits your strengths, and how to grow into the seniority you're targeting.
-4. Read the role behind the title, since titles vary wildly and scope tells the real story.
+1. Distinguish the four architect variants (solution, enterprise, platform, principal) by what they are accountable for, and identify which one a given job posting actually describes regardless of its title.
+2. Read the market with real numbers: know the current compensation bands for your region, where they come from, and how fast they decay.
+3. Decide, with reasons, which certifications are worth your hours and which are résumé decoration for this role.
+4. Write a positioning statement that names your target variant, your evidence gap, and your 12-month plan to close it.
 
 ## Introduction
 
-Part 8 closes the curriculum by turning the competence Parts 1–7 built into a career — the professional machinery around the technical judgment. This first chapter maps the role itself: the AI Solution Architect role — spanning the GenAI and classical-ML lanes the curriculum teaches — its variants, its market, and how to position within it. 1.1 defined what the role *is* (the architect's job — decisions, not code); this chapter maps the role's *variants and market* — the landscape of the role as it exists in the industry, so you can position yourself within it.
+Chapter 1.1 defined what an architect *does*. This chapter is about the job market that pays for it: what the role variants look like from inside, what companies actually pay, what a posting's title does and does not tell you, and how to position yourself deliberately instead of drifting into whatever your current employer calls you.
 
-The framing: **the AI Solution Architect role has variants and a market, and the title hides the scope** — the role variants (solution, enterprise, platform, principal), the seniority ladders, the compensation drivers, and the reality that the titles vary wildly (1.1's title inflation/deflation) so the scope tells the real story, and this chapter is the map of the role landscape.
+One warning governs everything here: **market facts decay**. Every number in this chapter is date-stamped to early 2026 and sourced so you can re-verify it. A salary band quoted without a date is folklore; treat this chapter's numbers as a worked example of *how to find current ones*, not as permanent truth.
 
 ## Business Motivation
 
-Understanding the role and market is the foundation of the career — the map that lets you position, grow, and negotiate within the role landscape. Without it: you can't position yourself (the role variant that fits your strengths un-identified), you can't target your growth (the seniority ladder un-mapped), and you can't read the market (the compensation drivers, the title-vs-scope). With it: you position yourself (the right variant, the targeted seniority), you grow deliberately (the ladder mapped, the growth targeted), and you read the market (the compensation, the scope behind the title). The business case is the career-foundation one: understanding the role and market is what lets you build the career deliberately (the positioning, the growth, the negotiation), and this chapter is the map — the role landscape that the rest of Part 8 (the portfolio — 8.2, the interviews — 8.3, the career progression — 8.7/8.8) builds the career within.
+The gap between knowing the market and not knowing it is measured in money and years. Two concrete costs of ignorance:
+
+- **Mispriced offers.** Recruiters anchor low when candidates cannot cite market data. The spread between the 25th and 75th percentile for senior AI-architecture roles in the US is roughly $80–120K of total compensation (levels.fyi aggregates, early 2026). A candidate who cannot name the band negotiates inside the bottom half of it. Over a five-year stretch, accepting the 25th percentile instead of the 60th is a six-figure decision.
+- **Misdirected preparation.** An engineer who spends a year earning certifications a hiring loop ignores, while their portfolio has no running system in it, has optimized the wrong variable (this chapter's certification section and [8.2](chapter-02-architecture-portfolio.md) exist to prevent exactly this). Preparation aimed at the wrong variant costs the same year.
+
+The positive case: role clarity compounds. Knowing that you are targeting, say, the *platform architect* variant tells you which projects to build (P16, P25), which chapters to go deep on (5.10, 7.9, 2.15), and which interview loops to seek. Vague ambition ("become an AI architect") produces scattered evidence; a named target produces a portfolio.
 
 ## Theory
 
-### The role variants
+### The four variants, by accountability
 
-The AI Solution Architect role has variants, differing by scope:
+Titles vary wildly; accountability does not. Ask "what is this person blamed for when it fails?" and the variant reveals itself:
 
-- **Solution Architect** — the architect of a *solution* (a specific system or set of systems — the solution to a business problem); the scope is the solution (the system architecture — Parts 3–5, the business problem — 1.3). The most common variant, the system-level architect.
-- **Enterprise Architect** — the architect of the *enterprise* (the portfolio, the target-state, the standards — Part 6); the scope is the enterprise (the portfolio — 6.1, the governance — 6.9, the strategy — 6.10). The strategic variant, the portfolio-level architect.
-- **Platform Architect** — the architect of the *platform* (the internal AI platform — GenAI gateway and eval services, 5.10/7.9, and the ML delivery machinery, 2.15/P25); the scope is the platform (the shared capabilities — 7.9, the platform engineering — 5.10). The platform variant, the shared-infrastructure architect.
-- **Principal Architect** — the *principal* (the standards, the portfolio stewardship, the organizational leadership — 8.8); the scope is the organization (the standards — 6.9, the strategy — 6.10, the leadership — 8.8). The most senior variant, the organizational-leadership architect (8.8).
+| Variant | Accountable for | Typical scope | Curriculum backbone |
+|---|---|---|---|
+| **Solution Architect** | One system (or family) meeting its business case: quality, cost, risk, delivery | A product line, a major initiative | Parts 2–5 |
+| **Enterprise Architect** | The portfolio's coherence: standards, integration, target state, spend | Many systems across an organization | Part 6 |
+| **Platform Architect** | The shared internal machinery other teams build on: gateways, eval services, ML delivery platforms | The internal developer/ML platform | 5.10, 7.9, 2.15 |
+| **Principal Architect** | The organization's technical trajectory: standards that stick, bets that pay, people who grow | Org-wide, multi-year | [8.8](chapter-08-principal-architect.md) |
 
-The variants differ by scope (the solution, the enterprise, the platform, the organization), and they overlap (the solution architect doing enterprise work, the platform architect doing principal work) — the variants as a landscape, not rigid categories (the scope tells the variant).
+Three practical notes. First, the variants overlap in real jobs; a solution architect at a 200-person company does platform and enterprise work on Tuesdays. Second, the *AI* prefix changes the content, not the structure: an AI Solution Architect is a solution architect whose systems carry the failure modes and economics this curriculum teaches (probabilistic quality, token and training economics, model risk). Third, seniority and variant are different axes: there are junior platform architects and principal-level solution architects. Compensation tracks seniority and company tier more than variant.
 
-### The seniority ladder
+### The market, with numbers (early 2026 — verify before using)
 
-The seniority ladder (the five maturity levels — the curriculum's, mapped to the career):
+Compensation for AI-architecture roles, from levels.fyi aggregates, LinkedIn/Indeed posting bands (which US postings must now disclose in many states), and recruiting-firm salary guides, as of Q4 2025–Q1 2026:
 
-- **The maturity levels** (the curriculum's five — Understand, Build, Engineer, Architect, Principal) map to the seniority (the junior architect at Engineer/Architect, the senior at Architect/Principal, the principal at Principal — 8.8); the ladder from the building competence (Level 2-3) to the architecting judgment (Level 4) to the organizational leadership (Level 5 — 8.8).
-- **The progression** — the seniority progression (the Engineer building the systems, the Architect designing them, the Principal leading the organization — 8.8), each level a broader scope (the system → the enterprise → the organization); the ladder the career climbs (the maturity levels — the curriculum's — as the career ladder).
+| Market | Senior (L5/L6-equivalent) total comp | Staff/Principal total comp | Notes |
+|---|---|---|---|
+| **US — large tech & AI-forward product companies** | $250–400K | $400–700K+ | Equity-heavy at the top; "AI" premium over generalist SA roles roughly 10–25% |
+| **US — enterprises, consultancies, non-tech F500** | $170–260K | $250–350K | Base-heavy; consultancies add utilization bonuses |
+| **UK / Western Europe** | £90–150K / €100–170K | £150–220K / €170–260K | Wide country variance; Switzerland and Netherlands at the top |
+| **India — product companies & GCCs** | ₹45–80 LPA | ₹90 LPA–1.8 Cr | Top AI labs and US-headquartered GCCs pay the upper band; services firms pay materially less |
 
-### The market
+How to keep these current (the durable skill): levels.fyi for large-company bands; the posted salary ranges now legally required in several US states and the EU (pay-transparency directive phasing in from 2026); one recruiting-firm salary guide per year for your region; and two or three actual conversations with recruiters, which beat every aggregate. Re-check before any negotiation; these bands have moved 10–20% in single years during the AI demand surge.
 
-The market (the compensation and the demand):
+What drives position *within* a band: company tier and funding, scope evidence (a platform serving 40 teams beats a title), scarcity of your specific combination (the two-lane breadth this curriculum builds is genuinely scarcer than GenAI-only profiles), and negotiation itself.
 
-- **The compensation drivers** — the compensation driven by the seniority (the level — Engineer to Principal), the scope (the solution to the organization), the impact (the business value — 1.3/6.10, the strategic contribution — 8.8), and the scarcity (the AI-capable architect is scarce — the market demand); the compensation as a function of the seniority, scope, impact, and scarcity.
-- **The demand** — the demand for the role (the enterprise AI adoption — 6.8, the scarcity of the AI-capable architect — the demand); the market demand driven by the AI adoption and the scarcity.
-- **The evolution** — the role evolving (the AI adoption maturing — 6.8, the role variants differentiating, the seniority ladders forming); the market evolving as the role matures.
+### Reading a posting: scope signals beat titles
 
-### The title-vs-scope
+The same title spans absurd ranges, so read for scope markers. Signals the role is real architecture: named accountability for outcomes ("owns the reliability and cost of…"), stakeholder breadth ("works with security, finance, and product leadership"), and artifacts ("produces reference architectures, ADRs, review standards"). Signals it is a senior-engineer role wearing the title: "hands-on coding 80% of the time," no governance or stakeholder language, reporting into a delivery manager rather than a technical leadership chain. Neither is bad; mismatched expectations are.
 
-The title-vs-scope reality (1.1's title inflation/deflation):
+### Certifications: an honest position (early 2026)
 
-- **The title varies** — the titles vary wildly (1.1 — "solution architect" ranging from pre-sales support to principal-level system ownership); the title unreliable (the title inflation/deflation — 1.1).
-- **The scope tells the story** — the scope (the actual responsibility, the decisions owned — 1.1) tells the real story (the scope, not the title); the scope as the reliable signal (the actual role behind the title).
-- **Reading the role** — reading the role behind the title (the scope — the decisions owned, the responsibility — 1.1), positioning by the scope (the actual role), not the title (the unreliable label).
+The curriculum is not a certification course, but refusing to *advise* on certifications would leave you guessing about a real market mechanism. The honest map:
+
+- **Cloud architect certifications** (AWS Solutions Architect Professional, Azure Solutions Architect Expert, GCP Professional Cloud Architect) still function as HR screening filters and consultancy staffing currency. Consultancies need them for partner-tier requirements, so if you are heading into consulting they are close to mandatory. At product companies they rarely move a senior loop but sometimes unblock the recruiter screen.
+- **Cloud AI/ML specialty certifications** are weaker signals for architect roles: they test service catalogs, not judgment. Take one only if your target employer names it.
+- **ISO/IEC 42001 and AI-governance credentials** are organizational instruments ([6.11](../part-6-enterprise-architecture/chapter-11-model-risk-management.md)); an individual "AI governance certified" line is beginning to appear in risk-function postings, mostly in banking and insurance. Relevant if you target that niche.
+- **Vendor GenAI badges** (short-course completions) carry near-zero weight in architect hiring loops and can read as padding on a senior résumé.
+
+The rule: a certification is worth your hours when a *named* gate requires it (a consultancy tier, a specific employer's screen, a regulated-industry role). It is never a substitute for the portfolio evidence of [8.2](chapter-02-architecture-portfolio.md), and no interview loop this curriculum prepares you for will ask about one.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    subgraph VARIANTS [The role variants — by scope]
-        SOLUTION[Solution Architect<br/>the solution — Parts 3-5]
-        ENTERPRISE[Enterprise Architect<br/>the enterprise — Part 6]
-        PLATFORM[Platform Architect<br/>the platform — 5.10/7.9]
-        PRINCIPAL[Principal Architect<br/>the organization — 8.8]
-    end
-    LADDER[The seniority ladder<br/>Engineer → Architect → Principal<br/>the maturity levels] -.climbs.-> VARIANTS
-    MARKET[The market<br/>compensation: seniority × scope × impact × scarcity] -.values.-> VARIANTS
-    TITLE[The title varies — 1.1] -.the scope tells the story.-> VARIANTS
+flowchart LR
+    YOU[Your current evidence<br/>projects, systems, scope] --> GAP{Gap analysis<br/>vs. target variant}
+    TARGET[Target variant + seniority<br/>chosen, written down] --> GAP
+    MARKET[(Market data<br/>bands, postings, recruiter calls<br/>date-stamped)] --> TARGET
+    GAP --> PLAN[12-month plan<br/>projects to build, chapters to deepen,<br/>loops to seek]
+    PLAN --> PORTFOLIO[Portfolio — 8.2]
+    PLAN --> INTERVIEWS[Interview readiness — 8.3]
+    MARKET -.re-verify quarterly.-> MARKET
 ```
 
-Readings. **The role variants differ by scope** — the solution (Parts 3-5), the enterprise (Part 6), the platform (5.10/7.9), the organization (8.8) — the variants as a landscape by scope (the solution to the organization), overlapping, the scope telling the variant. **The seniority ladder climbs the maturity levels** — the Engineer (building) → the Architect (designing) → the Principal (leading — 8.8), each a broader scope (the system → the enterprise → the organization), the curriculum's maturity levels as the career ladder. **And the title hides the scope** — the titles vary wildly (1.1's inflation/deflation), so the scope (the decisions owned, the responsibility) tells the real story (the actual role behind the title), and you position by the scope, not the title.
+Career positioning is an architecture problem applied to yourself: current state, target state, gap analysis, and a roadmap with dated milestones (the Part 6 method, one person wide). The market data is an external dependency with a fast decay rate; the diagram's only loop is the re-verification cadence, because every other box depends on it being current.
 
 ## Real-world Example
 
-The recurring architects illustrate the role variants and the ladder. Tomás (Bellhaven — 1.3 onward) began as a *solution architect* (the submission-intake solution — the system architecture, the business case — 1.3) and grew toward *enterprise architect* (the AI portfolio — 6.1, the business case at the portfolio level — 6.10) — the solution-to-enterprise progression, the scope broadening (the system → the portfolio). Adaeze (Vantora — 1.8 onward) was a *platform architect* (the internal GenAI platform — 5.10/7.9, the gateway, the shared capabilities) — the platform variant, and her arc (1.8's influence, 5.10's platform, 6.9's governance) grew toward *principal* (the organizational leadership — the standards, the enabling governance — 6.9, the platform strategy — 8.8). The seniority ladder was visible: the architects climbing the maturity levels (the building — the systems, the designing — the architecture, the leading — the organization — 8.8), each broader scope. And the title-vs-scope was real: the architects' actual roles (the scope — the decisions owned) told the story, not the titles (which varied — 1.1). The role-and-market note (across the architects): *"The role has variants — solution (the system), enterprise (the portfolio), platform (the shared capabilities), principal (the organization) — by scope. Tomás grew solution-to-enterprise (the system to the portfolio), Adaeze platform-to-principal (the platform to the organizational leadership). The seniority ladder climbs the maturity levels — building, designing, leading — each broader scope. And the title hides the scope — the actual role (the decisions owned — 1.1) tells the story, not the title (which varies wildly). Position by the scope, target the seniority, read the market — that's the role landscape the career is built within."*
+**Priya**, a staff engineer at a mid-size fintech (fictional, as all examples here are), decided in January to target an AI Solution Architect role within a year. Her gap analysis was blunt: strong delivery record, but every system she could talk about was owned by someone else's architecture, and her market knowledge was two years stale. Her plan had three lines: build two systems she owned end-to-end with written decision records (a fraud-scoring service against the IEEE-CIS public dataset; a RAG assistant over her company's public docs, with an eval suite); book four recruiter conversations by March to price the market ("senior AI architect, Bangalore GCCs" came back at ₹55–75 LPA, 20% above her guess); and skip the Azure certification she had planned, because none of her five target companies screened for it — that decision alone recovered ~80 hours for the portfolio work. In November she took an offer at ₹68 LPA, up 42% from her staff-engineer package. The offer conversation cited the fraud system's decision memo, not her title history. The plan's most valuable line turned out to be the one that *removed* work.
 
 ## Hands-on Exercise
 
-**Position yourself in the role landscape.** ~60 minutes. Self-assessment and market research.
+Produce your own positioning file (~2 pages, kept in version control, revised quarterly):
 
-1. **The variant fit (20 min).** Assess which role variant fits your strengths (solution — the system architecture, enterprise — the portfolio/strategy, platform — the shared infrastructure, principal — the organizational leadership). Identify your current variant and your target variant.
-2. **The seniority self-assessment (15 min).** Assess your current seniority on the maturity ladder (Engineer, Architect, Principal — the curriculum's levels), and your target. Identify the gap (the growth needed — the scope broadening).
-3. **The market research (15 min).** Research the market for your target variant and seniority (the compensation, the demand — the current market). Note the compensation drivers (seniority, scope, impact, scarcity) that apply to you.
-4. **The positioning statement (10 min).** Write your positioning statement: your current role (the scope, not the title), your target role (the variant and seniority), and the growth to get there.
+1. **Variant and seniority target** — one sentence, specific ("platform architect, staff level, at an AI-forward product company or GCC").
+2. **Market snapshot** — your region's band for that target, from at least two named sources, date-stamped. Include one number from a live posting and, if possible, one from a recruiter conversation.
+3. **Evidence inventory** — what you can currently *show* (systems, scope, artifacts), each with one line on what it proves.
+4. **Gap list** — the three biggest differences between your evidence and what postings for the target demand.
+5. **12-month plan** — projects (from P01–P25 or your own), chapters to deepen, certifications (only if a named gate requires one), and the date of your next market re-check.
 
 **Acceptance criteria:**
-- [ ] The variant fit assessed (current and target)
-- [ ] The seniority self-assessed on the maturity ladder (current and target, the gap)
-- [ ] The market researched for the target (compensation, demand, drivers)
-- [ ] The positioning statement written (current scope, target role, growth)
+- [ ] The target names a variant and seniority, not just "AI architect"
+- [ ] Every market number carries a source and a date
+- [ ] At least one planned item was *removed* because the market data didn't support it
+- [ ] The evidence inventory contains only things you could show in an interview this week
+- [ ] A calendar reminder exists for the quarterly revision
 
 ## Enterprise Considerations
 
-The role and market are shaped by the enterprise's AI maturity and structure. **The role variants reflect the enterprise's AI maturity** (6.8): the enterprise's AI adoption maturity (6.8 — the pilots-to-platform-to-enterprise-enabled) shapes the role variants (the early-adoption enterprise needing solution architects, the mature enterprise needing platform and enterprise architects — 5.10/6.1), so the role landscape reflects the enterprise's AI maturity. **The org structure shapes the role** (5.10/8.7): the platform/product split (5.10 — the platform team vs. the application teams) shapes the platform-architect vs. solution-architect roles (the platform architect on the platform team, the solution architect on the application teams — 8.7's org design), so the role reflects the org structure (Conway's law — 6.4). **The compensation reflects the enterprise's valuation** (6.10): the enterprise's valuation of the AI architecture (6.10 — the business case, the strategic importance) shapes the compensation (the AI architect valued for the strategic contribution — 6.10/8.8), so the compensation reflects the enterprise's AI valuation. **And the career progression is an enterprise-and-market concern** (8.7/8.8): the career progression (the ladder — the Engineer to Principal — 8.8) is shaped by the enterprise's ladder (the enterprise's seniority levels) and the market (the external opportunities), so the progression is an enterprise-and-market concern.
+Inside a large organization, this chapter's logic runs on internal ladders too: promotion committees are hiring loops with better memory, and the scope-beats-title rule applies doubly (an "architect" title granted without portfolio-visible scope will not survive an external interview). If you are the *hiring* side of this market: post the salary band (increasingly a legal requirement, always a filter-quality improvement), write the accountability sentence into the job description, and screen for evidence of decisions rather than vocabularies — Part 8's later chapters ([8.7](chapter-07-mentoring-building-teams.md)) return to this. Consultancies and GCCs should note the certification asymmetry above: what is staffing currency inside the firm is near-invisible to product-company loops, and architects moving between the two worlds need to re-weight their evidence accordingly.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Variant focus | Deep in one variant (e.g., platform) | Broad across variants | Building deep expertise in a variant (the specialization) | Building broad experience (the generalist path to principal — 8.8) |
-| Seniority target | Architect (system/portfolio design) | Principal (organizational leadership) | The design work is your strength (the architecting) | The leadership is your path (the organizational — 8.8) |
-| Positioning | By scope (the actual role) | By title | Always — the scope tells the story (1.1) | Never by title alone; the title varies wildly (1.1) |
-| Growth | Deliberate (targeted ladder climb) | Opportunistic | Always — the targeted growth (the ladder mapped) | Never purely opportunistic; the deliberate growth (the target) |
+| Target variant | Solution architect | Platform architect | You want business proximity and per-system ownership; strongest external market | You are energized by leverage and internal customers; fewer roles, stickier ones |
+| Employer class | Product company / GCC | Consultancy | Depth, equity upside, one estate to know deeply | Breadth, forced reps across industries, faster title progression |
+| Preparation spend | Portfolio systems | Certifications | Always the default at architect level | A named gate (consultancy tier, specific screen, regulated niche) requires the credential |
+| Market timing | Move for the role | Grow in place | Current employer cannot offer the scope within ~a year | Scope is genuinely available internally; internal evidence transfers |
 
 ## Common Mistakes
 
-1. **Positioning by title** — positioning by the unreliable title (1.1's inflation/deflation), not the scope; position by the scope (the actual role — 1.1).
-2. **The un-mapped ladder** — the seniority ladder un-mapped, the growth un-targeted; map the ladder (the maturity levels), target the growth.
-3. **The variant mismatch** — the variant that doesn't fit the strengths (the platform architect who prefers the system design); fit the variant to the strengths.
-4. **Ignoring the market** — the market un-read (the compensation, the demand un-researched); read the market (the compensation drivers, the demand).
-5. **The opportunistic-only career** — the career purely opportunistic (no deliberate growth); the deliberate growth (the targeted ladder climb).
-6. **Confusing the variants** — treating the variants as rigid categories (not the overlapping landscape); the variants overlap (the scope tells the variant).
-7. **The static role view** — the role viewed as static (not evolving — the market evolving); the role evolves (the AI adoption maturing — 6.8).
+1. **Positioning by title instead of scope.** "I'm a senior architect" means nothing across companies; carry the accountability sentence and the evidence instead.
+2. **Negotiating without current data.** Bands move 10–20% a year in this market; last year's number is a discount you hand the other side.
+3. **Certification-first preparation.** Weeks of service-catalog cramming that no architect loop will probe, while the portfolio stays empty. Invert it.
+4. **Treating the "AI premium" as automatic.** The premium attaches to demonstrated AI-systems judgment (evals, cost engineering, model risk), not to the word on the résumé; loops have learned to probe.
+5. **One-variant blindness.** Applying solution-architect evidence to platform-architect loops and wondering why the internal-customer and leverage questions land badly. Match the evidence to the variant.
 
 ## Best Practices
 
-1. **Position by the scope, not the title** — the actual role (the decisions owned, the responsibility — 1.1), not the unreliable title.
-2. **Map the seniority ladder, target the growth** — the maturity levels (the curriculum's — the career ladder), the targeted growth (the scope broadening).
-3. **Fit the variant to your strengths** — the solution (the system design), the enterprise (the strategy), the platform (the shared infrastructure), the principal (the leadership — 8.8) — the variant that fits.
-4. **Read the market** — the compensation drivers (seniority, scope, impact, scarcity), the demand, the evolution.
-5. **Grow deliberately** — the targeted ladder climb (the target variant and seniority), not purely opportunistic.
-6. **Recognize the variants overlap** — the landscape (the scope tells the variant), not the rigid categories.
-7. **Track the role's evolution** — the market evolving (the AI adoption maturing — 6.8), the role differentiating.
+1. **Write the positioning file and version it.** Careers drift without written target state; you already know this discipline from Part 6.
+2. **Date-stamp every market fact you collect**, and schedule the re-check. Treat undated numbers as expired.
+3. **Book recruiter conversations before you need them.** Two per quarter prices the market and builds the pipeline; the worst time to start is with an offer in hand.
+4. **Spend preparation hours where loops probe**: systems you own, decisions you can defend, numbers you measured. [8.2](chapter-02-architecture-portfolio.md) and [8.3](chapter-03-architecture-interviews.md) operationalize this.
+5. **Re-run the gap analysis after every real interview** — loops are free market research; what they probed that you couldn't answer is the next quarter's plan.
 
 ## Architecture Checklist
 
-For positioning in the role landscape:
+Before acting on a role decision:
 
-- [ ] The role variant identified (current and target — solution, enterprise, platform, principal — by scope)
-- [ ] The seniority self-assessed on the maturity ladder (current and target, the gap)
-- [ ] The market researched (compensation drivers, demand, evolution)
-- [ ] The positioning by scope, not title (1.1)
-- [ ] The growth targeted (the deliberate ladder climb)
-- [ ] The variant fit to the strengths
-- [ ] The role's evolution tracked (the market maturing — 6.8)
+- [ ] Target variant and seniority written down, with the accountability sentence for that variant
+- [ ] Market band for the target, from ≥2 named sources, dated within the last quarter
+- [ ] Evidence inventory maps to what postings for the target actually demand
+- [ ] Certification spend justified by a named gate, or zero
+- [ ] The 12-month plan contains more building than studying
+- [ ] Next market re-check is on the calendar
 
 ## Interview Questions
 
-1. *"What are the variants of the AI Solution Architect role?"* — Strong answers give the variants by scope (solution — the system, enterprise — the portfolio/strategy, platform — the shared infrastructure, principal — the organizational leadership — 8.8), noting they overlap (the scope tells the variant) and the titles vary (the scope tells the story — 1.1).
-2. *"How do you read the role behind a job title?"* — Strong answers give the title-vs-scope (1.1's inflation/deflation — the titles vary wildly), the scope as the reliable signal (the decisions owned, the responsibility), reading the actual role by the scope (not the title).
-3. *"What drives compensation for the role?"* — Strong answers give the drivers (the seniority — the level, the scope — the solution to the organization, the impact — the business value — 1.3/6.10, the scarcity — the AI-capable architect is scarce), the compensation as a function of these.
-4. *"How would you plan your growth as an AI architect?"* — Strong answers give the deliberate growth (the maturity ladder mapped — the Engineer to Principal, the target variant and seniority identified, the scope broadening — the system to the enterprise/organization), the targeted ladder climb (not purely opportunistic).
+1. *"Walk me through how you'd decide between two offers: a staff solution-architect role at a product company and a platform-architect role at a GCC paying 15% more."* — Strong answers price the whole position (scope, equity trajectory, what each role's evidence enables in three years), name the variant difference explicitly, and treat the 15% as one variable among five rather than the decision.
+2. *"What's the market rate for your target role, and how do you know?"* — Strong answers give a band with sources and a date, note the spread's width, and describe a verification habit. Weak answers give one number with no provenance.
+3. *"Your title has been 'architect' for three years, but this loop is probing your scope hard. Why do loops do that?"* — Strong answers explain title inflation, give the accountability test, and pivot to scope evidence without defensiveness.
+4. *"Would you recommend a cloud architecture certification to someone targeting this role?"* — Strong answers refuse the yes/no: they name the gates where certifications matter (consultancy tiers, HR screens, regulated niches), state where they don't (senior product-company loops), and rank them below portfolio evidence with reasons.
 
 ## Further Reading
 
-- 1.1 From Software Engineer to Solution Architect (the role definition, the title inflation/deflation) — the foundation this chapter maps the variants and market onto.
-- The AI/architecture job market research (the compensation surveys, the role postings — read critically for the scope behind the titles) — the market this chapter maps.
-- 8.8 Operating as a Principal Architect (the principal variant, the top of the ladder) — the senior end of the role landscape.
-- Gregor Hohpe, *The Software Architect Elevator* (re-linked from Part 1) — the architect's role and altitude, the through-line of the role landscape.
+- levels.fyi — the most current large-company compensation aggregates; read the percentile spreads, not just medians.
+- Posted salary bands on major boards for your target title and region — now legally required in several US states and phasing in across the EU; the closest thing to ground truth.
+- One recruiting-firm salary guide for your region, current year — directionally useful, methodology-opaque; triangulate, don't trust.
+- *The Software Architect Elevator* (Hohpe) — the best description in print of what enterprise-scale architects are actually accountable for, and the source of Part 6's sensibilities.
 
 ## Summary
 
-- The **AI Solution Architect role has variants** — solution (the system — Parts 2–5, both lanes), enterprise (the portfolio — Part 6), platform (the shared capabilities — 5.10/7.9/2.15), principal (the organization — 8.8) — differing by scope, overlapping (the scope tells the variant).
-- The **seniority ladder climbs the maturity levels** — Engineer (building) → Architect (designing) → Principal (leading — 8.8), each a broader scope (the system → the enterprise → the organization) — the curriculum's maturity levels as the career ladder.
-- The **market** values the role by seniority × scope × impact × scarcity — the compensation drivers, driven by the AI adoption (6.8) and the scarcity (the AI-capable architect), evolving as the role matures.
-- **The title hides the scope** (1.1's inflation/deflation) — the titles vary wildly, so the scope (the decisions owned, the responsibility) tells the real story; **position by the scope, not the title**.
-- Positioning in the role landscape (the variant fit, the seniority target, the market read, the deliberate growth) is the **career foundation** the rest of Part 8 builds within. The portfolio that presents your judgment is next: **building an architecture portfolio** (8.2).
+- Four variants — solution, enterprise, platform, principal — distinguished by accountability, not title; identify a posting's real variant by asking what the role is blamed for.
+- The market has knowable numbers: early-2026 bands run roughly $170–400K+ total comp in the US, £90–220K/€100–260K in Western Europe, and ₹45 LPA–1.8 Cr in India depending on tier and seniority — all decaying facts that must be re-verified from named sources before use.
+- Certifications are gate-dependent: near-mandatory for consultancy tracks, marginal at product companies, never a substitute for portfolio evidence.
+- Scope signals beat titles when reading postings; the accountability sentence is the test.
+- Positioning is an architecture exercise on yourself: written target, dated market data, evidence inventory, gap list, 12-month plan, quarterly revision.
 
 ---
 
-**Previous:** [Part 8 index](README.md) · **Next:** [Chapter 8.2 — Building an Architecture Portfolio](chapter-02-architecture-portfolio.md) · **Related:** [1.1 From Software Engineer to Solution Architect](../part-1-professional-foundation/chapter-01-from-engineer-to-architect.md), [8.8 Operating as a Principal Architect](chapter-08-principal-architect.md), [6.10 TCO & the Business Case](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)
+**Previous:** [Part 7 — Enterprise AI Architecture Patterns](../part-7-enterprise-ai-architecture-patterns/) · **Next:** [8.2 Building an Architecture Portfolio](chapter-02-architecture-portfolio.md) · **Related:** [1.1 From Engineer to Architect](../part-1-professional-foundation/chapter-01-from-engineer-to-architect.md), [8.2 Portfolio](chapter-02-architecture-portfolio.md), [8.3 Interviews](chapter-03-architecture-interviews.md)

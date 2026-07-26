@@ -12,150 +12,175 @@
 
 After this chapter you will be able to:
 
-1. Grow engineers into AI practitioners: the mentoring that builds the AI capability.
-2. Design team topologies for AI work: the platform/product split, the roles, the structure.
-3. Design hiring loops for AI roles: the assessment, the interview loops, the scaling.
-4. Build the AI capability of the organization through the people (the mentoring, the teams, the hiring).
+1. Define the six roles an enterprise AI capability actually needs, what each is accountable for, and the hiring sequence that doesn't strand early hires.
+2. Choose among the three team shapes — embedded, platform, center of excellence — using the organization's size and maturity rather than fashion.
+3. Design hiring loops per role around work samples that predict the job, and know the screening signals that separate practitioners from vocabulary.
+4. Mentor deliberately: the delegation ladder, review-as-teaching, and the multiplication math that makes growing architects part of the principal's job description.
 
 ## Introduction
 
-This chapter is mentoring and team-building — the Level-5 (Principal) work of growing the AI capability through the people. 8.1-8.6 built the individual architect's career; this chapter is the principal architect building *others* — the mentoring that grows engineers into AI practitioners, the team topologies that structure the AI work, and the hiring that scales the capability. This is the leadership scope (the organization's capability — the people), the principal architect's work (8.8).
-
-The framing: **build the AI capability through the people — the mentoring, the team topologies, the hiring** — the principal work of growing the AI capability through the people (the mentoring — growing the practitioners, the team topologies — structuring the work, the hiring — scaling the capability), and this chapter is how.
+Every architecture in this curriculum is operated by people the architect usually had a hand in hiring, organizing, and growing — and team design fails exactly like system design: wrong decomposition, missing interfaces, single points of failure, no monitoring. This chapter treats the team as the architect's second system. It is written for the reader arriving at Level 5 responsibilities — asked not just "design the platform" but "build the group that runs it" — and for the more common intermediate case: you are the first senior AI person somewhere, and every hire for the next year will be shaped by advice you give this quarter.
 
 ## Business Motivation
 
-The AI capability is a people capability — the organization's AI capability built through the people (the practitioners, the teams). The mentoring-and-team-building matters: the AI-capable practitioners are scarce (8.1's scarcity), so growing them (the mentoring — 8.7), structuring them (the team topologies — 5.10/8.7), and hiring them (the hiring loops — 8.7) is how the organization builds the AI capability. Without it: the AI capability is un-built (the practitioners un-grown, the teams un-structured, the hiring un-scaled); with it: the AI capability is built (the practitioners grown, the teams structured, the hiring scaled). The business case is the capability one: the AI capability is built through the people (the mentoring, the teams, the hiring), and the principal architect's mentoring-and-team-building is how — the organization's AI capability built through the people, the principal work (8.8) of growing the capability.
+Team-design errors cost more than architecture errors because they compound through every subsequent decision and they take longer to reverse. The canonical, expensively repeated sequence: an enterprise hires four ML/data scientists first ("we're doing AI now"), discovers there are no pipelines for them to build on, no serving path, and no product problem assigned, and eighteen months later has notebooks, attrition, and a written-off program — a pattern documented across industry surveys of failed AI initiatives, and visible in the fact that data-engineering openings have outnumbered data-science openings at most enterprises since the early 2020s as organizations learned the ordering the hard way. The unit economics make the point sharper: a senior AI engineer costs $200–400K fully loaded in Western markets (8.1's bands plus overheads); a five-person team mis-sequenced for a year is a seven-figure write-off before counting the opportunity cost. On the mentoring side the math runs positive with the same magnitude: a principal who develops two engineers to independent architect-level work has added more design capacity than they personally possess — multiplication is not a soft virtue; it is the only way the principal role scales ([8.8](chapter-08-principal-architect.md)).
 
 ## Theory
 
-### Mentoring: growing AI practitioners
+### The six roles, by accountability
 
-The mentoring (growing the practitioners):
+Titles vary; accountabilities are stable. An enterprise AI capability needs these six covered — by six people at scale, or by three people wearing pairs of hats early, but *covered knowingly*:
 
-- **The growth path** (8.1) — the mentoring growing the practitioners along the maturity ladder (8.1 — the Understand-to-Principal, the engineer to the practitioner to the architect), the growth path (8.1's ladder); the growth path (the ladder — 8.1).
-- **The mentoring** (1.8) — the mentoring (1.8's influence, the growing — the guidance, the feedback, the growth — the practitioner grown), the mentoring (the growing — 1.8); the mentoring (the growing — 1.8).
-- **The give-back** (8.4) — the mentoring as give-back (8.4's community, the giving — the practitioners grown, the community), the give-back (8.4 — the giving); the give-back (the giving — 8.4).
+| Role | Accountable for | Curriculum backbone | First-hire signal |
+|---|---|---|---|
+| **Data engineer** | The estate models live on: pipelines, contracts, quality gates, features ([2.12](../part-2-artificial-intelligence/chapter-12-data-engineering-feature-platforms.md)) | 2.12, 5.5 | Almost always the correct first or second hire |
+| **AI/ML engineer** | Models and LLM systems shipped as software: training, evals, serving integration | 2.9–2.15, Parts 3–4 | Hire after there is data to build on |
+| **Platform engineer** | The shared machinery: gateway, registries, delivery pipelines, observability ([2.15](../part-2-artificial-intelligence/chapter-15-mlops-engineering.md), 5.10) | 2.15, Part 5 | Hire when the second team starts duplicating the first |
+| **Evals/quality owner** | Golden sets, judges, gates, monitoring honesty (4.7, [2.17](../part-2-artificial-intelligence/chapter-17-online-experimentation.md)) | 4.7, 2.7, 2.17 | A hat before a hire — but a *named* hat from day one |
+| **AI product manager** | The problem's worth and the deployment's adoption: KPI trees, workflow fit, human-in-loop design | 1.3, 1.6, 7.5 | The difference between shipped and adopted |
+| **Architect** | Decisions, trade-offs, and the coherence of all of the above | This curriculum | You |
 
-### Team topologies for AI
+Two anti-patterns hide in the table. **The unnamed hat**: evals ownership assigned to nobody produces exactly the eval-free shipping that [7.10](../part-7-enterprise-ai-architecture-patterns/chapter-10-anti-patterns.md) catalogs — early teams must name the hat even when it is one person's twenty percent. **The prestige-ordered hiring plan**: hiring the most impressive-sounding role first (research-titled scientists) instead of the most load-bearing (data engineering) — the sequence below exists because the failure is so common.
 
-The team topologies (5.10's platform/product, 6.4's Conway's law):
+**The sequence that works** for a first enterprise AI team: (1) data engineer + the architect (you), building the estate and the first thin system end-to-end; (2) AI/ML engineer when there is something to build on, with the evals hat named; (3) product manager as the second use case appears (adoption problems surface with the second stakeholder group); (4) platform engineer when duplication appears; (5) specialize the evals hat into a role as model count crosses roughly five in production. Each hire lands on prepared ground; nobody spends their first quarter discovering there is nothing to do.
 
-- **The platform/product split** (5.10) — the platform/product split (5.10 — the platform team building the platform — 5.10/7.9, the application teams building the systems — the split), the topology (5.10's split); the platform/product split (5.10).
-- **The roles** — the AI roles (the solution architect — 8.1, the platform architect — 8.1, the ML engineer — 2.6, the AI engineer, the data engineer — 5.5), the roles (the AI team's roles — 8.1); the roles (the AI roles — 8.1).
-- **Conway's law** (6.4) — the topology reflecting Conway's law (6.4 — the team structure shaping the architecture, the topology reflecting the architecture — 5.10's platform/product, the integration — 6.4), the Conway's law (6.4); the Conway's law (the topology-architecture — 6.4).
+### The three team shapes
 
-### Hiring loops for AI
+| Shape | What it is | Right when | Failure mode |
+|---|---|---|---|
+| **Embedded** | AI engineers inside product teams | Few use cases, adoption-critical, early maturity | Duplication and drift as use cases multiply; no shared platform emerges |
+| **Platform + embedded** | A platform team serving embedded builders ([5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)'s shape) | Multiple teams building; duplication visible; the usual steady state | Platform drifts from users' reality unless run as a product with internal customers |
+| **Center of excellence** | Central AI group owning delivery | Scarce expertise, regulated estates needing one governed door, program-level funding | The ivory tower: a queue forms, teams route around it, governance becomes theater ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)) |
 
-The hiring (scaling the capability):
+The honest guidance: shapes are a *sequence*, not a choice — embedded first, platform extracted when duplication demands it, CoE only where regulation or genuine scarcity forces central delivery, and even then with an explicit path to redistribute. Choosing the end-state shape at the beginning is how organizations buy an ivory tower before they have anything to be excellent at.
 
-- **The assessment** (8.3) — the AI-role assessment (8.3's interviews — the judgment, the skills — the assessment), the assessment (8.3 — the interviews); the assessment (the interviews — 8.3).
-- **The hiring loop** — the hiring loop (the multi-round — the system design — 8.3, the trade-offs — 8.3, the leadership — 8.8, the culture — the loop), the loop (the multi-round — 8.3); the hiring loop (the multi-round — 8.3).
-- **The scaling** — the hiring scaling the capability (the practitioners hired, the capability scaled — the scaling), the scaling (the capability — 8.7); the scaling (the capability scaled).
+### Hiring: work samples over vocabulary
+
+AI hiring is noisy because the field rewards fluent vocabulary, and interviews that quiz vocabulary select for it. The correction is the same one [8.3](chapter-03-architecture-interviews.md) teaches from the candidate's chair: **probe evidence, not terminology** — and the strongest instrument is a work sample shaped like the actual job:
+
+- **Data engineer**: here is a messy extract with a late-arriving-data problem; design the pipeline and the quality gates; where does this break? (2.12's replay test as an interview.)
+- **AI/ML engineer**: here is a model, a golden set, and a failing eval; diagnose. Or: review this pull request that contains a leaked feature. The diagnostic shape beats the build-from-scratch shape — the job is mostly diagnosis.
+- **Evals owner**: here are ten model outputs and a rubric; score them, then critique the rubric. (Rubric critique is the signal; scoring is the setup.)
+- **Platform engineer**: here is a promotion gate that auto-shipped a bad model; what was missing? (2.15's corrupted-batch drill, inverted.)
+- **Any senior role**: walk me through the most important decision in *your* repo — the 8.2/8.3 discipline, now your best screening tool.
+
+Screening signals that generalize: candidates who name what their numbers *don't* show (the honest-hand tell); who reach for baselines before models; who ask about the label pipeline before the architecture. Red flags that generalize: portfolio claims that dissolve under one follow-up; framework enthusiasm without a failure story; "we didn't really measure it" delivered without discomfort.
+
+### Mentoring: the delegation ladder and review-as-teaching
+
+Mentoring architects is a designed process, not proximity. Two mechanisms carry most of it:
+
+**The delegation ladder** — for any recurring decision class, move the mentee up explicit rungs: (1) watch me decide, hear the narration; (2) recommend, I decide — the gap between their recommendation and the decision is the syllabus; (3) decide, I review within a day; (4) decide, tell me weekly; (5) own it, I hear about it in the ADR log. The rungs are per decision-class, not per person — the same engineer can be rung 5 on retrieval design and rung 2 on vendor negotiation — and *saying the rung out loud* ("this one's yours; I'll review Thursday") prevents both micromanagement and abandonment, the two default failure modes.
+
+**Review-as-teaching** — design reviews are the principal's classroom, and the questioning discipline decides whether they teach: ask "what else did you consider?" before critiquing the proposal ([1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md)'s discipline, Socratically applied); require the trade-off narration, not just the design; let wrong-but-recoverable decisions ship with a dated revisit trigger rather than overriding them — the reversible mistake a mentee owns teaches more than the correct answer they were handed ([1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md)'s one-way-door test, applied to pedagogy). Budget reality: real mentoring costs the mentor 2–4 hours per mentee per week at the intensive rungs; a principal claiming five intensive mentees is doing proximity, not mentoring.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    subgraph BUILDING [Building the AI capability through the people]
-        MENTOR[Mentoring<br/>growing the practitioners — 1.8/8.1]
-        TOPOLOGY[Team topologies<br/>platform/product — 5.10, Conway's law — 6.4]
-        HIRING[Hiring loops<br/>assessment — 8.3, scaling]
+flowchart LR
+    subgraph SEQ [Hiring sequence — load-bearing first]
+        DE[1. Data engineer<br/>+ architect] --> MLE[2. AI/ML engineer<br/>evals hat named]
+        MLE --> PM[3. AI product manager]
+        PM --> PE[4. Platform engineer<br/>at first duplication]
+        PE --> EV[5. Evals owner<br/>at ~5 models in prod]
     end
-    MENTOR -.grows.-> PRACTITIONERS[AI practitioners]
-    TOPOLOGY -.structures.-> TEAMS[AI teams]
-    HIRING -.scales.-> CAPABILITY[The AI capability]
-    PRINCIPAL[The principal architect — 8.8] -.builds through.-> BUILDING
+    subgraph SHAPE [Shape sequence]
+        EMB[Embedded] -->|duplication| PLAT[Platform + embedded]
+        PLAT -->|regulation/scarcity only| COE[CoE, with exit path]
+    end
+    SEQ --> SHAPE
+    LOOP[Hiring loops:<br/>work samples shaped like the job] -.staffs.-> SEQ
+    LADDER[Delegation ladder + review-as-teaching<br/>2–4 h/mentee/week] -.multiplies.-> SEQ
 ```
 
-Readings. **The AI capability is built through the people** — the mentoring (growing the practitioners — 1.8/8.1), the team topologies (structuring the teams — 5.10/6.4), the hiring (scaling the capability — 8.3) — the AI capability built through the people (the practitioners, the teams, the hiring). **The team topologies reflect Conway's law** — the platform/product split (5.10 — the platform team, the application teams), the topology reflecting the architecture (6.4's Conway's law — the team structure shaping the architecture — 5.10's platform/product), the topology-architecture (6.4). **And the principal architect builds through the people** — the mentoring (the practitioners grown), the topologies (the teams structured), the hiring (the capability scaled) — the principal work (8.8) of building the AI capability through the people (the leadership scope — the organization's capability).
+The two sequences are the chapter's load-bearing claims: hire in dependency order (the estate before its builders), and let the team shape follow observed duplication rather than org-chart ambition. Mentoring is drawn as the multiplier on the whole structure because that is its economic function: every rung-5 delegation is capacity the hiring plan no longer has to buy.
 
 ## Real-world Example
 
-Vantora's platform arc (the recurring platform — 5.10) illustrates the mentoring-and-team-building — Adaeze building the AI capability through the people. Consider Vantora's team-building (5.10's platform/product split, 8.7's building): the team topology (5.10 — the platform team building the gateway/eval/observability — 5.10/7.9, the application teams building the systems — the platform/product split, Conway's law — 6.4); the mentoring (1.8/8.1 — the engineers grown into AI practitioners — the growth path, the guidance — 1.8); the hiring (8.3 — the AI roles hired — the assessment, the loops — scaling the capability). And the capability built (5.10's platform arc — the capability): the AI capability built through the people (the practitioners grown, the teams structured, the hiring scaled), the platform enabling the teams (5.10's golden paths — the teams building on the platform). The mentoring-and-team-building note (Vantora's arc, echoing 5.10/8.7): *"Adaeze built Vantora's AI capability through the people. The team topology (the platform team building the gateway/eval/observability — 5.10/7.9, the application teams building the systems — the platform/product split, Conway's law — 6.4). The mentoring (the engineers grown into AI practitioners — the growth path — 8.1, the guidance — 1.8). The hiring (the AI roles hired — the assessment — 8.3, the loops — scaling). The AI capability built through the people — the practitioners grown, the teams structured, the hiring scaled, the platform enabling. That's the principal work (8.8) — building the AI capability through the people, the mentoring, the topologies, the hiring — the organization's capability built through the people."*
+**Bellhaven Insurance** (the recurring fictional carrier) built its first AI team twice — the second time under a new principal architect, after the first attempt produced the canonical failure. Attempt one, pre-principal: three data scientists hired in a quarter ("the AI team"), no data engineer, no assigned product problem; fourteen months later, eleven notebooks, zero production systems, two resignations, and a program review that nearly ended the budget. Attempt two ran this chapter's sequence: a data engineer and the principal spent one quarter building the estate's thin slice (2.12's contracts and gates around the claims tables) and shipping *one* small scored system end-to-end with the evals hat explicitly on the principal; an ML engineer joined against that working substrate (her work sample: diagnose a planted leaked feature — she found it in forty minutes and, better, asked for the replay test); a product manager arrived with use case two (renewal pricing support), and the platform engineer only when the second team started duplicating the first's registry scripts — month eleven, exactly when the duplication was visible rather than predicted. Eighteen months in: four systems in production, the delegation ladder had the ML engineer at rung 4 on model-promotion decisions (her gate rejections no longer paged the principal), and the program review that had nearly killed attempt one approved headcount six and seven. The principal's retrospective one-liner to the CTO: "The first team was hired for what AI sounds like. This one was hired in the order the work actually stacks."
 
 ## Hands-on Exercise
 
-**Design the AI team and capability-building.** ~90 minutes. For an organization building AI capability (real or hypothetical).
+Design the team for a realistic scenario: a 3,000-person insurer (or your own organization, disguised) with two funded use cases — claims-intake automation and a renewal-risk model — and budget for four hires over twelve months plus you.
 
-1. **The team topology (30 min).** Design the AI team topology (5.10 — the platform/product split, the roles — 8.1 — the architects, engineers, data engineers), reflecting Conway's law (6.4 — the topology-architecture). Document the topology.
-2. **The mentoring plan (20 min).** Design a mentoring plan (1.8/8.1 — growing an engineer into an AI practitioner along the maturity ladder — 8.1, the guidance — 1.8). Document the growth path.
-3. **The hiring loop (25 min).** Design the AI-role hiring loop (8.3 — the assessment, the multi-round — the system design, the trade-offs, the leadership — 8.8, the culture). Document the loop.
-4. **The capability plan (15 min).** Plan the capability-building: the mentoring (the practitioners), the topology (the teams), the hiring (the scaling) — the AI capability through the people.
+1. **Role plan (30 min):** which four roles, in what order, with a one-line accountability each and the month each starts; name every unfilled hat and who wears it meanwhile.
+2. **Shape memo (20 min):** embedded, platform, or CoE for year one — argued from this scenario's size and regulation, with the trigger that would change the shape in year two.
+3. **One hiring loop (30 min):** design the full loop for your *first* hire — the work sample (shaped like their actual first quarter), the two probes, the three signals you will score, the red flags.
+4. **One delegation plan (20 min):** pick a decision class you would hand your second hire; write the rung schedule for their first six months and the evidence that moves them up each rung.
 
 **Acceptance criteria:**
-- [ ] The team topology designed (platform/product — 5.10, roles — 8.1, Conway's law — 6.4)
-- [ ] The mentoring plan (growing the practitioner — 1.8/8.1)
-- [ ] The hiring loop (assessment, multi-round — 8.3)
-- [ ] The capability plan (mentoring, topology, hiring — the AI capability through the people)
+- [ ] The hiring order survives the question "what will this person build on, day one?" for every hire
+- [ ] Every one of the six accountabilities has a named owner or a named hat at every month of the plan
+- [ ] The work sample could not be passed with vocabulary alone
+- [ ] The shape memo names its year-two trigger observably
+- [ ] The delegation plan states the rung out loud, per the ladder, with promotion evidence
 
 ## Enterprise Considerations
 
-The mentoring-and-team-building is a core principal-and-organizational concern. **The team topology is an org-design decision** (5.10/6.4): the AI team topology (5.10's platform/product, 6.4's Conway's law) is an org-design decision (the org structure — the platform team, the application teams), so the team-building is org design (6.4/5.10). **The mentoring is a culture-and-retention concern** (1.8): the mentoring (the growing, the guidance — 1.8) is a culture-and-retention concern (the practitioners grown — the retention, the culture — the growth culture), so the mentoring is culture-and-retention (1.8). **The hiring is a scaling-and-market concern** (8.1): the hiring (the AI-role hiring — 8.3, the scaling) is a scaling-and-market concern (8.1's scarce market — the hiring in the scarce market), so the hiring is scaling-and-market (8.1). **And the capability is a strategic concern** (6.10/8.8): the AI capability (the people — the practitioners, the teams) is a strategic concern (6.10's business case — the capability the strategic asset, 8.8's principal — the capability building), so the capability-building is strategic (6.10/8.8).
+At enterprise scale the chapter's units compose: multiple product groups each running platform-plus-embedded, one governance layer ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)/[6.11](../part-6-enterprise-architecture/chapter-11-model-risk-management.md)) rather than one delivery CoE, and a deliberate community of practice carrying the mentoring function across team boundaries (the delegation ladder works between teams too — platform engineers at rung 5 locally can be rung 2 mentees on governance). Two enterprise-specific realities deserve planning: **the market clock** — AI-engineering tenure medians run short (2–3 years at many enterprises), so the multiplication math is also retention math: engineers stay where they are visibly climbing rungs, and the delegation ladder is the cheapest retention instrument you own; and **the build-borrow-buy triangle** — every role can be filled by hiring, growing (this curriculum is a growth instrument: a strong platform engineer plus the classical track is often your ML engineer in two quarters), or renting ([8.5](chapter-05-consulting-client-engagement.md)'s consultants — right for spikes and discovery, wrong for the estate's owners; a team that rents its data engineering owns nothing).
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Capability | Build through the people (mentoring, hiring) | Buy (contractors) | Building the durable capability (the people — the moat) | Buy for the temporary/specialized — but build the durable (the people) |
-| Team topology | Platform/product split | Flat teams | Beyond a few systems — the platform amortizes (5.10) | Genuinely small — but plan the split (5.10) |
-| Growth | Mentoring (grow the practitioners) | Hire fully-formed | Growing the capability (the mentoring — the durable) | Hire for the immediate — but the mentoring builds the durable |
-| Hiring | Multi-round loop (assessment) | Single interview | Always — the assessment (the judgment — 8.3) | Never single; the un-assessed (8.3) |
+| First hire | Data engineer | ML/AI engineer | Default — the estate precedes its builders | The estate genuinely exists (rare, verify by 2.12's replay test, not by assurance) |
+| Filling a role | Grow internal (curriculum + ladder) | Hire external senior | The base skill exists and two quarters is acceptable | The gap is load-bearing *now*, or no internal base exists |
+| Team shape year one | Embedded with named hats | Platform team up front | Fewer than ~3 building teams; adoption is the risk | Duplication already observable across existing teams |
+| Mentoring investment | Deep on 1–2 mentees (2–4 h/wk each) | Broad light-touch across the team | Building successors and multiplication capacity | Baseline uplift of a large team — do both, but never confuse the second for the first |
 
 ## Common Mistakes
 
-1. **The un-built capability** — the AI capability un-built (the practitioners un-grown, the teams un-structured); the capability through the people (the mentoring, the teams, the hiring).
-2. **The flat team** — the AI team flat (no platform/product split — the sprawl — 5.10); the platform/product split (5.10).
-3. **The un-mentored practitioners** — the practitioners un-mentored (the un-grown); the mentoring (the growing — 1.8/8.1).
-4. **The un-assessed hiring** — the hiring un-assessed (the single interview — 8.3); the multi-round loop (8.3).
-5. **The buy-only capability** — the capability bought (the contractors), not built (the durable — the people); the build through the people (the durable).
-6. **Ignoring Conway's law** — the topology ignoring Conway's law (6.4 — the topology-architecture); the Conway's law (the topology-architecture — 6.4).
-7. **The un-strategic capability** — the capability un-strategic (not the strategic asset — 6.10); the strategic capability (6.10/8.8).
+1. **Scientists before plumbing.** The prestige-ordered hiring plan; fourteen months of notebooks. The estate comes first, every time it is honestly checked.
+2. **The unnamed evals hat.** Quality ownership assigned to everyone is assigned to no one; the gate that nobody owns is the gate that quietly stops gating ([7.10](../part-7-enterprise-ai-architecture-patterns/chapter-10-anti-patterns.md)).
+3. **CoE-first ambition.** Central excellence declared before anything exists to be excellent at; the queue forms, the routing-around begins, and governance becomes the theater 6.9 warns about.
+4. **Vocabulary hiring.** Loops that quiz terminology select fluent talkers; the work sample shaped like the job is the correction, and it is cheaper than the mis-hire it prevents.
+5. **Delegation without rungs.** "You own this now" with no ladder produces either abandonment (rung 5 assigned at rung 1 readiness) or micromanagement (rung 1 forever); saying the rung out loud is the whole trick.
+6. **Mentoring as proximity.** Five "mentees" and no scheduled hours is a metaphor, not a practice; the 2–4 hours are real or the multiplication isn't.
 
 ## Best Practices
 
-1. **Build the capability through the people** — the mentoring (the practitioners), the topologies (the teams), the hiring (the scaling) — the durable AI capability.
-2. **Design the platform/product team topology** — the platform team (the platform — 5.10/7.9), the application teams (the systems), the split (5.10), Conway's law (6.4).
-3. **Mentor along the growth path** — the maturity ladder (8.1 — the Understand-to-Principal), the guidance (1.8), the give-back (8.4).
-4. **Design the multi-round hiring loop** — the assessment (8.3 — the judgment, the skills), the multi-round (the system design, the trade-offs, the leadership — 8.8).
-5. **Reflect Conway's law in the topology** — the topology-architecture (6.4 — the team structure shaping the architecture).
-6. **Build the durable capability** — the people (the practitioners, the teams — the moat), not the buy-only (the contractors).
-7. **Treat the capability as strategic** — the AI capability the strategic asset (6.10/8.8).
+1. **Hire in dependency order and verify the dependency** — "what does this person build on, day one?" asked of every hire, with 2.12's replay test as the estate's honesty check.
+2. **Name every hat, every month** — the six accountabilities covered knowingly even when three people wear them.
+3. **Let duplication pull the platform into existence** — extracted platforms serve real needs; predicted platforms serve org charts ([5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)).
+4. **Interview with the job, not about the job** — work samples shaped like the first quarter; diagnosis over greenfield; their repo's decisions over your trivia.
+5. **Run the ladder explicitly and per decision-class** — rung stated aloud, promotion evidence named, the mentee's gap-to-decision as the syllabus.
+6. **Count multiplication in the principal's output** — engineers moved to rung 5, successors readied, capacity created without headcount; [8.8](chapter-08-principal-architect.md) makes this a job requirement.
 
 ## Architecture Checklist
 
-For building the AI capability:
+For any team you are building or inheriting:
 
-- [ ] The AI capability built through the people (the mentoring, the topologies, the hiring)
-- [ ] The team topology (platform/product split — 5.10, the roles — 8.1, Conway's law — 6.4)
-- [ ] The mentoring along the growth path (the maturity ladder — 8.1, the guidance — 1.8)
-- [ ] The hiring loop (the assessment — 8.3, the multi-round)
-- [ ] The Conway's law reflected in the topology (6.4)
-- [ ] The durable capability built (the people, not the buy-only)
-- [ ] The capability treated as strategic (6.10/8.8)
+- [ ] All six accountabilities mapped to owners or named hats, dated
+- [ ] Hiring sequence justified by dependency, not prestige; each hire's day-one substrate named
+- [ ] Team shape chosen from observed conditions, with the shape-change trigger written down
+- [ ] Every open role's loop includes a work sample shaped like the actual job
+- [ ] Evals ownership named and resourced before the second model ships
+- [ ] Delegation rungs explicit for each senior's decision classes; promotion evidence defined
+- [ ] Mentoring hours real and scheduled; multiplication (rung-5 promotions) tracked as an outcome
+- [ ] Retention read honestly: who is climbing, who is plateaued, who is renting-not-owning their area
 
 ## Interview Questions
 
-1. *"How do you build an AI team?"* — Strong answers give the team topology (the platform/product split — 5.10, the roles — 8.1, Conway's law — 6.4), the mentoring (growing the practitioners — 1.8/8.1), the hiring (the multi-round loop — 8.3), the AI capability built through the people.
-2. *"How do you structure teams for AI work?"* — Strong answers give the platform/product split (5.10 — the platform team building the platform, the application teams building the systems), Conway's law (6.4 — the topology reflecting the architecture), the roles (8.1 — the architects, engineers, data engineers), the topology.
-3. *"How do you grow engineers into AI practitioners?"* — Strong answers give the mentoring (1.8's guidance, the growth path — the maturity ladder — 8.1, the Understand-to-Practitioner-to-Architect), the give-back (8.4's community), the growing (the durable capability through the people).
-4. *"How do you hire for AI roles?"* — Strong answers give the multi-round hiring loop (8.3 — the assessment, the system design, the trade-offs, the leadership — 8.8, the culture), the assessment (8.3 — the judgment, the skills), the scaling (the capability scaled in the scarce market — 8.1).
+1. *"You have budget for four AI hires at a company with no AI capability. Who, in what order, and why?"* — Strong answers run the dependency sequence (data engineering first, with the estate-verification caveat), name the hats during the gaps, and tie each hire to what exists for them to build on. Prestige-ordered answers are the failure the question hunts.
+2. *"Embedded, platform, or center of excellence?"* — Strong answers refuse the static choice: the sequence, the duplication trigger, the regulated-industry CoE exception with its exit path, and the ivory-tower failure mode named.
+3. *"How do you interview an ML engineer without quizzing vocabulary?"* — Strong answers design the work sample (diagnostic-shaped, job-shaped), name the generalizing signals (baselines first, limits volunteered, label-pipeline questions), and probe the candidate's own repo per 8.2/8.3.
+4. *"Walk me through how you'd grow a strong platform engineer into an ML engineer."* — Strong answers use the ladder with real rungs and evidence, budget the mentor hours honestly, pick the decision classes deliberately (start with promotion gates — closest to their existing instincts), and name the two-quarter horizon rather than promising osmosis.
 
 ## Further Reading
 
-- 1.8 Leadership & Influence (the mentoring, the growing) and 5.10 IaC & Platform Engineering (the platform/product split) — the mentoring and topology disciplines.
-- Team Topologies (Skelton & Pais, re-linked from 5.10) — the team-topology model this chapter applies to AI.
-- 6.4 Enterprise Integration (Conway's law) and 8.1 The Role & Market (the roles, the scarcity) — the topology and market context.
-- 8.8 Operating as a Principal Architect (the principal work) — the leadership scope this chapter is part of.
+- *Team Topologies* (Skelton & Pais) — the platform/stream-aligned vocabulary this chapter's shapes formalize; the cognitive-load framing maps directly onto AI team design.
+- *The Manager's Path* (Fournier) — the delegation and mentoring mechanics from the management side; the ladder here is its architecture-flavored cousin.
+- *An Elegant Puzzle* (Larson) — team sizing, hiring funnels, and the systems view of organizations; the strongest treatment in print of teams-as-systems.
+- Your own organization's last two AI hires' first-90-day retrospectives, if they exist — and if they don't, that absence is finding one about your team's monitoring plane.
 
 ## Summary
 
-- **Build the AI capability through the people** — the mentoring (growing the practitioners — 1.8/8.1), the team topologies (structuring the work — 5.10/6.4), the hiring (scaling the capability — 8.3) — the principal work (8.8) of building the capability.
-- The **team topologies reflect Conway's law** — the platform/product split (5.10 — the platform team, the application teams), the topology reflecting the architecture (6.4 — the team structure shaping the architecture).
-- The **mentoring grows the practitioners** along the maturity ladder (8.1 — the Understand-to-Principal), the guidance (1.8), the give-back (8.4's community).
-- The **hiring scales the capability** — the multi-round loop (8.3 — the assessment, the system design, the trade-offs, the leadership), the scaling in the scarce market (8.1).
-- The AI capability is a **strategic, durable asset** built through the people (6.10/8.8) — the principal architect building the organization's AI capability through the mentoring, the topologies, the hiring. The principal architect role that this leadership work is part of is the curriculum's final chapter: **operating as a principal architect** (8.8).
+- Six accountabilities — data engineering, AI/ML engineering, platform, evals, product, architecture — covered knowingly at every team size, with unnamed hats as the standing anti-pattern.
+- Hire in dependency order: the estate before its builders, product with the second use case, platform when duplication is observed, the evals role as model count compounds. The prestige-ordered plan is a seven-figure, eighteen-month write-off with a well-documented shape.
+- Team shapes are a sequence — embedded → platform+embedded → (rarely, with an exit path) CoE — pulled by observed conditions, not declared from ambition.
+- Hire with work samples shaped like the job and probes shaped like 8.3's depth probe; vocabulary fluency is the field's cheapest and least predictive signal.
+- Mentor with the explicit delegation ladder and review-as-teaching, at honest hours (2–4/week per intensive mentee); multiplication — capacity created without headcount — is the principal's real output and the cheapest retention instrument available.
 
 ---
 
-**Previous:** [Chapter 8.6 — Staying Current Without Chasing Frameworks](chapter-06-staying-current.md) · **Next:** [Chapter 8.8 — Operating as a Principal Architect](chapter-08-principal-architect.md) · **Related:** [1.8 Leadership & Influence](../part-1-professional-foundation/chapter-08-leadership-influence.md), [5.10 IaC & Platform Engineering](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md), [8.8 Operating as a Principal Architect](chapter-08-principal-architect.md)
+**Previous:** [8.6 Staying Current Without Chasing Frameworks](chapter-06-staying-current.md) · **Next:** [8.8 Operating as a Principal Architect](chapter-08-principal-architect.md) · **Related:** [1.8 Leadership & Influence](../part-1-professional-foundation/chapter-08-leadership-influence.md), [5.10 IaC & Platform Engineering](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)

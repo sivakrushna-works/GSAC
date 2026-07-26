@@ -12,155 +12,162 @@
 
 After this chapter you will be able to:
 
-1. Scope, price, and de-risk consulting engagements.
-2. Run discovery that finds the client's real problem, not the stated one.
-3. Say no profitably — declining the wrong engagement, scoping the right one.
-4. Apply the architect's disciplines (business understanding, requirements, estimation) to the consulting engagement.
+1. Run discovery that finds the fundable problem: qualification, the stakeholder sweep, and the workshop that converts "we want AI" into a scoped engagement.
+2. Scope and price engagements across the three models (time-and-materials, fixed-scope, value-linked), with current day-rate context and the risk math behind each.
+3. Write the proposal and SOW sections that prevent the standard engagement failures: scope boundaries, assumptions, acceptance criteria, and change control.
+4. Operate both sides of the RFP table — answering them credibly as a consultant, and running vendor evaluation properly as a buyer.
 
 ## Introduction
 
-This chapter is consulting — the client-engagement skills that turn the architect's competence and reputation (8.4) into engagements. Consulting is the architect operating for clients (external or internal), and it needs skills beyond the technical: scoping, pricing, de-risking, discovery, and the discipline to say no. The architect's disciplines (the business understanding — 1.3, the requirements — 1.6, the estimation — 1.7) apply directly, and this chapter is the consulting application.
+Every architect consults, whether or not the word appears in the title: an internal architect pitching a platform to skeptical product teams is running a consulting engagement with worse pricing leverage. This chapter teaches the commercial machinery around the technical work — discovery, scoping, pricing, proposals, delivery governance, and the RFP game from both chairs. The technical judgment is Parts 1–7; here we make it *buyable*.
 
-The framing: **consulting turns the architect's competence into engagements — scoped, priced, de-risked, and discovered** — the consulting skills (scoping, pricing, de-risking, discovery, saying no) that turn the architect's competence and reputation into engagements, applying the architect's disciplines (1.3/1.6/1.7), and this chapter is the consulting application.
+One framing carries the chapter: **consulting failures are contract failures before they are technical failures.** The engagements that end in write-offs and resentment were mis-scoped, mis-assumed, or mis-governed in week zero — usually all three, usually visibly, in a proposal nobody read critically. The disciplines here are cheap; the failures they prevent are not.
 
 ## Business Motivation
 
-Consulting is a career path and a skill set — the architect operating for clients (the consulting career, or the internal-consulting role). The consulting skills matter: the scoping (the engagement scoped — 1.6, the right problem), the pricing (the engagement priced — 1.7, the value), the de-risking (the engagement de-risked — 1.7, the phased), the discovery (the real problem found — 1.2/1.6), and the saying no (the wrong engagement declined). Without them: the engagement is mis-scoped (the wrong problem — 1.6), mis-priced (the value un-captured — 1.7), un-de-risked (the risk un-managed — 1.7), and the wrong engagements taken (the un-declined). With them: the engagement is scoped (the right problem), priced (the value), de-risked (the phased), and the right engagements taken. The business case is the consulting-career one: the consulting skills turn the architect's competence and reputation (8.4) into engagements (the scoped, priced, de-risked, discovered engagements), and this chapter is the consulting application — the skills that make the consulting career (or the internal-consulting role) work.
+The numbers on both sides of the table are large enough to justify the discipline. For the seller: AI-architecture consulting day rates as of early 2026 run roughly $1,500–3,000/day for independent senior architects in Western markets ($800–1,500 mid-market; more via top-tier firms, of which the consultant sees a fraction), and ₹40,000–1,20,000/day in the Indian market depending on client class — but realized income is rate × utilization, and unpriced scope creep is the silent utilization killer: a fixed-fee engagement that runs 40% over its estimate has quietly cut your effective rate by 29%. For the buyer: enterprises burn seven-figure sums annually on AI engagements whose deliverables were never acceptance-tested against written criteria, and the AI-specific failure — paying for a demo that cannot survive the demo-to-production multiplier ([4.11](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md)) — is now the modal disappointment in corporate AI spending. Both failure classes are prevented by the same documents, which is why this chapter teaches both chairs at once.
 
 ## Theory
 
-### Scoping
+### Discovery: finding the fundable problem
 
-The engagement scoping (1.6's requirements, consulting edition):
+Discovery has two jobs — qualify the client, and find the real problem — and they run in the same conversations.
 
-- **The scope** (1.6) — the engagement scope (the requirements — 1.6 — what the engagement delivers, the boundaries — 1.6's Won't list, what it doesn't); the scope (the requirements — 1.6, the boundaries — the Won't list).
-- **The discovery-driven scope** (1.2/1.6) — the scope driven by discovery (1.2's design thinking, 1.6's elicitation — the real problem found, the scope from the real problem); the discovery-driven scope (the real problem — 1.2/1.6).
-- **The scope management** — the scope managed (the scope creep prevented — 1.6's Won't list, the change process — the scope change), the scope managed (the Won't list — 1.6); the scope management (the creep prevented — 1.6).
+**Qualification** (before investing unpaid days): Is there a named budget owner? A decision date? A problem with a KPI attached, or only enthusiasm? Has anything been tried (a failed pilot is a *good* sign — budget existed and lessons exist)? The disqualifiers that save you weeks: "we're exploring AI" with no owner; procurement-led sourcing before problem definition; a stakeholder map where your sponsor has no budget authority ([1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md)'s power-interest grid, applied commercially).
 
-### Pricing
+**The real-problem dig**: clients present solutions ("we need a chatbot"), and the architect's first deliverable is converting the presented solution back into the underlying problem ([1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md)'s discipline). The reliable instrument is a structured discovery workshop, typically half a day: the KPI walk (which numbers hurt — [1.3](../part-1-professional-foundation/chapter-03-business-understanding.md)'s tree), the process walk (where the hours and errors actually accrue), the data reality check ([2.11](../part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)'s triage questions, asked early because they re-scope engagements), and the constraint sweep (regulatory posture, integration reality, political landscape). The workshop's output is one page: the problem as evidenced, three candidate scopes with rough sizes, and a recommendation. Priced or free, that page *is* discovery's deliverable — and writing it forces the qualification answer too.
 
-The engagement pricing (1.7's estimation, 1.3's value):
+### Scoping and pricing: the three models and their risk math
 
-- **The value-based pricing** (1.3) — the pricing based on the value (1.3 — the business value delivered — the value-based pricing, not the cost-plus), the value captured (1.3 — the value); the value-based pricing (the value — 1.3).
-- **The estimation** (1.7) — the pricing informed by the estimation (1.7 — the effort, the TCO, the risk), the estimate (1.7 — the realistic); the estimation (the realistic estimate — 1.7).
-- **The pricing model** — the pricing model (the fixed-price — the risk on the consultant, the time-and-materials — the risk on the client, the value-based — the value shared), the model matched to the engagement (the risk allocation — 1.4); the pricing model (the risk allocation).
+| Model | Who carries estimation risk | Right when | AI-specific caution |
+|---|---|---|---|
+| **Time & materials** | Client | Scope is genuinely unknowable yet (research phases, discovery, embedded advisory) | Cap it or lose the client's trust; uncapped T&M on AI exploration is how programs die |
+| **Fixed scope/fee** | You | Scope is definable and you have reference-class data ([1.7](../part-1-professional-foundation/chapter-07-estimation.md)) to price the risk | AI outcomes are probabilistic: fix *deliverables* (a system meeting named eval thresholds on a named dataset), never fix *model quality on unseen data* |
+| **Value-linked** | Shared | The KPI is measurable, attributable, and the client will share the measurement ([2.17](../part-2-artificial-intelligence/chapter-17-online-experimentation.md)'s counterfactual problem, now with your invoice attached) | Attribution disputes are the norm; use only with an agreed measurement design, and blend with a base fee |
 
-### De-risking
+The phase structure that manages AI uncertainty commercially: **paid discovery** (1–3 weeks, fixed, small) → **scoped build** (fixed or capped T&M against the discovery's page) → **operate/advise** (retainer). Each phase's output prices the next; the client buys certainty incrementally instead of pretending it exists up front. Anchor every estimate in [1.7](../part-1-professional-foundation/chapter-07-estimation.md)'s discipline — reference class, range not point, stated assumptions — because the proposal is where estimation malpractice becomes contractual.
 
-The engagement de-risking (1.7's phased, 6.8's pilot-to-platform):
+### The proposal and SOW: the sections that prevent the failures
 
-- **The phased de-risking** (1.7/6.8) — the engagement phased (1.7/6.8 — the pilot-to-platform, each phase converting risk into evidence — 1.7's cone, re-rating the remaining), the risk reduced (1.7/6.8 — the phased); the phased de-risking (the risk reduced — 1.7/6.8).
-- **The risk management** (1.7) — the engagement risks managed (1.7 — the risk register, the risks tracked), the risk managed (1.7 — the register); the risk management (the register — 1.7).
-- **The de-risking value** — the de-risking as value (the client's risk reduced — the value, the phased engagement the client trusts — the value); the de-risking value (the client's risk reduced).
+A proposal's job is to be *agreed with*, so it is short and front-loaded ([1.5](../part-1-professional-foundation/chapter-05-communicating-architecture.md)): the problem in the client's words, the approach in one page, and then the sections that do the legal-commercial work — the ones weak proposals skip:
 
-### Discovery and saying no
+- **Scope boundaries, stated negatively.** "Out of scope: data-quality remediation beyond the named tables; integration with systems not listed in Appendix A; model performance on data classes absent from the evaluation set." The out-list prevents more disputes than the in-list.
+- **Assumptions with owners.** "Client provides API access to X by week 1; a data steward is available 4 h/week." Every assumption names who breaks it and what happens then (timeline slides day-for-day is the standard clause).
+- **Acceptance criteria, testable.** The DoD discipline from the [projects](../../projects/README.md), contractualized: named eval thresholds on a named dataset, a runnable handover, documentation the client's engineer can operate from. If acceptance cannot be written testably, the scope isn't ready to fix — price that phase as T&M discovery instead.
+- **Change control.** A one-paragraph mechanism: changes requested in writing, sized within five working days, signed before work. Boring, and the single highest-ROI paragraph in the document.
+- **IP and data terms.** Who owns the delivered code and models; what you may reuse (your templates and harnesses — protect them); what touches client data and where it may run ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)'s processor reality, now in your contract).
 
-The discovery and saying no:
+**Delivery governance** keeps the signed document true: a weekly steering note (one page — done, next, risks, decisions needed, burn vs. budget), a decision log (ADRs travel well into client work), and the discipline of surfacing bad news at the week it happens. Consulting reputations are made in week eight, when the honest "the extraction accuracy is plateauing below threshold; here are three options with costs" note lands before the client discovers it themselves.
 
-- **The discovery** (1.2/1.6) — the discovery (1.2's design thinking, 1.6's elicitation — the real problem found, not the stated — 1.2's empathize/define), the real problem (1.2/1.6 — the discovery); the discovery (the real problem — 1.2/1.6).
-- **The saying no** — the saying no (the wrong engagement declined — the un-scopeable, the un-valuable, the mis-fit), the profitable no (the wrong engagement declined — the focus on the right); the saying no (the wrong declined — the profitable no).
-- **The client relationship** (1.8) — the client relationship (1.8's trust, the influence — 1.8, the relationship — the trust), the relationship (1.8 — the trust); the client relationship (the trust — 1.8).
+### The RFP game, from both chairs
+
+**Answering RFPs (the seller's chair):** qualify hard before writing — RFPs with a wired incumbent (spec written around one vendor's language, timeline too short for real proposals) have single-digit win probability, and a thorough response costs 40–80 hours; the portfolio evidence of [8.2](chapter-02-architecture-portfolio.md) (runnable systems, named datasets) is disproportionately effective in RFP responses because most competitors submit slideware. **Running vendor evaluation (the buyer's chair)** is the same discipline mirrored, and it is an architect's job the market badly under-supplies: write the requirements before meeting vendors (or the first vendor writes them for you); demand evidence in your evaluation's terms — a proof-of-concept on *your* sampled data with *your* eval harness ([3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)'s private-evals rule, applied to vendors); score against weighted criteria agreed before demos (the [1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md) matrix, procurement edition); and check the exit — data export, model portability, contract terms at renewal ([6.10](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)'s lock-in line). The vendor demo optimized to hide these questions is the vendor telling you the answers.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    DISCOVERY[Discovery — 1.2/1.6<br/>the real problem] --> SCOPE[Scoping — 1.6<br/>requirements, Won't list]
-    SCOPE --> PRICE[Pricing — 1.7/1.3<br/>value-based, estimated]
-    PRICE --> DERISK[De-risking — 1.7/6.8<br/>phased, risk register]
-    DISCOVERY -.the wrong engagement.-> NO[Saying no<br/>the profitable no]
-    DERISK --> ENGAGEMENT[The engagement<br/>scoped, priced, de-risked]
-    RELATIONSHIP[The client relationship — 1.8<br/>trust] -.throughout.-> DISCOVERY & SCOPE & PRICE & DERISK
+flowchart LR
+    LEAD[Lead] --> QUAL{Qualify<br/>owner? budget? date? KPI?}
+    QUAL -->|no| PASS[Decline politely<br/>the profitable no]
+    QUAL -->|yes| DISC[Paid discovery<br/>workshop → one-page finding]
+    DISC --> PROP[Proposal/SOW<br/>scope-out list · assumptions ·<br/>testable acceptance · change control · IP]
+    PROP --> BUILD[Scoped build<br/>weekly steering note · decision log ·<br/>bad news same-week]
+    BUILD --> ACCEPT[Acceptance against<br/>the written criteria]
+    ACCEPT --> RETAIN[Operate/advise retainer]
+    CHANGE[Change control<br/>written · sized · signed] -.guards.-> BUILD
+    RFP[RFP chair — either side:<br/>evidence in the evaluator's terms] -.same discipline.-> PROP
 ```
 
-Readings. **Consulting applies the architect's disciplines** — the discovery (1.2's design thinking, 1.6's elicitation — the real problem), the scoping (1.6's requirements, the Won't list), the pricing (1.7's estimation, 1.3's value), the de-risking (1.7/6.8's phased) — the architect's disciplines applied to the consulting engagement. **The discovery finds the real problem** — the discovery (1.2/1.6 — the real problem, not the stated — 1.2's empathize/define), the scope from the real problem (the discovery-driven scope — 1.2/1.6), the foundation (the real problem — the right engagement). **And saying no is profitable** — the wrong engagement declined (the un-scopeable, the un-valuable, the mis-fit), the profitable no (the focus on the right — the wrong declined), the client relationship (1.8's trust — the trust maintained by the honest no).
+The pipeline's economics live in its gates: the qualification gate protects unpaid time, the discovery gate prices the build honestly, and change control protects the margin the estimate earned. Remove any gate and the engagement's risk silently transfers to whoever failed to write it down.
 
 ## Real-world Example
 
-The consulting skills are illustrated by the architect engaging a client on a GenAI initiative. Consider an architect consulting on a client's GenAI initiative (the client's stated problem — "build us an AI agent"): the discovery (1.2/1.6 — the real problem found — the client's actual problem was a workflow, not an agent — 3.8/7.10's agent-for-everything, the discovery finding the real problem — 1.2's empathize/define); the scoping (1.6 — the engagement scoped to the real problem — the workflow, the Won't list — the agent excluded); the pricing (1.7/1.3 — the value-based pricing — the value delivered, the estimation — 1.7's realistic); the de-risking (1.7/6.8 — the phased — the pilot-to-platform, the risk register — 1.7); and the saying no (the wrong engagement — the agent-for-everything — declined, the right engagement — the workflow — scoped — the profitable no). The consulting note: *"Consulting applies the architect's disciplines to the client engagement. The discovery (the real problem — the client wanted an agent, but the real problem was a workflow — 3.8/7.10) — the discovery finding the real problem, not the stated. The scoping (the requirements, the Won't list — the agent excluded). The pricing (the value-based, the estimated — 1.7/1.3). The de-risking (the phased, the risk register — 1.7/6.8). The saying no (the wrong engagement — the agent-for-everything — declined, the right — the workflow — scoped — the profitable no). Consulting turns the architect's competence into engagements — scoped, priced, de-risked, discovered — applying the disciplines (the business understanding, the requirements, the estimation) to the client engagement, with the trust (1.8) throughout."*
+**Rafael** (fictional), an independent AI architect, took a mid-size logistics client's "we need an AI document assistant" inquiry. Qualification found a real owner (COO) and a dated trigger (a contract renewal requiring faster customs processing). The paid discovery week (fixed, $9K) ran the workshop and produced the one-pager: the presented chatbot was actually an extraction problem — 30 document types, but four types drove 70% of the manual hours; the KPI was processing time per shipment, baselined at 41 minutes. His proposal scoped a fixed-fee build ($86K, six weeks) around exactly those four types, with acceptance written testably: field-level extraction ≥95% on a 300-document golden set the *client's* team would label (an assumption with an owner and a day-for-day slip clause), a runnable handover, and everything else — including the other 26 document types — in the out-list. Week four delivered the bad-news note: one document type was plateauing at 91%; the note carried three options priced (accept with review-queue routing, extend two weeks at change-control rates, drop the type and reduce the fee). The client chose the review queue — and later told him that note was why the retainer ($6K/month, advisory) followed. Final measurements: 41 minutes → 12 for the four types, acceptance passed on the golden set, zero scope disputes. Rafael's own margin note: discovery and the out-list took nine hours to write and were worth more than any technical decision in the engagement.
 
 ## Hands-on Exercise
 
-**Scope a consulting engagement.** ~90 minutes. For a GenAI consulting scenario (real or hypothetical).
+Run the commercial machinery against a realistic scenario — take any case study's Business Problem section (CS16 or CS49 fit well) and play the consultant:
 
-1. **The discovery (30 min).** For a client's stated problem (e.g., "build us an AI chatbot"), run the discovery (1.2/1.6 — the empathize/define, the elicitation), finding the real problem (not the stated). Document the real problem.
-2. **The scope (20 min).** Scope the engagement (1.6 — the requirements, the boundaries — the Won't list) from the real problem. Document the scope.
-3. **The pricing and de-risking (25 min).** Price the engagement (1.7/1.3 — the value-based, the estimation), and de-risk it (1.7/6.8 — the phased, the risk register). Document the pricing and the phasing.
-4. **The saying no (15 min).** Identify what in the stated problem you'd say no to (the wrong engagement — the un-scopeable/un-valuable/mis-fit), and how (the profitable no, the trust maintained — 1.8).
+1. **Qualification memo (20 min):** who is the budget owner, what is the trigger, what disqualifies this lead — invent plausibly, and defend the invented answers.
+2. **Discovery plan (30 min):** the half-day workshop agenda, the five questions per session, and the one-page finding template you would fill.
+3. **Proposal core (60 min):** write the four load-bearing sections for a phase-2 build — scope with an explicit out-list, assumptions with owners and slip clauses, testable acceptance criteria (dataset, thresholds, handover), and the change-control paragraph. Price it two ways: fixed fee (with your 1.7-style estimate and risk buffer shown) and capped T&M.
+4. **The buyer flip (30 min):** now write the five weighted criteria and the PoC design you would demand *as the client* evaluating three vendors for the same problem.
 
 **Acceptance criteria:**
-- [ ] The discovery finds the real problem (1.2/1.6 — not the stated)
-- [ ] The engagement scoped from the real problem (1.6 — requirements, Won't list)
-- [ ] The engagement priced (value-based, estimated — 1.7/1.3) and de-risked (phased, risk register — 1.7/6.8)
-- [ ] The saying no identified (the wrong engagement declined, the trust maintained — 1.8)
+- [ ] The out-list contains ≥4 items someone would plausibly have assumed was included
+- [ ] Every assumption names its owner and its breach consequence
+- [ ] Acceptance criteria are testable by a stranger (named data, named thresholds, runnable handover)
+- [ ] The fixed price shows its estimate, buffer, and the reference class it leaned on
+- [ ] The buyer flip's PoC uses the client's data and harness, not the vendor's demo
 
 ## Enterprise Considerations
 
-Consulting applies to the enterprise's internal-consulting and the external-consulting careers. **The internal consulting is the architect's role** (8.1): the enterprise architect's internal consulting (the advising the business, the internal engagements — the internal-consulting role) is the architect's role (8.1 — the architect advising), so the internal consulting is the architect's role (8.1). **The external consulting is a career** (8.1): the external consulting (the consulting career — the client engagements) is a career (8.1's variant — the consulting), so the external consulting is a career path (8.1). **The procurement and contracts are the enterprise's** (6.10): the consulting engagement (the pricing, the contract) runs through the enterprise's procurement and contracts (6.10 — the procurement, the vendor management), so the consulting connects to the procurement (6.10). **And the client relationship is a trust-and-reputation asset** (8.4/1.8): the client relationship (1.8's trust, the reputation — 8.4) is a trust-and-reputation asset (the repeat engagements, the referrals — the reputation), so the consulting connects to the reputation (8.4).
+Internal architects should run this chapter's machinery on internal engagements: a platform team that writes scope-out lists, testable acceptance, and weekly steering notes for its internal customers escapes the unbounded-obligation trap that burns platform teams out — and internal "pricing" (headcount commitments, chargeback — [7.9](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md)) benefits from the same explicitness. On the procurement side, enterprises buying AI services should mandate the buyer-chair discipline as policy: requirements before vendor meetings, PoCs on sampled internal data with internal evals, weighted scoring signed before demos, exit terms reviewed at signature ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)'s governance applied to the supply side). And for consultancies: the acceptance-criteria discipline is also your defense — the engagement whose success was never testably defined is the engagement whose failure is negotiated against you.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Problem | The real problem (discovery) | The stated problem | Always — the discovery finds the real problem (1.2/1.6) | Never the stated-only; the un-discovered real problem (1.2/1.6) |
-| Pricing | Value-based | Cost-plus | The value is capturable (1.3 — the value shared) | Cost-plus where the value is un-clear — but value-based captures the value (1.3) |
-| Engagement | Phased (de-risked) | Big-bang | Always — the phased de-risks (1.7/6.8) | Never big-bang; the un-de-risked engagement (1.7) |
-| Wrong engagement | Say no (profitable) | Take it | Always — the profitable no (the focus on the right) | Never the wrong engagement; the mis-fit (the profitable no) |
+| Discovery | Paid, small, fixed | Free, as sales investment | Default — free discovery attracts unqualified buyers and devalues the finding | Strategic logo, tight competition, and you cap the investment explicitly |
+| Pricing | Fixed fee with shown risk buffer | Capped T&M | Scope survived discovery and you have reference-class data | Genuine residual uncertainty; the cap keeps the client's trust |
+| Bad-news channel | Immediate note with priced options | Fold into the next weekly steering note | Threshold risk, timeline impact, or anything the client could discover first | Minor variances already visible in the weekly note's risk line; escalating everything trains the client to ignore escalations |
+| RFP response | Full response with portfolio evidence | Decline or minimal response | Qualified: no wired incumbent, real timeline, evaluable criteria | The spec reads like a vendor wrote it; spend the 60 hours on the pipeline instead |
 
 ## Common Mistakes
 
-1. **The stated-problem engagement** — the engagement on the stated problem, not the real (the un-discovered — 1.2/1.6); the discovery (the real problem — 1.2/1.6).
-2. **The mis-scoped engagement** — the engagement un-scoped (the scope creep — 1.6); the scoping (the requirements, the Won't list — 1.6).
-3. **The mis-priced engagement** — the engagement mis-priced (the value un-captured — 1.7/1.3); the value-based pricing (1.3), the estimation (1.7).
-4. **The un-de-risked engagement** — the engagement un-de-risked (the risk un-managed — 1.7); the phased de-risking (1.7/6.8), the risk register (1.7).
-5. **Taking the wrong engagement** — the wrong engagement taken (the un-declined — the mis-fit); the saying no (the profitable no).
-6. **The un-managed scope** — the scope creep (the un-managed — 1.6); the scope management (the Won't list, the change process — 1.6).
-7. **The un-trusted relationship** — the client relationship un-trusted (1.8); the trust (1.8 — the relationship).
+1. **Skipping qualification because the lead is exciting.** Unqualified engagements consume the calendar that qualified ones needed; the profitable "no" is a skill.
+2. **Pricing the presented solution.** The chatbot the client asked for was an extraction pipeline; discovery exists because scoping the wrong problem is the most expensive estimate error available ([1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md)).
+3. **Fixing model quality on unseen data.** "95% accuracy" without a named dataset and golden set is an uncollectable promise and an unwinnable dispute; fix deliverables and evaluation terms instead.
+4. **The missing out-list.** Every scope dispute in an engagement's post-mortem traces to something both sides assumed differently and nobody wrote down.
+5. **Assumptions without owners.** "Client provides data access" with no name and no slip clause converts the client's delay into your margin loss.
+6. **Hiding the plateau.** The week-eight quiet-recovery gamble; when it fails, the write-off includes the relationship.
+7. **Buying from the demo.** As the buyer: vendor demos are optimized artifacts ([3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)'s leaderboard lesson, commercially); evaluation on your data with your harness or it isn't evaluation.
 
 ## Best Practices
 
-1. **Discover the real problem** — the discovery (1.2's design thinking, 1.6's elicitation — the real problem, not the stated), the foundation.
-2. **Scope from the real problem** — the requirements (1.6), the boundaries (the Won't list — 1.6), the scope from the real problem.
-3. **Price on the value** — the value-based pricing (1.3 — the value), the estimation (1.7 — the realistic).
-4. **De-risk with phasing** — the phased (1.7/6.8 — the pilot-to-platform), the risk register (1.7).
-5. **Say no profitably** — the wrong engagement declined (the un-scopeable/un-valuable/mis-fit), the focus on the right.
-6. **Manage the scope** — the Won't list (1.6), the change process (the scope creep prevented).
-7. **Build the client relationship** — the trust (1.8), the reputation (8.4 — the repeat engagements, the referrals).
+1. **Gate unpaid time with written qualification** — owner, budget, date, KPI; two minutes per lead, weeks saved per quarter.
+2. **Sell certainty incrementally** — paid discovery → scoped build → retainer; each phase prices the next from evidence.
+3. **Write the out-list first** — it is the proposal's hardest-working section and the cheapest dispute prevention in commerce.
+4. **Contractualize the DoD discipline** — named datasets, thresholds, runnable handover; your project-template habits are literally the acceptance section.
+5. **Send the weekly note whether or not it's good news** — one page: done, next, risks, decisions, burn. Retainers are built from week-eight honesty.
+6. **Keep your reusable assets out of the client's IP** — harnesses, templates, checklists are your margin; name them in the IP clause.
+7. **As buyer, evaluate like 3.10 selects models** — your data, your harness, weighted criteria signed before the first demo, exit terms checked at signature.
 
 ## Architecture Checklist
 
-For the consulting engagement:
+Before signing (either chair):
 
-- [ ] The discovery finds the real problem (1.2/1.6 — not the stated)
-- [ ] The engagement scoped from the real problem (1.6 — requirements, Won't list)
-- [ ] The engagement priced on the value (1.3), informed by the estimation (1.7)
-- [ ] The engagement de-risked (phased — 1.7/6.8, the risk register — 1.7)
-- [ ] The wrong engagements declined (the profitable no)
-- [ ] The scope managed (the Won't list, the change process — 1.6)
-- [ ] The client relationship built on trust (1.8), the reputation (8.4)
+- [ ] Qualification documented: owner, budget signal, decision date, KPI
+- [ ] Discovery finding exists as one page with evidence, not enthusiasm
+- [ ] Scope has an explicit out-list; assumptions carry owners and breach consequences
+- [ ] Acceptance criteria testable by a stranger; AI quality fixed only on named data
+- [ ] Pricing model matched to residual uncertainty; fixed fees show their buffer
+- [ ] Change control, IP terms, and data-handling terms present and read
+- [ ] Delivery governance defined: steering cadence, decision log, escalation path
+- [ ] (Buyer) Criteria weighted and signed pre-demo; PoC on own data; exit terms reviewed
 
 ## Interview Questions
 
-1. *"How do you scope a consulting engagement?"* — Strong answers give the discovery-driven scope (1.2/1.6 — the real problem found via the discovery, the scope from the real problem, the requirements — 1.6, the boundaries — the Won't list — 1.6), the scope managed (the creep prevented — 1.6).
-2. *"How do you price a GenAI consulting engagement?"* — Strong answers give the value-based pricing (1.3 — the value delivered, not the cost-plus), informed by the estimation (1.7 — the realistic effort/TCO/risk), the pricing model matched to the risk allocation (fixed/T&M/value-based — 1.4).
-3. *"How do you find the client's real problem?"* — Strong answers give the discovery (1.2's design thinking — the empathize/define, 1.6's elicitation — the real problem, not the stated), the example (the client wants an agent, the real problem is a workflow — 3.8/7.10), the discovery-driven engagement.
-4. *"When and how do you say no to an engagement?"* — Strong answers give the profitable no (the wrong engagement — the un-scopeable/un-valuable/mis-fit — declined, the focus on the right), the trust maintained (1.8 — the honest no builds the trust), the profitable no (the right engagements — the focus).
+1. *"A client asks for a customer-service chatbot. Walk me through your first two weeks."* — Strong answers qualify first, then run the discovery dig (KPI walk, process walk, data reality) and expect the problem to reframe; pricing appears only after the one-page finding. Weak answers start architecting the chatbot.
+2. *"How do you price a fixed-fee engagement for a system whose model quality you can't guarantee?"* — Strong answers separate deliverables from outcomes: fix the system, the harness, and thresholds on a named golden set; show the estimate's buffer and reference class; name value-linked pricing's attribution trap.
+3. *"Your extraction accuracy plateaus below the acceptance threshold in week four of six. What does the client hear from you, and when?"* — Strong answers send the same-week note with three priced options, and can say why the quiet-recovery gamble is a relationship-sized bet at engagement-sized odds.
+4. *"You're the buyer: three vendors claim 98% accuracy on documents like yours. Design the evaluation."* — Strong answers demand PoCs on the buyer's sampled data with the buyer's harness and operating point, weighted criteria signed before demos, and an exit-terms review — and recognize the claim's meaninglessness without a named dataset (the curriculum's oldest rule, wearing a purchase order).
 
 ## Further Reading
 
-- 1.3 Business Understanding (the value), 1.6 Requirements Engineering (the scoping, the discovery), 1.7 Estimation (the pricing, the de-risking), 1.2 Systems Thinking (the design-thinking discovery) — the disciplines the consulting applies.
-- The consulting literature (the consulting-skills references — the scoping, pricing, discovery, saying no) — the consulting craft.
-- 6.8 Legacy Modernization & AI Adoption (the pilot-to-platform de-risking) and 6.10 TCO & the Business Case (the value, the procurement) — the connected chapters.
-- 1.8 Leadership & Influence (the trust, the client relationship) — the relationship discipline.
+- *The Trusted Advisor* (Maister, Green, Galford) — the relationship arc underneath every retainer; the trust equation is the chapter's soft half.
+- *Million Dollar Consulting* (Weiss) — value-based pricing's strongest advocate; read critically against this chapter's attribution cautions.
+- Your jurisdiction's standard consulting-agreement clauses (IP assignment, liability caps, data processing) — one hour with real contract language repays itself on the first signature.
+- The [project template](../../templates/project-template.md)'s Definition of Done — the acceptance-criteria discipline this chapter contractualizes; you already practice it.
 
 ## Summary
 
-- **Consulting turns the architect's competence into engagements** — scoped (1.6), priced (1.7/1.3), de-risked (1.7/6.8), and discovered (1.2/1.6) — applying the architect's disciplines to the client engagement.
-- The **discovery finds the real problem** (1.2's design thinking, 1.6's elicitation — the real problem, not the stated — the example of the agent-that-was-really-a-workflow — 3.8/7.10), the discovery-driven scope.
-- The engagement is **priced on the value** (1.3 — value-based, not cost-plus), informed by the estimation (1.7), and **de-risked with phasing** (1.7/6.8's pilot-to-platform, the risk register).
-- **Saying no is profitable** — the wrong engagement declined (the un-scopeable/un-valuable/mis-fit), the focus on the right, the trust maintained (1.8's honest no).
-- Consulting applies the architect's disciplines (business understanding — 1.3, requirements — 1.6, estimation — 1.7) with the client relationship (1.8's trust) throughout — the consulting career (or internal-consulting role — 8.1) built on the architect's competence. Staying current to keep the competence fresh is next: **staying current without chasing frameworks** (8.6).
+- Consulting failures are contract failures first: qualification, discovery, the out-list, owned assumptions, testable acceptance, and change control prevent the disputes that technical excellence cannot.
+- Price by phase — paid discovery, scoped build, retainer — matching the model (T&M, fixed, value-linked) to residual uncertainty, and never fix AI quality on unseen data.
+- Day rates (early 2026: roughly $1,500–3,000 senior independent in Western markets; ₹40–120K in India) matter less than realized rate: scope creep and unqualified leads are the utilization killers.
+- Delivery governance is a weekly one-page note and same-week bad news with priced options — the behavior retainers are made of.
+- The RFP table has two chairs and one discipline: evidence in the evaluator's terms — runnable systems and named datasets when selling, your-data-your-harness PoCs when buying.
 
 ---
 
-**Previous:** [Chapter 8.4 — Technical Writing & Public Speaking](chapter-04-technical-writing-speaking.md) · **Next:** [Chapter 8.6 — Staying Current Without Chasing Frameworks](chapter-06-staying-current.md) · **Related:** [1.3 Business Understanding](../part-1-professional-foundation/chapter-03-business-understanding.md), [1.6 Requirements Engineering](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md), [1.7 Estimation](../part-1-professional-foundation/chapter-07-estimation.md)
+**Previous:** [8.4 Technical Writing & Public Speaking](chapter-04-technical-writing-speaking.md) · **Next:** [8.6 Staying Current Without Chasing Frameworks](chapter-06-staying-current.md) · **Related:** [1.6 Requirements & Stakeholders](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md), [1.7 Estimation](../part-1-professional-foundation/chapter-07-estimation.md), [6.10 TCO & Business Case](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)
