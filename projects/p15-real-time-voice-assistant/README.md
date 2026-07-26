@@ -12,6 +12,8 @@
 
 A voice assistant needs real-time interaction (speech in/out) with a conversational latency budget — the latency-critical extreme. The value: a real-time voice assistant with barge-in and graceful degradation, meeting the conversational-turn budget. KPI moved: voice interaction quality, latency (the defining challenge — 4.12).
 
+**Suggested corpus/dataset:** LibriSpeech test-clean for the ASR-stage WER benchmark; script your own 20-dialog golden set (task-oriented turns) for end-to-end latency and task-success measurement.
+
 ## Requirements
 
 ### Functional
@@ -20,9 +22,21 @@ A voice assistant needs real-time interaction (speech in/out) with a conversatio
 - FR-3: Graceful degradation (on latency/failure).
 
 ### Non-functional
-- NFR-1 (Latency): Conversational-turn budget (~sub-second-feeling — 4.12); the defining requirement.
+- NFR-1 (Latency): p95 voice-to-first-audio ≤ 800 ms, p99 ≤ 1,500 ms, per the stage budget below (4.12); the defining requirement.
 - NFR-2 (Streaming): Streaming throughout (4.12).
 - NFR-3 (Degradation): Graceful under latency/failure (3.1/4.12).
+- NFR-4 (Barge-in): Assistant audio stops ≤ 250 ms after user speech onset is detected.
+- NFR-5 (Quality): Task success ≥ 90% on a 20-dialog golden set; streaming-ASR WER ≤ 8% on the eval slice — latency wins that trade away comprehension don't count.
+
+**Latency budget (p95, per conversational turn):**
+
+| Stage | Budget |
+|---|---|
+| ASR final transcript after end-of-speech | ≤ 200 ms |
+| LLM time-to-first-token | ≤ 350 ms |
+| TTS time-to-first-audio | ≤ 150 ms |
+| Network + orchestration overhead | ≤ 100 ms |
+| **Voice-to-first-audio total** | **≤ 800 ms** (p99 ≤ 1,500 ms) |
 
 ## Architecture Diagram
 
@@ -74,8 +88,9 @@ Latency-first (4.12): time-to-first-audio (TTFT-equivalent), turn latency (p95/p
 ## Definition of Done
 
 - [ ] Streaming speech-to-text → LLM → text-to-speech
-- [ ] Barge-in works
-- [ ] Conversational latency budget met (p95/p99 measured)
+- [ ] Barge-in works; cutoff ≤ 250 ms measured
+- [ ] Latency budget met: p95 voice-to-first-audio ≤ 800 ms, per-stage breakdown measured
+- [ ] Quality bars met: task success ≥ 90% on the golden dialog set; ASR WER ≤ 8%
 - [ ] Graceful degradation on latency/failure
 - [ ] Audio governed (biometric-adjacent)
 - [ ] Latency SLOs monitored (tail)

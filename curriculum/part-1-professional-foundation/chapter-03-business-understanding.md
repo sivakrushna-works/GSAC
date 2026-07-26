@@ -102,7 +102,7 @@ Proposal A had a real benefit too, but its sponsor couldn't say whose number it 
 1. **P&L skim (30 min).** From the latest annual report, extract: revenue, cost of revenue, operating expenses, operating margin. One sentence: what is the expensive thing this company does?
 2. **KPI tree (45 min).** Choose one plausible GenAI use case for this company. Build the tree from an executive metric down to the system metric your design would move. Mark each edge with its causal assumption.
 3. **Classify the play (15 min).** Revenue, cost, or risk? State the evidence standard and payback expectation that follow.
-4. **Unit economics sketch (30 min).** Write the cost-per-unit equation for your use case with guessed-but-stated numbers (token math from [Chapter 1.7](README.md) can refine later). Identify which term your architecture controls most.
+4. **Unit economics sketch (30 min).** Write the cost-per-unit equation for your use case with guessed-but-stated numbers (token math from [Chapter 1.7](chapter-07-estimation.md) can refine later). Identify which term your architecture controls most.
 
 **Acceptance criteria:**
 - [ ] KPI tree reaches an executive metric that appears (or clearly rolls up) in the actual annual report

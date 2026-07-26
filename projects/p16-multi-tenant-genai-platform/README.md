@@ -12,6 +12,8 @@
 
 An enterprise with many teams building GenAI needs a shared platform (the alternative is sprawl). The value: an internal GenAI platform — gateway, prompt registry, eval service, metering/chargeback, governance — offered as self-service with golden paths. This is Vantora's platform (5.10/7.9), the capstone consolidating P06/P10/P13. **Architect capstone: the architecture document is the primary deliverable; implement a vertical slice.** KPI moved: consolidation, amortization, governance-by-default across the org.
 
+**Suggested corpus/dataset:** none external — the vertical slice reuses your P01/P06 corpora as tenant workloads; two tenants with distinct corpora are enough to demonstrate isolation and chargeback.
+
 ## Requirements
 
 ### Functional

@@ -12,6 +12,8 @@
 
 Meeting transcripts are long and rarely turned into actionable outputs; decisions and action items get lost. The value: transform a transcript into structured minutes — summary, decisions, action items (with owners) — in a consistent format. KPI moved: follow-through on action items, meeting documentation time.
 
+**Suggested corpus/dataset:** the AMI Meeting Corpus (public, ~100 hours of meetings with transcripts); transcripts of public city-council or standards-body meetings also work.
+
 ## Requirements
 
 ### Functional

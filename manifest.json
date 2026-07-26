@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-26T09:01:04+00:00",
+  "generated": "2026-07-26T13:49:17+00:00",
   "title": "GSAC — AI Solution Architect Curriculum",
   "counts": {
     "chapters": 90,
@@ -1113,6 +1113,37 @@
               "path": "GLOSSARY.md",
               "title": "Glossary",
               "kind": "overview"
+            },
+            {
+              "path": "CONTRIBUTING.md",
+              "title": "Contributing to GSAC",
+              "kind": "overview"
+            }
+          ]
+        },
+        {
+          "id": "provenance",
+          "title": "Provenance & Reviews",
+          "docs": [
+            {
+              "path": "docs/PROJECT-BRIEF-AMENDMENT.md",
+              "title": "Amendment to the Original Project Brief",
+              "kind": "provenance"
+            },
+            {
+              "path": "docs/reviews/2026-07-26-first-pass-review.md",
+              "title": "Repository Review: GSAC as an \"AI Solution Architect\" Roadmap",
+              "kind": "provenance"
+            },
+            {
+              "path": "docs/reviews/2026-07-26-second-pass-review.md",
+              "title": "GSAC — Independent Second-Pass Review",
+              "kind": "provenance"
+            },
+            {
+              "path": "docs/reviews/2026-07-26-third-pass-review.md",
+              "title": "Independent Repository Review (Third Pass)",
+              "kind": "provenance"
             }
           ]
         },
@@ -1123,6 +1154,11 @@
             {
               "path": "checklists/agent-design-checklist.md",
               "title": "Agent Design Checklist",
+              "kind": "checklist"
+            },
+            {
+              "path": "checklists/ai-incident-response-checklist.md",
+              "title": "AI Incident Response Checklist",
               "kind": "checklist"
             },
             {

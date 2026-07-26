@@ -12,6 +12,8 @@
 
 Real enterprise corpora are messy (formats, tables, duplicates, freshness, deletion) — naive ingestion produces poor retrieval. The value: an industrial ingestion platform handling the format zoo, dedup, freshness, and deletion, feeding the retrieval service (P06). KPI moved: corpus quality (which caps retrieval — 3.5), ingestion reliability.
 
+**Suggested corpus/dataset:** SEC EDGAR filings — a public, realistic format zoo (HTML, PDF exhibits, heavy tables); inject duplicates and near-duplicates yourself to exercise dedup, and scanned pages to exercise the OCR path.
+
 ## Requirements
 
 ### Functional

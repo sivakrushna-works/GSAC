@@ -12,6 +12,8 @@
 
 The Beginner RAG (P01) works for a small corpus but doesn't scale: multiple users with different permissions, a larger corpus, and quality that plateaus. The value: a production RAG service with hybrid search, reranking, ACL-aware retrieval, and a retrieval eval harness — the reference RAG implementation. KPI moved: answer quality (recall), permission compliance, and a reusable service other apps consume.
 
+**Suggested corpus/dataset:** documentation of 2–3 open-source projects as separate "spaces" (simulate ACLs per space); MS MARCO passages if you want a large ready-made retrieval-eval corpus with relevance judgments.
+
 ## Requirements
 
 ### Functional

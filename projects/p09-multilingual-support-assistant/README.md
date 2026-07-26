@@ -12,6 +12,8 @@
 
 A customer-facing support bot must handle multiple languages, stay safe (no harmful/off-policy content), and escalate when needed. The value: a multilingual, guarded support assistant with escalation. KPI moved: deflection, safety, multilingual coverage. (Customer-facing — the guardrail and multilingual project.)
 
+**Suggested corpus/dataset:** a public product's multilingual help-center articles (many open-source and consumer products publish docs in several languages) as the RAG corpus, with per-language test questions synthesized from them; Amazon's MASSIVE dataset (51 languages) covers language-detection and intent evals.
+
 ## Requirements
 
 ### Functional

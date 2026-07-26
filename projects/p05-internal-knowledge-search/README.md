@@ -12,6 +12,8 @@
 
 A team wiki is hard to search — keyword search misses relevant pages because people don't remember the exact words. The value: semantic search over the wiki with metadata filters, returning relevant pages by meaning. This is the foundational retrieval project (the RAG systems build on it). KPI moved: time to find information, search satisfaction.
 
+**Suggested corpus/dataset:** an exported docs site of a large open-source project (e.g., the Kubernetes documentation) or a single-domain slice of a Wikipedia dump, with page metadata (section, date) preserved for the filters.
+
 ## Requirements
 
 ### Functional

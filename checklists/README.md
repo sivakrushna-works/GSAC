@@ -7,6 +7,7 @@ The habits of the job, in checkbox form — apply them to every project and desi
 | Checklist | Use when |
 |---|---|
 | [Architecture review](architecture-review-checklist.md) | Every design review of an AI system — GenAI or classical; the master checklist that routes to the others |
+| [AI incident response](ai-incident-response-checklist.md) | Building the incident capability before go-live — and running the incident when it lands |
 
 ## GenAI lane
 

@@ -12,6 +12,8 @@
 
 A support team manually triages incoming emails (categorize, prioritize, extract details) and drafts responses — slow and inconsistent. The value: classify incoming email, extract key fields, and draft a reply for a human to review and send (draft-not-send). KPI moved: triage time, response consistency.
 
+**Suggested corpus/dataset:** synthesize 100–200 inbound support emails against a public product's documentation (labels come free from the synthesis); the Enron email corpus supplies realistic email tone and formatting to mimic.
+
 ## Requirements
 
 ### Functional

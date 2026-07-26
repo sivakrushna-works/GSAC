@@ -53,13 +53,13 @@ The safety & guardrail patterns are what keep GenAI's failures from becoming the
 
 ### Pattern: Constrained Decoding
 
-- **Context** — an output that must conform to a structure/grammar (3.4's structured outputs, self-hosted serving — 5.3).
+- **Context** — an output that must conform to a structure/grammar (3.4's structured outputs).
 - **Problem** — the invalid output that must be made unproducible (3.4 — the strongest constraint).
-- **Forces** — the guarantee (the invalid unproducible) vs. the self-hosting requirement (5.3 — the constrained decoding needs the serving control).
-- **Solution** — mask the invalid tokens at generation (3.4's constrained decoding — 5.3), so only conforming output is producible (3.4's rung 4).
+- **Forces** — the guarantee (the invalid unproducible) vs. control over the constraint language: managed APIs enforce JSON-schema-class constraints server-side (3.4's strict structured-output modes); *arbitrary* grammars beyond what the provider exposes still require self-hosted serving control (5.3).
+- **Solution** — mask the invalid tokens at generation (3.4's constrained decoding), so only conforming output is producible — via the provider's strict structured-output mode where the schema class suffices, via self-hosted grammar constraints (5.3) where it doesn't.
 - **Structure** — generation with token masking (only grammar-conforming — 3.4/5.3).
-- **Consequences** — the structural guarantee (the invalid unproducible — 3.4); the self-hosting requirement (5.3) and the possible content-quality shift (3.4).
-- **Known uses** — the self-hosted structured extraction (3.4/5.3), the schema-guaranteed outputs (3.4).
+- **Consequences** — the structural guarantee (the invalid unproducible — 3.4); the possible content-quality shift (3.4); custom grammars bind you to serving control (5.3).
+- **Known uses** — provider strict-schema modes for JSON outputs (3.4), self-hosted grammar-constrained extraction (3.4/5.3).
 - **Related** — the structured-output pattern (3.4), the provider structured-output modes (3.4's rung 2).
 
 ### Pattern: Output Quarantine
@@ -126,7 +126,7 @@ The safety & guardrail patterns are the enterprise's safety-and-security referen
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
 | Untrusted content near tools | Output quarantine (unprivileged digester) | Process in the privileged context with filters | The content is attacker-influenceable and the context has tools/authority (4.9) | The content is genuinely trusted (rare — verify — 4.9) |
-| Output enforcement | Constrained decoding (unproducible) | Post-validation (4.8) | Self-hosting and the structural guarantee matters (3.4/5.3) | Managed API (constrained decoding unavailable) — post-validation (4.8) |
+| Output enforcement | Constrained decoding (unproducible) | Post-validation (4.8) | The structural guarantee matters — provider strict-schema mode covers it, or self-host for custom grammars (3.4/5.3) | The constraint exceeds what schema-class enforcement expresses (semantic/policy rules) — post-validation (4.8) |
 | Output check | Dual-model verification (on the flagged slice) | No verification | The output needs nuanced checking (4.8's flagged slice) | The programmatic checks suffice (3.4) |
 | Kill switch | Always (rehearsed, state-preserving) | No kill switch | Always for running systems, especially agents (3.8/4.4) | Never no-kill-switch; the un-stoppable runaway (4.4) |
 

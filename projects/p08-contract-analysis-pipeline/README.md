@@ -12,6 +12,8 @@
 
 Contracts are dense; extracting clauses, flagging risks, and comparing against a playbook is manual. The value: a pipeline that extracts clauses, flags risks, and compares against a playbook for a reviewer. KPI moved: contract review time, risk-flagging consistency. (Scaled-down CS23.)
 
+**Suggested corpus/dataset:** CUAD (Contract Understanding Atticus Dataset) — ~500 real contracts with expert clause annotations; point your playbook rules at its labeled clause categories.
+
 ## Requirements
 
 ### Functional

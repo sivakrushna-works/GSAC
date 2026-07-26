@@ -12,6 +12,8 @@
 
 Teams produce recurring narrative reports (weekly status, monthly business review) from structured data — repetitive, and the data must be reported accurately. The value: generate the narrative report from data + a template, with figure faithfulness (numbers match the data). KPI moved: reporting time, consistency.
 
+**Suggested corpus/dataset:** any public structured business dataset — e.g., the M5 retail sales data or a city open-data portal extract — paired with a weekly-report template you define.
+
 ## Requirements
 
 ### Functional

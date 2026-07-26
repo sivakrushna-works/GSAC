@@ -12,6 +12,8 @@
 
 Applications talking directly to model providers re-implement (or skip) the cross-cutting concerns — routing, caching, cost, observability, resilience. The value: a GenAI gateway centralizing these, with task-class routing, caching, failover, and cost metering. This is Vantora's gateway (5.4) — the platform keystone. KPI moved: cost (caching/tiering), model reversibility, cost attribution.
 
+**Suggested corpus/dataset:** none external — build a replay set of ~1,000 requests sampled from your P01/P02/P06 golden sets, adding paraphrase clusters so the semantic cache has genuine near-duplicates to find (and near-misses it must not conflate).
+
 ## Requirements
 
 ### Functional
@@ -23,8 +25,10 @@ Applications talking directly to model providers re-implement (or skip) the cros
 ### Non-functional
 - NFR-1 (Reversibility): Model swappable behind task class without app changes (3.10).
 - NFR-2 (Capacity): Provider limits pooled, lane-allocated (5.4).
-- NFR-3 (Reliability): Highest tier, minimal latency overhead (5.9/4.12).
+- NFR-3 (Reliability): Highest tier (5.9); gateway-added latency overhead p95 ≤ 50 ms / p99 ≤ 100 ms, excluding model time (4.12).
 - NFR-4 (Non-bypassable): Direct provider access blocked (5.4).
+- NFR-5 (Failover): Circuit breaker trips to the fallback provider automatically within 30 s of sustained provider failure; in-flight requests drain or retry — none dropped beyond a 0.1% monthly error budget (5.9).
+- NFR-6 (Cache effectiveness): ≥30% combined hit rate on the replay set (semantic tier ≥20% of hits), with a semantic false-hit rate ≤1% on a paraphrase/near-miss suite.
 
 ## Architecture Diagram
 
@@ -80,8 +84,9 @@ The gateway *reduces* consumer cost (caching, tiering — 4.11).
 ## Definition of Done
 
 - [ ] Task-class routing; model swappable without app changes
-- [ ] Caching (prompt + semantic); cache hit rate measured
-- [ ] Resilience (circuit breaker → fallback); failover demonstrated
+- [ ] Caching (prompt + semantic); ≥30% hit rate on the replay set, semantic false-hit rate ≤1% measured
+- [ ] Resilience (circuit breaker → fallback); failover demonstrated: automatic within 30 s, no in-flight requests dropped beyond the 0.1% error budget
+- [ ] Gateway latency overhead measured: p95 ≤ 50 ms excluding model time
 - [ ] Cost metering per consumer
 - [ ] Non-bypassable (egress control)
 - [ ] Lane allocation (interactive protected)

@@ -12,6 +12,8 @@
 
 A RAG system over personal data must meet privacy obligations — PII redaction, audit trail, retention, right-to-be-forgotten. The value: a compliance-aware RAG demonstrating the full privacy/governance architecture. KPI moved: deployability in regulated contexts (the governance is the license to operate — 4.14).
 
+**Suggested corpus/dataset:** the Enron email corpus — real personal data (names, addresses, personal messages) in a public dataset, which makes redaction, retention, and right-to-be-forgotten exercises concrete.
+
 ## Requirements
 
 ### Functional

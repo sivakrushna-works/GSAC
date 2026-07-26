@@ -3,13 +3,13 @@
 | | |
 |---|---|
 | **Industry** | Telecommunications |
-| **Company profile** | Meridian Telecom (the operator from [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)'s churn example) — fictional operator, 8M subscribers, ~45,000 cell sites, national fiber backbone, 24×7 NOC |
+| **Company profile** | Varuna Telecom (the operator from [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)'s churn example) — fictional operator, 8M subscribers, ~45,000 cell sites, national fiber backbone, 24×7 NOC |
 | **System type** | Classical ML — multivariate anomaly detection on operational telemetry, streaming + batch |
 | **Maturity level exercised** | 3 Engineer → 4 Architect |
 
 ## Business Problem
 
-The Network Operations Center watched ~2M KPI time series (per-cell throughput, drop rates, latency, interference; per-link utilization and errors) through static thresholds configured years ago. Two failure modes, both expensive: **alert floods** — a single backbone event cascades into thousands of threshold alerts, burying the cause under its symptoms (mean time to identify a root region: 47 minutes); and **silent degradations** — a cell slowly degrading *within* thresholds never alerts, discovered only through churn-correlated complaint clusters weeks later (and churn is Meridian's most expensive metric, as its own churn model — 2.9 — quantifies). The goal: learned per-series baselines that catch deviations static thresholds cannot, with topology-aware correlation that compresses event storms into a handful of ranked incidents. The constraint that shapes everything: the NOC can act on **a few dozen incidents per shift, nationally** — detection quality is capped by triage capacity, not by model capability.
+The Network Operations Center watched ~2M KPI time series (per-cell throughput, drop rates, latency, interference; per-link utilization and errors) through static thresholds configured years ago. Two failure modes, both expensive: **alert floods** — a single backbone event cascades into thousands of threshold alerts, burying the cause under its symptoms (mean time to identify a root region: 47 minutes); and **silent degradations** — a cell slowly degrading *within* thresholds never alerts, discovered only through churn-correlated complaint clusters weeks later (and churn is Varuna's most expensive metric, as its own churn model — 2.9 — quantifies). The goal: learned per-series baselines that catch deviations static thresholds cannot, with topology-aware correlation that compresses event storms into a handful of ranked incidents. The constraint that shapes everything: the NOC can act on **a few dozen incidents per shift, nationally** — detection quality is capped by triage capacity, not by model capability.
 
 ## Stakeholders
 
@@ -112,13 +112,13 @@ flowchart TB
 
 | Item | Assumption | Monthly |
 |------|-----------|---------|
-| Streaming + detection compute | 2M series at 5-min intervals, regional partitions, on-prem cluster amortization | ~$34K |
-| Baseline + telemetry feature storage | Rolling windows; raw telemetry stays in existing collectors | ~$9K |
-| Correlation/ranking + incident integration | Topology joins, ranking retrains (CPU, monthly) | ~$6K |
-| Dashboards + disposition tooling | | ~$4K |
-| **Total** | | **~$53K** |
+| Streaming + detection compute | 2M series at 5-min intervals, regional partitions, on-prem cluster amortization | ~₹28 lakh |
+| Baseline + telemetry feature storage | Rolling windows; raw telemetry stays in existing collectors | ~₹8 lakh |
+| Correlation/ranking + incident integration | Topology joins, ranking retrains (CPU, monthly) | ~₹5 lakh |
+| Dashboards + disposition tooling | | ~₹3 lakh |
+| **Total** | | **~₹44 lakh** |
 
-Dominant driver: always-on streaming detection across 2M series. Benchmark for the memo: one hour of national MTTI improvement across last year's incident log prices out at ~$1.9M in SLA credits and churn-adjacent impact — and the churn model ([2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)) independently values the silent-degradation catch, since network-quality dissatisfaction is one of its top churn drivers. Two classical systems, one reinforcing business case.
+Dominant driver: always-on streaming detection across 2M series. Benchmark for the memo: one hour of national MTTI improvement across last year's incident log prices out at ~₹16 crore in SLA credits and churn-adjacent impact — and the churn model ([2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)) independently values the silent-degradation catch, since network-quality dissatisfaction is one of its top churn drivers. Two classical systems, one reinforcing business case.
 
 ## Scaling Strategy
 

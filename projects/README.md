@@ -18,7 +18,7 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 
 ## Tier 2 — Intermediate (Level 2→3: Build → Engineer)
 
-*After Part 3 complete + Part 4 chapters 4.1–4.7. Goal: quality you can measure. P21 additionally requires the classical track (chapters 2.9–2.10) — complete those first.*
+*After Part 3 complete + Part 4 chapters 4.1–4.7. Goal: quality you can measure. P21 additionally requires the classical track (chapters 2.9–2.10) and P23 requires 2.12–2.13 — complete those first.*
 
 | # | Project | Core skills | Anchor chapters |
 |---|---------|-------------|-----------------|
@@ -56,6 +56,18 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 | P18 | **Sovereign / Hybrid RAG** — data-residency-constrained deployment spanning on-prem data and cloud inference | Hybrid architecture, data perimeters | 5.11 |
 | P19 | **Agent Orchestration Platform** — durable, resumable long-running agents with checkpoints, approvals, and fleet observability | Durable execution, agent ops at scale | 4.6, 7.4 |
 | P20 | **AI Center of Excellence Reference Architecture** — target-state architecture, standards, review process, and adoption roadmap for a 5,000-person enterprise | EA, governance, business case, leadership | 6.8–6.10, 8.8 |
+
+## The minimum credible portfolio
+
+Twenty-five projects is a menu, not a mandate — done sequentially at the stated efforts they are roughly two years of weekends. Hiring loops probe five artifact classes, so the **minimum credible portfolio is five projects, one per class**, done to their full Definition of Done:
+
+1. **A measured RAG system** — P06 (or P01 grown into it)
+2. **The evaluation harness that gates it** — P10 (build it early; every other project consumes it)
+3. **A tool-using agent with real safety architecture** — P07 or P19
+4. **One classical-lane system** — P21 or P23 (the two-lane claim needs proof)
+5. **One architecture-first capstone** — any of P16–P20, document-led
+
+Five deep beats twenty-five shallow: a portfolio review goes one layer down into whatever you present, and only the full-DoD projects survive that probe. Everything else in the catalog is elective depth — pick by the job you want.
 
 ## Rules
 

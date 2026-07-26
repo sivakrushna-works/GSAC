@@ -8,7 +8,7 @@
 
 ## Context
 
-The curriculum was commissioned (see the original project brief) to take experienced engineers to *GenAI* Solution Architect. An objective full-repository review (2026-07-26, `REVIEW-AI-SOLUTION-ARCHITECT.md`) found that the market role the author is targeting — **AI Solution Architect** — is broader: it includes classical ML system design (prediction, forecasting, ranking, anomaly detection), perception systems, MLOps, data engineering for ML, and model risk management. Against that role, the repository's coverage was measured at ~2.7% of curriculum words, 2 of 22 projects, 0 of 50 case studies, 0 of 6 checklists, and 0 of 41 patterns.
+The curriculum was commissioned (see the original project brief) to take experienced engineers to *GenAI* Solution Architect. An objective full-repository review (2026-07-26, [first-pass review](../docs/reviews/2026-07-26-first-pass-review.md) — at the time `REVIEW-AI-SOLUTION-ARCHITECT.md` in the repo root) found that the market role the author is targeting — **AI Solution Architect** — is broader: it includes classical ML system design (prediction, forecasting, ranking, anomaly detection), perception systems, MLOps, data engineering for ML, and model risk management. Against that role, the repository's coverage was measured at ~2.7% of curriculum words, 2 of 22 projects, 0 of 50 case studies, 0 of 6 checklists, and 0 of 41 patterns.
 
 A partial broadening had already begun (chapters 2.9–2.11, projects P21–P22 — which explicitly argue the broader role) but stalled unintegrated: nothing referenced them, the site manifest omitted them, and the capstone excluded them. The repository therefore claimed one scope in its title and argued another in its own chapters.
 

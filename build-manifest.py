@@ -111,12 +111,22 @@ def reference_section() -> dict:
     groups = []
 
     overview = []
-    for name in ["README.md", "ROADMAP.md", "PROGRESS.md", "GLOSSARY.md"]:
+    for name in ["README.md", "ROADMAP.md", "PROGRESS.md", "GLOSSARY.md", "CONTRIBUTING.md"]:
         p = ROOT / name
         if p.exists():
             overview.append(doc(p, "overview"))
     if overview:
         groups.append({"id": "overview", "title": "Overview", "docs": overview})
+
+    # Provenance: the brief amendment and the preserved review reports.
+    provenance = []
+    amendment = ROOT / "docs" / "PROJECT-BRIEF-AMENDMENT.md"
+    if amendment.exists():
+        provenance.append(doc(amendment, "provenance"))
+    for p in sorted((ROOT / "docs" / "reviews").glob("*.md")):
+        provenance.append(doc(p, "provenance"))
+    if provenance:
+        groups.append({"id": "provenance", "title": "Provenance & Reviews", "docs": provenance})
 
     checklists = [doc(p, "checklist") for p in sorted((ROOT / "checklists").glob("*.md"))]
     if checklists:

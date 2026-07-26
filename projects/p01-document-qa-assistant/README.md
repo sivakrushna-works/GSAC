@@ -12,6 +12,8 @@
 
 A team has a policy/handbook corpus (dozens of documents) that people constantly ask questions about — and they either can't find the answer or misremember it. "What's our remote-work policy?" gets asked in Slack ten times a week. The value: a Q&A assistant that answers from the documents with citations, and — crucially — says "I don't know" rather than guessing when the answer isn't in the corpus. KPI moved: time-to-answer for policy questions, and a reduction in repeated Slack questions.
 
+**Suggested corpus/dataset:** assemble your own from public policy documents — e.g., GitLab's public employee handbook or US federal HR policy documents; a few dozen files is enough.
+
 ## Requirements
 
 ### Functional

@@ -12,6 +12,8 @@
 
 Every GenAI system needs evals, but teams reinvent them. The value: a reusable evaluation harness — golden sets, LLM-as-judge (calibrated), CI gates, dashboards — that any project can consume. This is the eval platform (4.7), the precondition for everything else's velocity. KPI moved: eval consistency, regression prevention across projects.
 
+**Suggested corpus/dataset:** the harness consumes other projects' golden sets — seed it with P01/P06's; for judge-calibration practice, SQuAD 2.0's answerable/unanswerable questions provide ready-made human labels to calibrate a refusal-dimension judge against.
+
 ## Requirements
 
 ### Functional

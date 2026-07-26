@@ -12,6 +12,8 @@
 
 Research tasks (gather from many sources, verify, synthesize) benefit from parallel exploration. The value: an orchestrator-workers research assistant that fans out research across sources, verifies, and produces a cited brief. KPI moved: research throughput. **Critically**: prove the multi-agent structure beats a single agent (4.5's baseline discipline) — don't build multi-agent theater.
 
+**Suggested corpus/dataset:** a fixed offline source pool beats the live web for reproducible evals — a Wikipedia-dump slice plus arXiv abstracts in one topic area, with 10–20 research questions whose answers you can verify by hand.
+
 ## Requirements
 
 ### Functional

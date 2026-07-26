@@ -12,6 +12,8 @@
 
 IT helpdesk handles routine requests (ticket lookup, KB search, password reset) — an agent can resolve or advance many, with a human approving the consequential actions. The value: a tool-using agent that looks up tickets, searches the KB, and requests password resets — with approval gates on consequential actions. KPI moved: helpdesk resolution time, ticket deflection. This is Vantora's helpdesk agent (4.4).
 
+**Suggested corpus/dataset:** no good public helpdesk-ticket corpus exists — export a public product's documentation as the KB and synthesize ~50 tickets (lookups, how-tos, reset requests) against it; keep the synthesis script as your golden-set generator.
+
 ## Requirements
 
 ### Functional

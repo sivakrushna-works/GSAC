@@ -37,4 +37,4 @@ Apply to every GenAI system before production. Aligned with OWASP Top 10 for LLM
 ## Verification
 - [ ] Adversarial testing performed (injection suite, red-team scenarios) with results recorded
 - [ ] Security review sign-off obtained; residual risks accepted by a named owner
-- [ ] Incident response runbook covers AI-specific incidents (mass hallucination, injection breach, data leak via completions)
+- [ ] Incident response runbook covers AI-specific incidents (mass hallucination, injection breach, data leak via completions) — build it with the [AI incident response checklist](ai-incident-response-checklist.md)

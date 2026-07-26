@@ -90,7 +90,7 @@ Every chapter and project is tagged with the level it targets. The [ROADMAP](ROA
 | [Glossary](GLOSSARY.md) | Single source of truth for terminology (used consistently everywhere) |
 | [Architecture Decision Records](adr/) | Why this curriculum is built the way it is — and a model for your own ADRs |
 | [Templates](templates/) | Chapter, project, case study, and ADR templates |
-| [Checklists](checklists/) | Architecture review, RAG design, agent design, security, deployment, evaluation — plus the classical-ML family: model validation, data quality & labeling, drift & monitoring, MRM & fairness |
+| [Checklists](checklists/) | Architecture review, AI incident response, RAG design, agent design, security, deployment, evaluation — plus the classical-ML family: model validation, data quality & labeling, drift & monitoring, MRM & fairness |
 | [Prompt Library](prompt-library/) | Curated, versioned prompts with usage notes |
 
 ## How to use this repository
@@ -115,4 +115,4 @@ Every chapter and project is tagged with the level it targets. The [ROADMAP](ROA
 
 - **License:** content is [CC BY 4.0](LICENSE); the reader-site code is MIT. Fork it, translate it, teach from it — with attribution.
 - **Contributing:** corrections, exercise reports, and reference implementations are the most valuable contributions — see [CONTRIBUTING.md](CONTRIBUTING.md).
-- **Provenance:** this curriculum was developed by its author with substantial AI assistance for drafting, and hardened through adversarial review passes whose full reports are preserved in [docs/reviews/](docs/reviews/). Known limitations are documented there rather than hidden — read the latest review before treating any claim as settled, and file an issue when you catch something it missed.
+- **Provenance:** this curriculum was developed by its author with substantial AI assistance for drafting, and hardened through adversarial review passes whose full reports are preserved: [first pass](docs/reviews/2026-07-26-first-pass-review.md), [second pass](docs/reviews/2026-07-26-second-pass-review.md), [third pass](docs/reviews/2026-07-26-third-pass-review.md). Known limitations are documented there rather than hidden — read the latest review before treating any claim as settled, and file an issue when you catch something it missed. The original commissioning brief and its amendment live in [docs/](docs/PROJECT-BRIEF-AMENDMENT.md).

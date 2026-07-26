@@ -5,7 +5,7 @@
 | **Tier** | Advanced |
 | **Maturity level** | 3→4 — Engineer → Architect |
 | **Estimated effort** | 4–5 weekends |
-| **Prerequisite chapters** | [2.11 Choosing the Right AI Approach](../../curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md), [2.9](../../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md), [4.3 Document Ingestion](../../curriculum/part-4-enterprise-genai-systems/), P21, and P02's draft-not-send pattern |
+| **Prerequisite chapters** | [2.11 Choosing the Right AI Approach](../../curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md), [2.9](../../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md), [4.3 Document Ingestion](../../curriculum/part-4-enterprise-genai-systems/chapter-03-document-ingestion.md), P21, and P02's draft-not-send pattern |
 | **Skills exercised** | Per-stage approach assignment, OCR/vision extraction, classical risk scoring, rules routing, grounded generation with human review, per-stage evaluation |
 
 ## Business Problem

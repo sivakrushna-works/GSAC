@@ -12,6 +12,8 @@
 
 Long-running, durable, resumable agents with checkpoints, approvals, and fleet observability need a platform. The value: an agent orchestration platform providing durable execution, the production envelope (4.4), and fleet observability for long-running agents. This extends P07/P11 to platform scale. **Architect capstone: architecture document primary; vertical slice of one durable agent.** KPI moved: reliable long-running agent operations at scale.
 
+**Suggested corpus/dataset:** none external — the durable-agent vertical slice needs a genuinely long-running task; reuse P11's research task over a Wikipedia-dump slice, or a batch document-processing run over P12's corpus.
+
 ## Requirements
 
 ### Functional

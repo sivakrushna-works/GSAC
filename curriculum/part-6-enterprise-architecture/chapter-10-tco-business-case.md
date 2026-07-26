@@ -19,7 +19,7 @@ After this chapter you will be able to:
 
 ## Introduction
 
-This capstone chapter of Part 6 builds the full business case for AI — the TCO, the value quantification, the risk-adjusted ROI, and the pitch — that justifies the AI investment and survives the review board. It assembles the curriculum's business and estimation machinery (1.3's value view, 1.7's estimation, 4.11's cost engineering, 6.1's portfolio) into the business case an AI initiative (or portfolio) needs, at the strategic level where the AI investment decisions are made (6.1's EA altitude, the board-level).
+This chapter builds the full business case for AI — the TCO, the value quantification, the risk-adjusted ROI, and the pitch — that justifies the AI investment and survives the review board. It assembles the curriculum's business and estimation machinery (1.3's value view, 1.7's estimation, 4.11's cost engineering, 6.1's portfolio) into the business case an AI initiative (or portfolio) needs, at the strategic level where the AI investment decisions are made (6.1's EA altitude, the board-level).
 
 The framing: **the business case is the full-lifecycle TCO against the risk-adjusted value, at the portfolio level** — the TCO (the total cost across build, run, maintain, and the organizational costs — 1.7's full estimate, 4.11's run costs), the value (the quantified business outcomes — 1.3's KPI trees), and the risk-adjustment (the value discounted by the probability of achieving it — 1.7's risk), assembled into the business case that justifies the AI investment and directs the portfolio (6.1) — the strategic business case at the EA altitude.
 
@@ -168,7 +168,7 @@ For the AI business case:
 - The **full TCO is the AI-specific estimate** — the build (demo-to-production multiplier — 1.7), the run (marginal-cost inference — 4.11), the maintain (eval, model, corpus — 4.7/3.10/4.1), and the organizational (supervision — 4.4, change management — 1.8) — the full-lifecycle TCO the naive build-only estimate omits (the ambush — 1.7/4.11).
 - The **value is quantified, measured, and honest** (1.3) — connected to the business outcomes (the KPI trees), measured (the benefits realization — 4.11), conservative and telemetry-backed — so it survives the review and realizes.
 - The **ROI is risk-adjusted** (value × probability — 1.7) with **phased de-risking** (the pilot-to-platform — 6.8), and the business case is at the **portfolio level** (the prioritization — 6.1, the board-level pitch — 1.5).
-- The business case is where the curriculum's **business and estimation machinery assembles** (1.3's value, 1.7's estimation, 4.11's cost, 6.1's portfolio) into the strategic AI investment decision — closing Part 6's enterprise architecture. **Part 7** turns to the pattern language that compresses all this architecture into reusable form.
+- The business case is where the curriculum's **business and estimation machinery assembles** (1.3's value, 1.7's estimation, 4.11's cost, 6.1's portfolio) into the strategic AI investment decision. **Chapter 6.11** closes Part 6 with the governance regime that decision must survive: model risk management and AI regulation.
 
 ---
 

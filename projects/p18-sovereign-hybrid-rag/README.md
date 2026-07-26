@@ -12,6 +12,8 @@
 
 A data-residency-constrained deployment must keep data on-premises/in-jurisdiction while using GenAI capability. The value: a sovereign/hybrid RAG demonstrating the data-gravity resolution (models to the data, or minimize-and-cloud) with the capability trade handled honestly. This is Bellhaven's sovereign market entry (5.11). **Architect capstone: the architecture document (driver assessment + data-gravity design) is primary.** KPI moved: deployability under sovereignty constraints.
 
+**Suggested corpus/dataset:** any corpus you already run (P01's works) — the point is the boundary, not the content; for realism, pick something plausibly residency-bound, e.g., a national government's public policy documents kept in-jurisdiction.
+
 ## Requirements
 
 ### Functional

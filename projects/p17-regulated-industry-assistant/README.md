@@ -12,6 +12,8 @@
 
 A banking advisor copilot under strict compliance (suitability, model risk management, auditability, sign-offs) is the archetypal regulated-industry deployment. The value: a fully-governed advisor copilot with auditability, MRM, and the complete governance paper trail. This is Nordhaven's RM copilot (CS06). **Architect capstone: architecture + governance document primary; vertical slice.** KPI moved: deployability under strict financial regulation.
 
+**Suggested corpus/dataset:** assemble from public financial materials — SEC investor-education pages (investor.gov) plus fund prospectuses and factsheets from EDGAR — as the advice-support RAG corpus; suitability test cases are yours to script.
+
 ## Requirements
 
 ### Functional
