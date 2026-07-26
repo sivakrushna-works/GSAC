@@ -31,8 +31,22 @@
   /* ---------- init ---------- */
   async function init() {
     initTheme();
+
+    // Guard: the rendering libraries load from cdn.jsdelivr.net. If a proxy,
+    // offline session, or regional block stopped them, fail with guidance
+    // instead of a permanently blank page.
+    if (typeof marked === "undefined" || typeof mermaid === "undefined" || typeof hljs === "undefined") {
+      els.content.innerHTML = errorHtml(
+        "Couldn't load the rendering libraries",
+        "This reader loads marked, highlight.js, and mermaid from <code>cdn.jsdelivr.net</code>, which your network blocked or couldn't reach. " +
+        "The content itself is plain Markdown — read it directly at " +
+        '<a href="https://github.com/sivakrushna-works/GSAC">github.com/sivakrushna-works/GSAC</a>.'
+      );
+      return;
+    }
+
     configureMarked();
-    mermaid.initialize({ startOnLoad: false, theme: currentMermaidTheme(), securityLevel: "loose" });
+    mermaid.initialize({ startOnLoad: false, theme: currentMermaidTheme(), securityLevel: "strict" });
 
     try {
       state.manifest = await fetchJSON("manifest.json");
@@ -88,12 +102,17 @@
         // Collapse everything except the first group of the curriculum by default.
         if (!(section.id === "curriculum" && gi === 0)) grpEl.classList.add("collapsed");
 
-        const grpTitle = document.createElement("div");
+        const grpTitle = document.createElement("button");
+        grpTitle.type = "button";
         grpTitle.className = "grp-title";
+        grpTitle.setAttribute("aria-expanded", String(!grpEl.classList.contains("collapsed")));
         grpTitle.innerHTML =
           `<span class="caret">▾</span><span class="grp-label">${escapeHtml(shortLabel(group.title))}</span>` +
           `<span class="grp-count">${group.docs.length}</span>`;
-        grpTitle.addEventListener("click", () => grpEl.classList.toggle("collapsed"));
+        grpTitle.addEventListener("click", () => {
+          grpEl.classList.toggle("collapsed");
+          grpTitle.setAttribute("aria-expanded", String(!grpEl.classList.contains("collapsed")));
+        });
         grpEl.appendChild(grpTitle);
 
         const docsEl = document.createElement("div");
@@ -424,11 +443,17 @@
     els.themeToggle.addEventListener("click", () => {
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       setTheme(next);
-      mermaid.initialize({ startOnLoad: false, theme: currentMermaidTheme(), securityLevel: "loose" });
+      mermaid.initialize({ startOnLoad: false, theme: currentMermaidTheme(), securityLevel: "strict" });
       if (state.current) loadDoc(state.current, ""); // re-render diagrams for the theme
     });
 
-    els.menuToggle.addEventListener("click", () => document.body.classList.toggle("nav-open"));
+    els.menuToggle.addEventListener("click", () => {
+      const open = document.body.classList.toggle("nav-open");
+      els.menuToggle.setAttribute("aria-expanded", String(open));
+    });
+
+    const skipLink = document.getElementById("skip-link");
+    if (skipLink) skipLink.addEventListener("click", () => els.content.focus());
     els.readCheckbox.addEventListener("change", toggleRead);
 
     document.addEventListener("keydown", (e) => {

@@ -4,6 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GSAC — AI Solution Architect Curriculum</title>
+  <meta name="description" content="A free, production-oriented curriculum taking experienced software engineers to enterprise AI Solution Architect: 90 chapters, 56 case studies, 25 projects across generative AI and classical machine learning." />
+  <meta name="theme-color" content="#1f6feb" />
+  <link rel="canonical" href="https://sivakrushna-works.github.io/GSAC/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GSAC — AI Solution Architect Curriculum" />
+  <meta property="og:description" content="From experienced software engineer to enterprise AI Solution Architect: 90 chapters, 56 case studies, 25 projects — generative AI and classical ML, free and open." />
+  <meta property="og:url" content="https://sivakrushna-works.github.io/GSAC/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="GSAC — AI Solution Architect Curriculum" />
+  <meta name="twitter:description" content="From experienced software engineer to enterprise AI Solution Architect: 90 chapters, 56 case studies, 25 projects — generative AI and classical ML, free and open." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>" />
   <link rel="stylesheet" href="styles.css" />
   <!-- Rendering libraries (CDN; the reader is served, so these load online) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light" />
@@ -13,15 +24,21 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
 </head>
 <body>
+  <button id="skip-link" class="skip-link" type="button">Skip to content</button>
+  <noscript>
+    <p style="padding:1rem; max-width:60ch; margin:0 auto;">This reader requires JavaScript. The content itself is plain Markdown — read it directly at
+    <a href="https://github.com/sivakrushna-works/GSAC">github.com/sivakrushna-works/GSAC</a>.</p>
+  </noscript>
   <header class="topbar">
-    <button id="menu-toggle" class="icon-btn" title="Toggle navigation" aria-label="Toggle navigation">☰</button>
+    <button id="menu-toggle" class="icon-btn" title="Toggle navigation" aria-label="Toggle navigation" aria-expanded="false">☰</button>
     <a href="#README.md" class="brand">GSAC</a>
     <div class="search-wrap">
       <input id="search" type="search" placeholder="Search the curriculum…  (press /)" autocomplete="off" />
       <div id="search-results" class="search-results" hidden></div>
     </div>
     <span id="search-status" class="search-status" title="Full-text indexing status"></span>
-    <button id="theme-toggle" class="icon-btn" title="Toggle light/dark">◐</button>
+    <a class="repo-link" href="https://github.com/sivakrushna-works/GSAC" title="View source on GitHub" aria-label="View source on GitHub">GitHub</a>
+    <button id="theme-toggle" class="icon-btn" title="Toggle light/dark" aria-label="Toggle light or dark theme">◐</button>
   </header>
 
   <div class="layout">
@@ -31,7 +48,7 @@
     </nav>
 
     <main class="main">
-      <article id="content" class="content markdown-body">
+      <article id="content" class="content markdown-body" tabindex="-1">
         <p class="loading">Loading…</p>
       </article>
       <footer class="doc-footer">
