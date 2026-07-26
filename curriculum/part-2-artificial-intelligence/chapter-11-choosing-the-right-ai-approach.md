@@ -167,4 +167,4 @@ Before signing off a design touching this topic:
 
 ---
 
-**Previous:** [2.10 MLOps and LLMOps](chapter-10-mlops-vs-llmops.md) · **Next:** [Part 3 — Core Building Blocks of Generative AI](../part-3-core-building-blocks-of-genai/) · **Related:** [2.9 Classical ML System Design](chapter-09-classical-ml-system-design.md), [3.1 LLM Capabilities & Limits](../part-3-core-building-blocks-of-genai/chapter-01-llm-capabilities-limits.md), [P21](../../projects/p21-churn-prediction-service/), [P22](../../projects/p22-hybrid-claims-intake/)
+**Previous:** [2.10 MLOps and LLMOps](chapter-10-mlops-vs-llmops.md) · **Next:** [2.12 Data Engineering & Feature Platforms for ML](chapter-12-data-engineering-feature-platforms.md) · **Related:** [2.9 Classical ML System Design](chapter-09-classical-ml-system-design.md), [3.1 LLM Capabilities & Limits](../part-3-core-building-blocks-of-genai/chapter-01-llm-capabilities-limits.md), [P21](../../projects/p21-churn-prediction-service/), [P22](../../projects/p22-hybrid-claims-intake/)

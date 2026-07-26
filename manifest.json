@@ -1,8 +1,8 @@
 {
-  "generated": "2026-07-26T06:39:17+00:00",
+  "generated": "2026-07-26T06:47:26+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
-    "chapters": 82,
+    "chapters": 84,
     "caseStudies": 56,
     "projects": 22
   },
@@ -124,6 +124,16 @@
             {
               "path": "curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md",
               "title": "Chapter 2.11 — Choosing the Right AI Approach",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-12-data-engineering-feature-platforms.md",
+              "title": "Chapter 2.12 — Data Engineering & Feature Platforms for ML",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-13-forecasting-systems.md",
+              "title": "Chapter 2.13 — Forecasting Systems",
               "kind": "chapter"
             }
           ]
