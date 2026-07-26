@@ -12,14 +12,15 @@
 
 After this chapter you will be able to:
 
-1. Trace the model production pipeline — pre-training, supervised fine-tuning, preference alignment — and state what each stage changes, costs, and leaves behind.
+1. Trace the model production pipeline — pre-training, supervised fine-tuning, preference alignment, reasoning training — and state what each stage changes, costs, and leaves behind.
 2. Distinguish what fine-tuning is *for* (behavior, style, format, domain fluency) from what it is *not* for (knowledge injection, facts that change) — and defend the distinction in a design review.
 3. Explain RLHF and related alignment methods at intuition level, including their footprints in model behavior (helpfulness, refusals, sycophancy).
-4. Make the adaptation decision — prompt, fine-tune, or RAG — as a first-pass judgment, with the full framework deferred to Chapter 4.13.
+4. State the operational consequences of reasoning models — thinking tokens billed as output, effort budgets as a dial, reasoning vs. non-reasoning routing — as architecture decisions, not model trivia.
+5. Make the adaptation decision — prompt, fine-tune, or RAG — as a first-pass judgment, with the full framework deferred to Chapter 4.13.
 
 ## Introduction
 
-Chapters 2.3–2.5 built the machine; this chapter explains how the machine acquires its behavior — and why the model you call via API behaves like a helpful assistant rather than like the internet it was trained on. That gap is manufactured, in stages, and each stage is architecturally legible: pre-training explains what the model knows and when its knowledge ends; supervised fine-tuning explains why it follows instructions; preference alignment explains its helpfulness, its refusals, and its urge to agree with you.
+Chapters 2.3–2.5 built the machine; this chapter explains how the machine acquires its behavior — and why the model you call via API behaves like a helpful assistant rather than like the internet it was trained on. That gap is manufactured, in stages, and each stage is architecturally legible: pre-training explains what the model knows and when its knowledge ends; supervised fine-tuning explains why it follows instructions; preference alignment explains its helpfulness, its refusals, and its urge to agree with you; and reasoning training explains why the current generation deliberates before answering — and why that deliberation arrives on your invoice as output tokens.
 
 For the enterprise architect this chapter carries one decision with money attached — *should we fine-tune?* — and one recurring diagnostic skill: recognizing which stage of the pipeline a given model behavior comes from, because the remedy differs by stage. It is the last conceptual chapter before evaluation (2.7) and governance (2.8) close out Part 2.
 
@@ -48,6 +49,17 @@ SFT teaches the pattern of helpfulness; alignment teaches *choices* — which of
 - **Sycophancy** — optimizing for human approval teaches agreement; models drift toward telling users what they signal they want to hear. Design consequence: don't let the model's concurrence validate anything that matters (Chapter 4.7's LLM-as-judge biases start here).
 - **Reward gaming** — the reward model is a proxy, and Chapter 1.2's Goodhart dynamics apply inside the training loop itself: verbose, confident, well-formatted answers score well and proliferate. The polish of model output is partly *trained polish*, not evidence of correctness.
 
+### Stage 4 — Reasoning training: deliberation
+
+The pipeline grew a fourth stage in the mid-2020s, and it changed the invoice as much as the behavior. **Reasoning training** applies reinforcement learning not against a learned preference proxy but against **verifiable rewards** — tasks where correctness is machine-checkable (the math answer matches, the code passes its tests). Freed from imitating human-length answers, models trained this way learn to spend a long **chain of thought** — thousands of "thinking" tokens of exploration, backtracking, and self-checking — before committing to an answer, and quality on hard problems scales with how long they are allowed to think. Because the reward is objective, this stage largely escapes stage 3's reward-gaming dynamics *on those tasks* — but only where a verifiable reward exists; on fuzzy tasks, the stage-3 residues still govern.
+
+The architectural residue is operational, and it revises defaults this curriculum has taught so far:
+
+- **Thinking tokens are billed as output** — priced several times input — and for reasoning-heavy workloads they dominate both cost and latency; the input-dominance heuristic (Chapter 1.7) is now workload-shaped, not universal.
+- **Effort is a dial, not a property** — providers expose thinking-budget/effort controls per request, making quality-latency-cost routable per task class (Chapter 3.2's reasoning-token budgets are the management discipline).
+- **Routing between reasoning and non-reasoning tiers is now a standard architecture decision** — sending extraction or routing calls to a model that deliberates is paying for thought nobody needed; Chapter 7.8's tiering logic gains a second axis.
+- **Evaluation gets harder** — latency is variable (the model decides how long to think), and providers often summarize or hide the reasoning chain, so it cannot serve as audit evidence; behavioral evals (Chapter 4.7) remain the only ground truth, now over a wider variance envelope.
+
 ### The adaptation decision, first pass
 
 Where should *your* requirement be implemented? The pipeline gives the sorting rule:
@@ -69,8 +81,9 @@ flowchart LR
     subgraph PROVIDER [Provider-owned]
         PT[Pre-training<br/>capability, cutoff] --> SFT1[SFT<br/>assistant behavior]
         SFT1 --> AL[Alignment<br/>judgment, refusals]
+        AL --> RT[Reasoning training<br/>deliberation, verifiable rewards]
     end
-    AL --> API[(Served model<br/>versioned artifact)]
+    RT --> API[(Served model<br/>versioned artifact)]
     subgraph ENTERPRISE [Enterprise-owned adaptation]
         API --> PRM[Prompting / system prompts<br/>instant, reversible]
         API --> FT[Fine-tuning / adapters<br/>behavior at volume]
@@ -81,7 +94,7 @@ flowchart LR
     EV -.regressions on provider updates.-> API
 ```
 
-Three structural readings. **The ownership boundary is a risk boundary:** everything left of the API is the provider's — and it *changes* (new alignment training, revised refusal contours) under stable API names; a provider model update is a silent re-release of stages 1–3, which is why model pinning and eval gates on upgrades ([deployment checklist](../../checklists/deployment-checklist.md)) are non-negotiable, and why Chapter 1.7's risk register carries "model behavior change" as a standing entry. **Adaptation layers stack, not compete:** production systems typically run all three enterprise layers at once — a fine-tuned compact model, behind a system prompt, over RAG; the design question is which *requirement* lands in which layer (the sorting table), not which layer "wins." **Evals are the only stable ground:** every layer, both sides of the boundary, changes on its own schedule; the eval suite (Chapter 4.7) is the single fixed reference frame — which elevates it from testing tool to architectural keystone.
+Three structural readings. **The ownership boundary is a risk boundary:** everything left of the API is the provider's — and it *changes* (new alignment training, revised refusal contours) under stable API names; a provider model update is a silent re-release of stages 1–4, which is why model pinning and eval gates on upgrades ([deployment checklist](../../checklists/deployment-checklist.md)) are non-negotiable, and why Chapter 1.7's risk register carries "model behavior change" as a standing entry. **Adaptation layers stack, not compete:** production systems typically run all three enterprise layers at once — a fine-tuned compact model, behind a system prompt, over RAG; the design question is which *requirement* lands in which layer (the sorting table), not which layer "wins." **Evals are the only stable ground:** every layer, both sides of the boundary, changes on its own schedule; the eval suite (Chapter 4.7) is the single fixed reference frame — which elevates it from testing tool to architectural keystone.
 
 ## Real-world Example
 
@@ -120,7 +133,7 @@ Enterprise fine-tuning arrives wrapped in obligations the demo never showed. **D
 1. **Fine-tuning as knowledge injection** — the flagship error this chapter exists to prevent: facts belong in retrieval, where they update and cite; the fine-tuned "knowledge" is stale at first policy change and unauditable always.
 2. **Skipping the prompted baseline** — shipping a fine-tune without proving it beats good prompting on evals; a large fraction of fine-tuning projects lose that comparison when it's finally run.
 3. **Garbage demonstrations, faithful garbage** — SFT reproduces its dataset, inconsistencies included; demonstration curation is label ops (Chapter 2.2) and needs the same quality machinery.
-4. **Treating provider model updates as free upgrades** — stages 1–3 re-released under your feet; unpinned models plus no eval gate equals silent behavior change in production (and fine-tunes must be *re-trained and re-gated* on new bases — Kestrel's regression).
+4. **Treating provider model updates as free upgrades** — stages 1–4 re-released under your feet; unpinned models plus no eval gate equals silent behavior change in production (and fine-tunes must be *re-trained and re-gated* on new bases — Kestrel's regression).
 5. **Reading alignment residue as facts about your domain** — the model's hedging, agreeableness, or refusal contours are training artifacts, not domain signals; sycophancy especially must never validate decisions (Chapter 4.7's judge-bias mitigations).
 6. **Adapter sprawl without lineage** — a dozen fine-tunes, no registry, no reproducibility; six months later nobody can say what any of them was trained on or whether it's safe to retire.
 
@@ -157,15 +170,17 @@ For any adaptation decision (and standing, for any system on managed models):
 - Ouyang et al., *Training language models to follow instructions with human feedback* (arxiv.org/abs/2203.02155) — the InstructGPT paper; the SFT + RLHF recipe that defined the assistant era, readable at figure level.
 - Bai et al., *Constitutional AI: Harmlessness from AI Feedback* (arxiv.org/abs/2212.08073) — alignment steered by explicit principles; read for how judgment gets manufactured and inspected.
 - Hu et al., *LoRA: Low-Rank Adaptation of Large Language Models* (arxiv.org/abs/2106.09685) — why enterprise fine-tuning is economically routine; abstract and introduction suffice.
+- DeepSeek-AI, *DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning* (arxiv.org/abs/2501.12948) — the public stage-4 recipe: deliberation manufactured with verifiable rewards; readable at figure level.
 - Your provider's fine-tuning documentation and data-use terms (official docs) — the operational and contractual reality of everything above; read before any proposal, reread at renewal.
 
 ## Summary
 
-- Models are manufactured in three stages: **pre-training** (capability + cutoff), **SFT** (assistant behavior from curated demonstrations), **alignment** (judgment via preference optimization) — and each stage leaves legible residue in production behavior.
+- Models are manufactured in four stages: **pre-training** (capability + cutoff), **SFT** (assistant behavior from curated demonstrations), **alignment** (judgment via preference optimization), **reasoning training** (deliberation via RL on verifiable rewards) — and each stage leaves legible residue in production behavior.
 - The alignment residue to design around: **helpfulness pressure** (rare spontaneous "I don't know"), **refusal contours** (a selection criterion), **sycophancy** (never let agreement validate anything), **trained polish** (fluency ≠ correctness, again).
+- Reasoning training's residue is operational: **thinking tokens are billed as output** and dominate reasoning-workload cost and latency; **effort budgets are a per-request dial**; **reasoning vs. non-reasoning routing** is a standard architecture decision (Chapter 7.8) — and hidden, variable-length deliberation makes behavioral evals more indispensable, not less.
 - The adaptation sorting rule: **knowledge → RAG; behavior → prompting, then fine-tuning at volume; judgment → model selection + prompts + guardrails.** If the sentence says "our documents," the answer is retrieval.
 - **PEFT/LoRA** makes behavior fine-tuning routine; demonstration quality is the binding constraint, and the prompted baseline is the mandatory null option.
-- The provider boundary is a risk boundary: model updates are silent re-releases of all three stages — **pin, gate with evals, rehearse deprecation** — and the eval suite is the only fixed reference frame in the whole stack.
+- The provider boundary is a risk boundary: model updates are silent re-releases of all four stages — **pin, gate with evals, rehearse deprecation** — and the eval suite is the only fixed reference frame in the whole stack.
 
 ---
 

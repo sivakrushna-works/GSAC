@@ -55,7 +55,7 @@ The first-order model everyone learns:
 
 The second-order terms that dominate real bills:
 
-- **Context growth.** Input tokens per request are not constant: RAG stuffs retrieved chunks (often 2–10K tokens), conversations accumulate history, agents accumulate tool results. Real systems' input:output ratios commonly run 10:1 to 50:1 — *input pricing dominates*, which is why prompt caching and context discipline (Chapter 4.11) are the levers that matter.
+- **Context growth.** Input tokens per request are not constant: RAG stuffs retrieved chunks (often 2–10K tokens), conversations accumulate history, agents accumulate tool results. Context-heavy systems' input:output ratios commonly run 10:1 to 50:1 — there *input pricing dominates*, and prompt caching and context discipline (Chapter 4.11) are the levers that matter. The ratio inverts for reasoning-heavy and long-generation workloads, where thinking tokens are billed as output at several times the input price (Chapter 2.6) and the levers become effort budgets, output-length discipline, and reasoning-tier routing. Estimate the ratio per workload; never inherit it.
 - **Multipliers on the request count.** Retries, guardrail check calls, judge calls in online evaluation, parallel agent branches, speculative prefetch: a "single user request" frequently triggers 3–8 model calls. Estimate the *call graph*, not the request.
 - **The distribution, not the mean.** Cost concentrates: the p99 conversation (long documents, long history, agentic loops) can cost 100× the median. Estimate mean *and* tail, and design the budget enforcement (Chapter 7.8) the tail will need.
 - **Non-inference costs.** Embedding/re-embedding the corpus (a re-index at 10× corpus growth is a real bill), vector store hosting, log/trace storage at LLM verbosity, and eval runs in CI (a full nightly eval suite can cost more than daily production traffic for low-volume systems).
@@ -179,7 +179,7 @@ Before funding, and refreshed at each phase gate:
 ## Summary
 
 - Estimates are **ranges with assumptions and a dominant driver**, graded against actuals monthly — calibration, not prophecy, is the skill.
-- GenAI cost math is **call-graph math**: input tokens dominate, multipliers (guardrails, judges, retries, agents) turn one request into many calls, and the tail costs 100× the median — estimate all three.
+- GenAI cost math is **call-graph math**: the dominant token side is workload-shaped (input for context-heavy, output/thinking for reasoning-heavy), multipliers (guardrails, judges, retries, agents) turn one request into many calls, and the tail costs 100× the median — estimate all three.
 - The **demo-to-production multiplier is 4–10×** and decomposes into six nameable components; say them out loud before the pilot's velocity anchors the sponsor.
 - **Calendar-time items** (security review, data access, consultation processes) are cheap in effort and fatal in elapsed time — start them in week one.
 - Risk registers live or die by **observable triggers with named owners**, reviewed where status is already reviewed.
