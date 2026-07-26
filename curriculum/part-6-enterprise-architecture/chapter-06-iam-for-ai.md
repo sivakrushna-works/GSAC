@@ -45,7 +45,7 @@ The chain's discipline: the user's identity propagates end-to-end (user → appl
 The core challenge (the recurring long-pole):
 
 - **The problem** — the AI system accesses resources (tools, data) on the user's behalf, so it must act *as the user* (with the user's permissions), which requires the user's identity to propagate through the system (the application, the model/agent, the tools) to the resource access — the identity propagation.
-- **The mechanisms** — the enterprise identity mechanisms that propagate identity (on-behalf-of flows, token exchange, delegated credentials — the enterprise IAM's mechanisms for one system acting on a user's behalf), applied to the AI system (the application's token exchanged for the user-scoped credential the tool uses — the on-behalf-of flow, AI edition); the mechanisms exist in the enterprise IAM, and the AI identity uses them (integrate-don't-parallel — 6.5).
+- **The mechanisms** — the enterprise identity mechanisms that propagate identity (on-behalf-of flows, token exchange — standardized as RFC 8693, worked below —, delegated credentials — the enterprise IAM's mechanisms for one system acting on a user's behalf), applied to the AI system (the application's token exchanged for the user-scoped credential the tool uses — the on-behalf-of flow, AI edition); the mechanisms exist in the enterprise IAM, and the AI identity uses them (integrate-don't-parallel — 6.5).
 - **The god-credential anti-pattern** (3.7/4.9) — the failure to propagate: the AI system using a broad service credential (the god-credential) instead of the user's identity, so the AI system can access more than the user should (the over-broad access — the injection blast-radius uncontained — 4.9, the data leaked across users — 4.1); the anti-pattern the identity propagation prevents (the AI acts as the user, not as a god-credential).
 
 ### The AI-specific identity challenges
@@ -54,6 +54,46 @@ The core challenge (the recurring long-pole):
 - **Service identity** — the AI system's components (the gateway — 5.4, the agents — 4.4, the tools — 3.7) have service identities (for the system-to-system authentication, the non-user actions), managed like any enterprise service identity (the enterprise IAM's service-identity management), with the least-privilege (the service identity scoped to what the component needs — 4.9).
 - **Least-privilege and short-lived credentials** (3.7/4.4/4.9) — the credentials (the user-scoped, the service) least-privileged (the minimum access — 4.9) and short-lived (expiring, minted per-task — 4.4's per-task credentials, the agent's credentials expiring with the task), which bounds the blast-radius (the compromised credential's window and scope both minimal — 4.9's zero-trust).
 - **The agent's identity** (4.4) — the agent (running in the sandbox — 4.4) receives the user-scoped credentials per task (4.4's per-task credential injection), acting on the user's behalf with the user's permissions, the credentials expiring with the task — the identity propagation to the agent, with the per-task least-privilege and expiry (4.4/4.9).
+
+### The token-exchange flow, worked (RFC 8693)
+
+"On-behalf-of flow" stays abstract until you see the tokens, so here is the propagation mechanism concretely. The standardized form is **OAuth 2.0 Token Exchange — RFC 8693**: a service holding a token that proves the user's identity presents it to the authorization server and receives a *new* token — different audience, reduced scope, delegation recorded — to call the next hop. Chained through an agent to a tool:
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant App as Application
+    participant AS as Authorization server<br/>(enterprise IdP)
+    participant Ag as Agent runtime
+    participant T as Tool (order API)
+    U->>App: authenticate (SSO); App holds user token
+    App->>AS: token exchange (RFC 8693):<br/>subject = user token, audience = agent
+    AS-->>App: delegated token<br/>(acts for user, agent audience)
+    App->>Ag: invoke task + delegated token
+    Ag->>AS: token exchange: subject = delegated token,<br/>audience = order API, scope = orders:read
+    AS-->>Ag: narrow token (user identity, orders:read only,<br/>short-lived, actor chain recorded)
+    Ag->>T: call tool with narrow token
+    T->>T: authorize as the user, orders:read
+    T-->>Ag: result
+```
+
+Three properties do the work. **Identity survives; authority narrows** — the final token still asserts the *user's* identity (the ACL-aware retrieval — 4.1 — and the audit both see the user), but its scope is the intersection of what the user may do and what *this task at this hop* needs (`orders:read`, not the user's full authority) — 4.9's least-privilege, minted per hop. **The delegation chain is recorded** — RFC 8693's actor claim carries "the agent, acting for the application, acting for the user," so the audit (4.14) reconstructs the delegation, not just the endpoint access. **And every token is short-lived** — minted at the hop, expiring with the task (4.4's per-task credentials *are* these tokens, operationalized). The god-credential dies here structurally: there is no standing credential to steal, only a chain of narrow, expiring delegations.
+
+### Non-human identity: the agent as a first-class principal
+
+The scale problem current practice has named: **non-human identities (NHIs)** — service accounts, workload identities, and now agents — already outnumber human identities in most enterprises by an order of magnitude, and agent fleets (4.4) multiply the count again: every agent type, every task-scoped credential, every tool-server connection is an identity to govern. The governance discipline, at agent scale:
+
+- **Agents are principals, not features** — each agent type registered in the enterprise IAM as a first-class identity with an owner, a purpose, a scope, and a review cadence (4.4's named-owner discipline, identity edition); an agent the IAM can't name is an agent the audit can't explain.
+- **Credential lifecycle, managed end-to-end** — issuance through the enterprise vault (never in code, config, or prompt), rotation on schedule and on incident, and *decommissioning*: the agent retired last quarter whose credentials still work is the canonical NHI failure, and at agent scale it is the default outcome unless the lifecycle is automated.
+- **The sprawl problem is the governance problem** — NHI sprawl (credentials accumulating faster than inventory, ownership, and rotation keep up) was already the enterprise's quiet weakness; agents industrialize it. The countermeasures: a complete NHI inventory (every identity enumerated, owned, scoped), preference for short-lived *attested* credentials over standing secrets (next subsection), and the same least-privilege review the human joiner-mover-leaver process gets — because an over-scoped, orphaned agent credential is 4.9's confused deputy waiting for its injection.
+
+### Workload identity: attestation over secrets
+
+For the service half of the dual identity — how the agent authenticates *as itself* — the strongest current pattern is **workload identity via attestation**, the SPIFFE/SVID model: the platform *attests* what the workload is (this container image, this runtime, this node) and issues it a short-lived cryptographic identity document (an SVID), renewed automatically and verifiable by any party in the trust domain. No standing secret exists to leak, vault, or rotate — the identity derives from what the workload verifiably *is*, not from what it *knows*. For agent platforms (4.4) this is the natural substrate: the sandbox attests the agent runtime, the runtime holds an attested service identity, and the user's delegated authority (the RFC 8693 chain above) rides on top — service identity from attestation, user authority from token exchange, both short-lived by construction.
+
+### The MCP authorization model
+
+Tool connectivity via MCP (3.7) has an identity architecture of its own, and it lands squarely in this chapter's frame: **remote MCP servers are OAuth resource servers** — the current specification builds on OAuth 2.1, with the server advertising its authorization requirements, the host obtaining tokens through standard flows, and **dynamic client registration** letting hosts register with servers they haven't met before (the ecosystem property — with the governance consequence that "who may register with what" needs an enterprise answer: the registry/allowlist — 3.7/4.9). The architect's reading: the MCP server is a *tool-layer hop* in the identity chain, so the propagation discipline applies unchanged — the token the server receives should carry the user's identity at reduced scope (the RFC 8693 chain, extended one hop), never a server-wide standing credential to downstream systems. A remote MCP server holding broad credentials is the god-credential relocated, not retired (4.9's confused deputy), and the same rejection applies — Halvard & Roth's reasoning, one protocol later.
 
 ## Architecture Perspective
 
@@ -128,6 +168,10 @@ For AI system identity and access:
 
 - [ ] The end-to-end identity chain (user → application → model/agent → tools → data) with the user's identity propagated and permissions enforced at each layer
 - [ ] The user's identity propagated via the enterprise IAM's mechanisms (on-behalf-of, token exchange); the AI acts as the user
+- [ ] Delegation implemented as token exchange (RFC 8693): identity survives, scope narrows per hop, actor chain recorded for audit
+- [ ] Agents registered as first-class NHIs: named owner, scope, vaulted credential lifecycle (issuance, rotation, decommissioning); NHI inventory maintained against sprawl
+- [ ] Service identity via workload attestation (SPIFFE/SVID-style) preferred over standing secrets where the platform supports it
+- [ ] Remote MCP servers treated as OAuth resource-server hops in the identity chain: user-scoped reduced tokens, no server-wide standing credentials; client registration governed via the allowlist (3.7/4.9)
 - [ ] The god-credential rejected; no broad service credential for user-scoped access
 - [ ] Credentials least-privileged (4.9) and short-lived (per-task — 4.4), bounding the blast-radius
 - [ ] Permissions resolved from the systems of record (4.1) with the staleness discipline (TTL, invalidation)
@@ -141,10 +185,14 @@ For AI system identity and access:
 2. *"What's the identity-propagation problem and why is it hard?"* — Strong answers explain the AI must act as the user (the user's identity flowing through the system to the resources it accesses on their behalf), the mechanisms (on-behalf-of, token exchange — the enterprise IAM's), and why it's the recurring long-pole (the permission-systems-of-record integration — 4.1, the calendar-time item — 1.7 — touching every layer and system of record — Halvard & Roth's matter walls).
 3. *"Why is the god-credential an anti-pattern for AI systems?"* — Strong answers give the over-broad-access failure: the AI using a broad service credential can access more than the user should (the cross-user data leak — 4.1's confidentiality incident, the uncontained injection blast-radius — 4.9), and the fix is identity propagation (the AI acts as the user, least-privileged, not as a god-credential — 4.9's zero-trust).
 4. *"How does AI identity relate to the enterprise IAM?"* — Strong answers give the integrate-don't-parallel (identity edition — 6.5): the AI identity uses the enterprise IAM's mechanisms (on-behalf-of, token exchange, service-identity management), not a parallel AI identity, which makes it coherent and governable — and note the organizational coordination (the IAM team as a stakeholder — 1.6, Conway's law — 6.4).
+5. *"An agent calls a remote MCP server that in turn calls your order API. Whose identity does the API see, and how?"* — Strong answers walk the token-exchange chain (RFC 8693): the user's token exchanged for a delegated agent token, exchanged again for a narrow, short-lived token that still carries the user's identity plus the recorded actor chain, presented through the MCP server as an OAuth resource-server hop — and they reject the alternative (the server's own standing credential to the API) as the confused deputy, the god-credential relocated (4.9).
 
 ## Further Reading
 
 - OAuth 2.0 and the on-behalf-of / token-exchange flows (the OAuth specifications and your IdP's documentation) — the identity-propagation mechanisms this chapter uses; the enterprise IAM's delegation flows.
+- RFC 8693, *OAuth 2.0 Token Exchange* (ietf.org) — the standardized delegation mechanism behind this chapter's worked flow; read alongside your IdP's on-behalf-of documentation.
+- SPIFFE / SPIRE documentation (spiffe.io) — the workload-identity-by-attestation pattern; the service half of the dual identity without standing secrets.
+- Model Context Protocol specification, authorization section (modelcontextprotocol.io) — remote MCP servers as OAuth resource servers, dynamic client registration; the tool-connectivity hop of the identity chain.
 - 4.1 Production RAG (the ACL-aware retrieval, permission systems of record) and 3.7 Function Calling & Tool Use (the user-scoped tool credentials) — the identity-propagation-dependent capabilities this chapter's identity chain enables.
 - 4.4 Agent Architectures (the per-task credentials) — the agent identity this chapter's chain includes.
 - Your enterprise IAM documentation (internal, and the IAM team) — the identity substrate the AI identity integrates with (6.5's zero-trust, this chapter's IAM).
@@ -155,6 +203,7 @@ For AI system identity and access:
 - **The god-credential is the anti-pattern the propagation prevents** — the AI using a broad service credential instead of the user's identity is the over-broad-access failure (the cross-user leak — 4.1, the uncontained injection blast-radius — 4.9); the AI acts as the user, least-privileged, not as a god-credential.
 - The **model/agent has a dual identity** (its own service identity plus the propagated user identity), and all credentials are **least-privileged and short-lived** (per-task — 4.4, bounding the blast-radius — 4.9's zero-trust).
 - AI identity **integrates with the enterprise IAM** (integrate-don't-parallel, identity edition — 6.5) — using its on-behalf-of flows, token exchange, and service-identity management — not a parallel AI identity system.
+- The current practice layer makes the chain concrete: **token exchange (RFC 8693)** narrows authority per hop while identity survives and the actor chain is recorded; **NHI governance** treats agents as first-class principals with vaulted, rotated, decommissioned credentials against sprawl; **workload attestation** (SPIFFE/SVID-style) replaces standing secrets for the service identity; and **remote MCP servers** join the chain as OAuth resource-server hops, never credential-holding deputies.
 - Identity is the **recurring long-pole** (the permission-systems-of-record integration — 4.1, the calendar-time item — 1.7, the organizational coordination — 6.4) — planned and started first, because solving identity propagation is what makes the ACL-aware retrieval and the user-scoped tools "just work." The data the identity governs access to is next: **data governance & knowledge management** (6.7).
 
 ---

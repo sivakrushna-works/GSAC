@@ -38,6 +38,20 @@ What 3.8's single-agent governors become at fleet scale:
 - **Concurrency and admission control** — the fleet competes for rate limits, provisioned throughput (5.4), and downstream system capacity (an agent fleet can accidentally load-test your ticketing API); admission queues with per-type priorities, and backpressure that degrades gracefully (defer batch-lane tasks before interactive ones — 4.6's lanes).
 - **The kill switches, pluralized** — per-task stop (3.8), per-agent-type disable (the bad-deploy response), and the fleet-level pause, each rehearsed, each preserving task state for inspection and resumption (4.6's checkpoints doing double duty as incident forensics).
 
+### Computer use and browser agents — the highest-blast-radius quadrant
+
+One agent class needs its own envelope discipline: **computer-use agents**, where the model's tool is the *screen* — it reads the rendered UI (screenshots or accessibility trees), decides, and acts through synthetic clicks, keystrokes, and navigation. This is the universal tool: any application a human can operate becomes automatable without an API, which is exactly why enterprises reach for it — the decades-old ERP with no integration surface, the vendor portal with no export, the legacy system whose replacement is three roadmaps away. It is also, on this chapter's own terms, the highest-blast-radius quadrant of the autonomy discipline: the tool contract's careful boundaries (3.7 — typed parameters, per-tool gates, declared consequence classes) dissolve into "whatever the UI permits," and every rendered page is untrusted input read by the thing holding the mouse.
+
+The production non-negotiables:
+
+- **Isolation first** — the agent drives a sandboxed browser or VM, never the operator's desktop and never a machine with standing network position; egress allowlisted to the applications in scope. This is the envelope's egress policy at its most load-bearing.
+- **Credentials injected, never possessed** — no standing passwords; session credentials are injected at task start, scoped to the target application, the task, and the user on whose behalf it acts (6.6's propagation), and they expire with the task. An agent that "knows the admin password" is a god-credential with hands.
+- **The screen is an injection surface** — any page the agent views can carry instructions aimed at it: a support ticket, a search result, a hostile page element (4.9's on-screen injection class). The browsing-scope allowlist and the gates below are the architectural controls, because detection-on-pixels is even weaker than detection-on-text.
+- **Consequence gates on irreversible UI actions** — submit, approve, pay, delete are gated exactly as 3.7 classifies them, except the class must be *inferred from UI state* rather than declared per tool — which argues for conservative gating (unrecognized destructive-looking action → pause) and human checkpoints at workflow boundaries, feeding the same approval queues as every other consequential action.
+- **Replayable traces** — screenshot-plus-action logs for every step, joined to the trajectory store; when the agent did something odd in the vendor portal at 3 a.m., the replay is the forensic record, and it doubles as approval-queue context (the reviewer sees what the agent saw).
+
+The workforce frame holds: a computer-use agent is a worker at a shared terminal — you would give that worker a locked-down machine, per-shift credentials, supervised access to the payment screen, and a camera over the desk. Build the same.
+
 ### Trajectory observability at fleet scale
 
 3.8's trajectory review, industrialized (4.10 builds the general observability; this is the agent-specific layer):
@@ -138,6 +152,7 @@ For any agent system beyond a single bounded prototype:
 - [ ] Runtime provides sandboxing (egress policy, filesystem scope) and per-task, user-scoped, expiring credentials
 - [ ] Budget hierarchy enforced: task → type → tenant → fleet, with breakers and rehearsed kill switches at each level
 - [ ] Admission control with priorities and graceful backpressure against downstream capacity
+- [ ] Computer-use/browser agents (if any) run in isolated VMs/browsers with egress allowlists, per-session injected credentials, conservative gates on irreversible UI actions, and replayable screen-action traces
 - [ ] Trajectory store captures full task records; fleet dashboards show exits, cost tails, and verification disagreement
 - [ ] Sampling policy routes disagreements, exhaustions, outliers, and baseline samples to human review; taxonomy maintained
 - [ ] Approval queues have context-rich items, SLAs, rubber-stamp monitoring, and evidence-based auto-approval paths
