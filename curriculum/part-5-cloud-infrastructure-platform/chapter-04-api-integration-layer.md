@@ -6,7 +6,7 @@
 | **Maturity level** | 3 — Engineer |
 | **Difficulty** | Advanced |
 | **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
-| **Prerequisites** | [3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md); [4.10](chapter-10-observability.md); [4.11](chapter-11-cost-engineering.md) |
+| **Prerequisites** | [3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md); [4.10](../part-4-enterprise-genai-systems/chapter-10-observability.md); [4.11](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md) |
 
 ## Learning Objectives
 

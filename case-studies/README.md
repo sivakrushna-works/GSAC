@@ -2,7 +2,7 @@
 
 Fifty-six case studies across twelve industries. Every case study uses the [case-study template](../templates/case-study-template.md): business problem, stakeholders, requirements, architecture, sequence diagram, deployment diagram, threat model, cost estimation, scaling strategy, monitoring strategy, lessons learned. Most are GenAI systems; CS51–CS56 form the **classical-ML track** (see [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)–[2.11](../curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)), and CS24, CS30, and CS45 are classical-primary designs — study these for what an architecture looks like when the right answer *isn't* an LLM.
 
-Companies are fictional but constraints are real. Study cadence: **one per week** from Phase 2 onward; write your own solution *before* reading the given one.
+Companies are fictional but constraints are real — and so, explicitly, are the numbers: **every metric, cost, and outcome in these case studies is an illustrative composite, realistic in shape but invented in value.** Study them for the reasoning; never cite them as industry data. Study cadence: **one per week** from Phase 2 onward; write your own solution *before* reading the given one.
 
 Each case study lives in its own file (`cs01-clinical-documentation-assistant.md`, …).
 

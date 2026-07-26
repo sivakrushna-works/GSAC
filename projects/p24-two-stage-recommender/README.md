@@ -80,10 +80,10 @@ Nightly offline path (embedding + index build, ranker retrain, blue/green index 
 |------|-----------|------------------|
 | Nightly training + index builds | CPU + small embedding runs | ~₹500 / ~$6 |
 | Serving (dev-scale) | In-process, negligible | ~₹100 / ~$1.50 |
-| Storage (logs, indexes, registry) | Impression logs dominate — the honest line | ~₹400 / ~$5 |
-| **Total** | | **~₹1,000 / ~$12.50** |
+| Storage (logs, indexes, registry) | Impression logs dominate — the honest line | ~₹700 / ~$8.50 |
+| **Total** | | **~₹1,300 / ~$16** |
 
-Note which line dominates: *impression logging* — the ~20× event-volume cost of recording what was shown. That proportion holds at enterprise scale ([CS54](../../case-studies/cs54-product-recommendations.md)) and is the project's most transferable budget lesson.
+Note which line dominates: *impression logging* — the order-of-magnitude event-volume cost of recording what was shown. That proportion holds at enterprise scale ([CS54](../../case-studies/cs54-product-recommendations.md)) and is the project's most transferable budget lesson.
 
 ## Future Improvements
 

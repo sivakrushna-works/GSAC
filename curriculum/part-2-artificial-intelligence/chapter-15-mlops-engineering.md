@@ -158,7 +158,7 @@ Before signing off a design touching this topic:
 ## Further Reading
 
 - Sculley et al., "Hidden Technical Debt in Machine Learning Systems" (NeurIPS 2015) — the canonical argument that the model is the small box; a decade old and still the best framing.
-- Google Cloud, "MLOps: Continuous delivery and automation pipelines in machine learning" — the maturity-levels document behind this chapter's ladder; provider-neutral in substance.
+- Google Cloud, "MLOps: Continuous delivery and automation pipelines in machine learning" — the document that inspired this chapter's ladder; note its levels differ from ours (Google's level 1 *is* pipeline automation with continuous training; its level 2 adds CI/CD for the pipelines themselves) — read it as the source, not a mirror.
 - MLflow documentation (tracking + model registry concepts) — the concrete open reference for runs, lineage, stages, and promotion.
 - DVC documentation (data & pipeline versioning) — what versioned data and re-runnable pipelines look like without a heavyweight platform.
 

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Industry** | Retail |
-| **Company profile** | Suvarna Retail — fictional Indian grocery & general-merchandise chain, 1,400 stores, ~85,000 SKUs, thin-margin, monsoon-seasonal demand (the same Suvarna whose forecasting triage appears in [2.11](../curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)) |
+| **Company profile** | Suvarna Retail — fictional Indian grocery & general-merchandise chain, now 1,400 stores after a three-year expansion (400 stores at the time of [2.11](../curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)'s triage), ~85,000 SKUs, thin-margin, monsoon-seasonal demand |
 | **System type** | Classical ML — hierarchical demand forecasting, batch scoring (no LLM in the forecast path) |
 | **Maturity level exercised** | 3 Engineer → 4 Architect |
 
@@ -31,7 +31,7 @@ Store replenishment ran on planner judgment plus a fixed "last year same week ×
 - FR-5: Exception queue — the ~0.5% of SKU×store forecasts with widest intervals or largest baseline disagreement, ranked for planner review ([7.5](../curriculum/part-7-enterprise-ai-architecture-patterns/chapter-05-human-in-the-loop-patterns.md) review-sampling, classical edition).
 
 ### Non-functional
-- NFR-1 (Accuracy): Beat the incumbent rule *and* a seasonal-naïve baseline by ≥15% weighted MAPE overall — reported by segment (stable staples vs. promo-driven vs. fresh), because the aggregate hides where the money is ([2.7](../curriculum/part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md)'s operating-point discipline).
+- NFR-1 (Accuracy): Beat the incumbent rule *and* a seasonal-naïve baseline by ≥15% weighted MAPE overall (the 2.11-era pilot beat its incumbent by 14% at 400-store scale; this program sets a slightly higher bar at 3.5× the estate) — reported by segment (stable staples vs. promo-driven vs. fresh), because the aggregate hides where the money is ([2.7](../curriculum/part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md)'s operating-point discipline).
 - NFR-2 (Calibration): 90% prediction intervals contain actuals 88–92% of the time per segment — miscalibrated intervals corrupt every order quantity downstream.
 - NFR-3 (Timeliness): Full batch scored and delivered to replenishment by 04:00 IST; a missed batch falls back to the incumbent rule automatically (fail-degraded, never fail-silent).
 - NFR-4 (Explainability): Per-forecast driver attribution (base, seasonality, promo uplift, weather) — planners will not act on numbers they cannot interrogate.

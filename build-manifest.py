@@ -71,6 +71,10 @@ def case_studies_section() -> dict:
     # Group by industry, preserving encounter order (cs number == catalog order).
     order: list[str] = []
     buckets: dict[str, list[dict]] = {}
+    readme = ROOT / "case-studies" / "README.md"
+    if readme.exists():
+        order.append("Catalog")
+        buckets["Catalog"] = [doc(readme, "case-study-index")]
     for cs in sorted((ROOT / "case-studies").glob("cs*.md")):
         industry = meta(cs, INDUSTRY_RE) or "Other"
         if industry not in buckets:
@@ -84,6 +88,10 @@ def case_studies_section() -> dict:
 def projects_section() -> dict:
     order: list[str] = []
     buckets: dict[str, list[dict]] = {}
+    readme = ROOT / "projects" / "README.md"
+    if readme.exists():
+        order.append("Catalog")
+        buckets["Catalog"] = [doc(readme, "project-index")]
     for pdir in sorted((ROOT / "projects").glob("p*")):
         readme = pdir / "README.md"
         if not readme.exists():
@@ -95,7 +103,7 @@ def projects_section() -> dict:
             buckets[tier_key] = []
             order.append(tier_key)
         buckets[tier_key].append(doc(readme, "project"))
-    groups = [{"id": t, "title": f"{t} Tier", "docs": buckets[t]} for t in order]
+    groups = [{"id": t, "title": t if t == "Catalog" else f"{t} Tier", "docs": buckets[t]} for t in order]
     return {"id": "projects", "title": "Projects", "groups": groups}
 
 
@@ -160,8 +168,10 @@ def main() -> None:
     counts = {
         "chapters": sum(1 for s in sections if s["id"] == "curriculum"
                         for g in s["groups"] for d in g["docs"] if d["kind"] == "chapter"),
-        "caseStudies": sum(len(g["docs"]) for s in sections if s["id"] == "case-studies" for g in s["groups"]),
-        "projects": sum(len(g["docs"]) for s in sections if s["id"] == "projects" for g in s["groups"]),
+        "caseStudies": sum(1 for s in sections if s["id"] == "case-studies"
+                           for g in s["groups"] for d in g["docs"] if d["kind"] == "case-study"),
+        "projects": sum(1 for s in sections if s["id"] == "projects"
+                        for g in s["groups"] for d in g["docs"] if d["kind"] == "project"),
     }
     manifest = {
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),

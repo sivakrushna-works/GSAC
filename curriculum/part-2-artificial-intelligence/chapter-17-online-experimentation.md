@@ -48,7 +48,7 @@ Experimentation is the difference between an AI portfolio that *reports* value a
 | Threat | What it looks like | Defense |
 |---|---|---|
 | **Peeking** | Checking daily, stopping on the first significant day — inflates false positives severalfold | Fixed horizon honored, or sequential methods *designed* for continuous monitoring; the platform enforces, not etiquette |
-| **Sample-ratio mismatch (SRM)** | 50/50 split arrives 52/48 | Automated SRM check; an SRM'd experiment is *discarded*, not explained — the assignment is broken |
+| **Sample-ratio mismatch (SRM)** | The observed split deviates from the planned ratio beyond chance — e.g., 52/48 *at large n* (at n=1M that is a five-alarm fire; at n=100 it is noise) | Automated chi-squared test against the planned ratio at a strict threshold (p < 0.001 is common); an SRM'd experiment's *result* is discarded **and the cause is root-caused** — the assignment or logging bug behind it is usually contaminating other live experiments too |
 | **Interference** | Treatment units affect control units: shared inventory, marketplace sellers, social features, one model retrained on pooled data | Cluster or switchback designs; explicit interference story in the design doc |
 | **Novelty/primacy** | Week-one effects that decay | Duration floors; report the time curve, not just the mean |
 | **Segment paradoxes (Simpson's)** | Aggregate winner losing in every major segment (or vice versa) via mix shift | Pre-registered segment analysis; investigate mix before celebrating |
@@ -114,7 +114,7 @@ Experimentation crosses governance surfaces that pure ML work doesn't: **differe
 1. **Comparing to last period** — seasonality, mix shift, and regression to the mean masquerade as impact (Meridian's attempt 1). The counterfactual must be *concurrent and randomized*, or explicitly quasi-experimental with stated assumptions.
 2. **Measuring takers vs. non-takers** — self-selection dressed as treatment effect (attempt 2). Intent-to-treat on randomized assignment is the analysis unit.
 3. **Peeking with fixed-horizon statistics** — the false-positive rate quietly multiplies. Sequential methods exist for a reason; use them or don't look.
-4. **Ignoring SRM** — a 52/48 split "close enough to 50/50" is a broken instrument reporting plausible numbers. Check automatically; discard on failure.
+4. **Ignoring SRM** — a statistically significant deviation from the planned split is a broken instrument reporting plausible numbers. Test automatically (chi-squared, strict threshold); on failure, discard the result *and* root-cause the assignment bug — it rarely affects only one experiment.
 5. **Underpowered tests read as "no effect"** — the absence of significance at an undetectable MDE is the absence of information. Power analysis before launch, and say "we cannot measure this" when true.
 6. **Metric harvesting** — twenty metrics, one significant, victory declared. One pre-registered primary; everything else is exploratory and labeled so.
 7. **Interference denial** — user-randomized tests on shared-inventory or two-sided systems dilute or invert effects. Name the interference story in every design.

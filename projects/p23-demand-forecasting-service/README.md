@@ -26,7 +26,7 @@ A retailer (use a public multi-series retail dataset — M5-class) replenishes s
 
 ### Non-functional
 - NFR-1 (Quality): beat seasonal-naïve by ≥10% WAPE overall, **reported by segment and horizon step** — and honestly show the segments where naïve wins (expect them).
-- NFR-2 (Calibration): P10–P90 coverage 80–95% per volume tercile, or the miscalibration diagnosed in the run report.
+- NFR-2 (Calibration): P10–P90 coverage 76–84% per volume tercile (nominal 80%; over-wide intervals inflate safety stock and are a defect too), or the miscalibration diagnosed in the run report.
 - NFR-3 (Timeliness): full batch inside a stated window; a failed batch falls back to the incumbent rule loudly.
 - NFR-4 (Reproducibility): every reported metric regenerable from a versioned snapshot + feature code + config (2.12's replay test).
 

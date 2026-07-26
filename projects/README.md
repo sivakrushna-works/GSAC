@@ -2,7 +2,7 @@
 
 Twenty-five projects across four tiers — nineteen on the GenAI lane, five on the classical-ML lane (P21, P23 in Tier 2; P22, P24, P25 in Tier 3), one portfolio capstone spanning both (P20). Every project uses the [project template](../templates/project-template.md) and must satisfy its **Definition of Done** — including evals, threat model, monitoring, and a cost estimate. Do them in tier order; within a tier, pick by interest.
 
-Each project gets its own directory (`p01-document-qa-assistant/`, …) containing the filled template plus source code.
+Each project gets its own directory (`p01-document-qa-assistant/`, …) containing the filled template; **you** supply the source code — that is the project. (Cost estimates and target metrics in the specs are illustrative; your build produces the real ones.)
 
 ## Tier 1 — Beginner (Level 2: Build)
 

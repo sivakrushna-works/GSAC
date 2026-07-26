@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-26T07:19:52+00:00",
+  "generated": "2026-07-26T08:13:58+00:00",
   "title": "GSAC — AI Solution Architect Curriculum",
   "counts": {
     "chapters": 90,
@@ -556,6 +556,17 @@
       "title": "Case Studies",
       "groups": [
         {
+          "id": "Catalog",
+          "title": "Catalog",
+          "docs": [
+            {
+              "path": "case-studies/README.md",
+              "title": "Case Studies — 56 Enterprise Architecture Deep Dives",
+              "kind": "case-study-index"
+            }
+          ]
+        },
+        {
           "id": "Healthcare",
           "title": "Healthcare",
           "docs": [
@@ -914,6 +925,17 @@
       "title": "Projects",
       "groups": [
         {
+          "id": "Catalog",
+          "title": "Catalog",
+          "docs": [
+            {
+              "path": "projects/README.md",
+              "title": "Projects — Twenty-five projects across four tiers.",
+              "kind": "project-index"
+            }
+          ]
+        },
+        {
           "id": "Beginner",
           "title": "Beginner Tier",
           "docs": [
@@ -1144,6 +1166,11 @@
               "kind": "checklist"
             },
             {
+              "path": "checklists/README.md",
+              "title": "Checklists",
+              "kind": "checklist"
+            },
+            {
               "path": "checklists/security-checklist.md",
               "title": "GenAI Security Checklist",
               "kind": "checklist"
@@ -1203,6 +1230,11 @@
             {
               "path": "templates/project-template.md",
               "title": "Project PXX — {Title}",
+              "kind": "template"
+            },
+            {
+              "path": "templates/README.md",
+              "title": "Templates",
               "kind": "template"
             }
           ]

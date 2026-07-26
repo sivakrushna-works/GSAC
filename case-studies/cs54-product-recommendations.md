@@ -9,7 +9,7 @@
 
 ## Business Problem
 
-Product discovery ran on category browsing and a "bestsellers" carousel — identical for every user. Search converts well when users know what they want; the money left on the table is *discovery*: 62% of sessions ended with no add-to-cart, and the bestseller carousel's click-through had decayed to 1.1% (everyone had seen it). The goal: personalized recommendations on the home page, product pages ("similar / bought together"), and cart ("complete the look") — driven by *implicit* feedback (views, carts, purchases — nobody rates products), serving in-request at page-load latency, and measured by incremental conversion in controlled experiments, not by offline metrics alone. This is [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)'s ranking/recommendation family — the one the chapter compresses to "two-stage retrieve-then-rank" and this case expands to a working architecture.
+Product discovery ran on category browsing and a "bestsellers" carousel — identical for every user. Search converts well when users know what they want; the money left on the table is *discovery*: 91% of sessions ended with no add-to-cart (a ~9% add-to-cart rate, typical for the category), and the bestseller carousel's click-through had decayed to 1.1% (everyone had seen it). The goal: personalized recommendations on the home page, product pages ("similar / bought together"), and cart ("complete the look") — driven by *implicit* feedback (views, carts, purchases — nobody rates products), serving in-request at page-load latency, and measured by incremental conversion in controlled experiments, not by offline metrics alone. This is [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)'s ranking/recommendation family — the one the chapter compresses to "two-stage retrieve-then-rank" and this case expands to a working architecture.
 
 ## Stakeholders
 
@@ -120,7 +120,7 @@ flowchart TB
 | Experimentation platform share | | ~$5K |
 | **Total** | | **~$69K** |
 
-Dominant driver: impression logging — recording *what was shown at which position* multiplies event volume ~20× over click-only logging, and it is non-negotiable: it is the training data. A conversion lift of 0.15 points at Loomora's volume pays for the platform ~30× over ([6.10](../curriculum/part-6-enterprise-architecture/chapter-10-tco-business-case.md)).
+Dominant driver: impression logging — recording *what was shown at which position* multiplies event volume by well over an order of magnitude versus click-only logging (with 24-item placements and ~1% CTR, every click arrives with dozens of logged impressions behind it), and it is non-negotiable: it is the training data. A conversion lift of 0.15 points at Loomora's volume pays for the platform ~30× over ([6.10](../curriculum/part-6-enterprise-architecture/chapter-10-tco-business-case.md)).
 
 ## Scaling Strategy
 

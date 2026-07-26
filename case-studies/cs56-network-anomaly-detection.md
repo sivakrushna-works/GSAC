@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Industry** | Telecommunications |
-| **Company profile** | Meridian Telecom (the operator from [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)'s churn example) — fictional operator, 10M subscribers, ~45,000 cell sites, national fiber backbone, 24×7 NOC |
+| **Company profile** | Meridian Telecom (the operator from [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)'s churn example) — fictional operator, 8M subscribers, ~45,000 cell sites, national fiber backbone, 24×7 NOC |
 | **System type** | Classical ML — multivariate anomaly detection on operational telemetry, streaming + batch |
 | **Maturity level exercised** | 3 Engineer → 4 Architect |
 
