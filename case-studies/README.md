@@ -1,6 +1,6 @@
-# Case Studies — 50 Enterprise Architecture Deep Dives
+# Case Studies — 56 Enterprise Architecture Deep Dives
 
-Fifty case studies across twelve industries. Every case study uses the [case-study template](../templates/case-study-template.md): business problem, stakeholders, requirements, architecture, sequence diagram, deployment diagram, threat model, cost estimation, scaling strategy, monitoring strategy, lessons learned.
+Fifty-six case studies across twelve industries. Every case study uses the [case-study template](../templates/case-study-template.md): business problem, stakeholders, requirements, architecture, sequence diagram, deployment diagram, threat model, cost estimation, scaling strategy, monitoring strategy, lessons learned. Most are GenAI systems; CS51–CS56 form the **classical-ML track** (see [2.9](../curriculum/part-2-artificial-intelligence/chapter-09-classical-ml-system-design.md)–[2.11](../curriculum/part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md)), and CS24, CS30, and CS45 are classical-primary designs — study these for what an architecture looks like when the right answer *isn't* an LLM.
 
 Companies are fictional but constraints are real. Study cadence: **one per week** from Phase 2 onward; write your own solution *before* reading the given one.
 
@@ -25,6 +25,8 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 | CS08 | Credit Memo Drafting | Document pipeline | Data lineage, four-eyes review, model governance |
 | CS09 | Retail Bank Support Assistant | Customer-facing bot | Fraud surface, authentication, multilingual |
 | CS10 | Trading Floor Research Summarizer | Low-latency summarization | Information barriers, licensing of data, latency |
+| CS52 | Real-Time Card Fraud Scoring | Classical ML — online scoring in the auth path | Label lag, adversarial drift, fail-open, threshold-as-P&L, MRM |
+| CS55 | Credit Risk Scoring under Model Risk Management | Classical ML — governed application scoring | Reason codes, reject inference, fairness, independent validation, SR 11-7 |
 
 ## Retail
 
@@ -34,6 +36,8 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 | CS12 | Conversational Shopping Assistant | RAG + recommendation tools | Personalization vs. privacy, conversion metrics |
 | CS13 | Store Operations Copilot | Mobile RAG for associates | Offline/edge constraints, seasonal load |
 | CS14 | Returns & Complaints Automation | Workflow + guardrails | Fraud abuse, refund authority limits |
+| CS51 | Demand Forecasting for Store Replenishment | Classical ML — hierarchical forecasting, batch | Baselines, interval calibration, stockout censoring, batch economics |
+| CS54 | Product Recommendations at Marketplace Scale | Classical ML — two-stage recommender, online | Implicit feedback, position bias, offline–online gap, ecosystem health |
 
 ## Manufacturing
 
@@ -43,6 +47,7 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 | CS16 | Supplier Document Intelligence | Extraction pipeline | Multi-language, EDI/legacy integration |
 | CS17 | Quality Incident Analysis | Agentic root-cause research | Data silos, traceability standards |
 | CS18 | Sales Engineering Quote Copilot | RAG + configurators | Correctness on specs, margin protection |
+| CS53 | Predictive Maintenance for Production Lines | Classical ML — anomaly detection + risk classification | Label scarcity, alert budgets, sensor health, OT/IT boundary |
 
 ## Education
 
@@ -58,7 +63,7 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 | # | Case study | System type | Key themes |
 |---|-----------|-------------|------------|
 | CS23 | Contract Review Platform | Extraction + playbook comparison | Privilege, confidentiality walls, precision-first evals |
-| CS24 | eDiscovery Triage | Classification at scale | Defensibility, sampling statistics, cost at TB scale |
+| CS24 | eDiscovery Triage | Classical ML — TAR / continuous active learning | Defensibility, statistical stopping, privilege lane, cost at TB scale |
 | CS25 | Legal Research Assistant | RAG with citation verification | Hallucinated-citation risk, shepardizing-style checks |
 | CS26 | Regulatory Change Monitoring | Watch + summarize + route | Freshness pipelines, jurisdiction fan-out |
 
@@ -69,7 +74,7 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 | CS27 | Claims Intake & Summarization | Multimodal intake pipeline | Fraud signals, adjuster workflow, photo/document mix |
 | CS28 | Underwriting Copilot | RAG + risk tools | Actuarial guardrails, regulatory filings, explainability |
 | CS29 | Policy Q&A for Agents | Multi-tenant RAG | Product-version correctness, agent licensing rules |
-| CS30 | Subrogation Opportunity Detection | Classification + case building | Recovery economics, legal handoff |
+| CS30 | Subrogation Opportunity Detection | Classical ML — propensity + expected-value ranking | Label censoring, exploration slice, capacity-bounded queue, recovery economics |
 
 ## Telecommunications
 
@@ -79,6 +84,7 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 | CS32 | Customer Care Deflection | Voice + chat assistant | Very high volume economics, churn-sensitive UX |
 | CS33 | Field Technician Assistant | Mobile multimodal RAG | Connectivity gaps, equipment recognition |
 | CS34 | B2B Proposal Automation | Document generation | CPQ integration, margin and SLA correctness |
+| CS56 | Network Anomaly Detection at Telecom Scale | Classical ML — streaming anomaly detection | Alert budgets, topology correlation, baseline poisoning, storm resilience |
 
 ## Government
 
@@ -104,7 +110,7 @@ Each case study lives in its own file (`cs01-clinical-documentation-assistant.md
 |---|-----------|-------------|------------|
 | CS43 | Employee Policy Assistant | ACL-aware RAG | Works-council/union constraints, jurisdiction variants |
 | CS44 | Recruiting Screening Support | Structured extraction + ranking assistance | Anti-discrimination law, human decision requirement |
-| CS45 | Learning & Development Recommender | Skills-graph + generation | Skills taxonomy, privacy of performance data |
+| CS45 | Learning & Development Recommender | Classical ML — content-based recommender, small-data | Structure over scale, works-council constraints, exposure equity |
 | CS46 | HR Case Management Copilot | Summarization + drafting | Extreme confidentiality, retention rules |
 
 ## Finance (Corporate)

@@ -53,7 +53,7 @@ Every chapter and project is tagged with the level it targets. The [ROADMAP](ROA
 ## Hands-on tracks
 
 - **[Projects](projects/)** — 22 enterprise-grade projects, Beginner → Intermediate → Advanced → Architect. Each includes business problem, requirements, architecture diagram, technology choices, security, deployment, monitoring, estimated cost, and future improvements.
-- **[Case studies](case-studies/)** — 50 enterprise architecture case studies across 12 industries. Each includes stakeholders, requirements, architecture, sequence diagram, deployment diagram, threat model, cost estimation, scaling strategy, monitoring strategy, and lessons learned.
+- **[Case studies](case-studies/)** — 56 enterprise architecture case studies across 12 industries (CS51–CS56 form the classical-ML track). Each includes stakeholders, requirements, architecture, sequence diagram, deployment diagram, threat model, cost estimation, scaling strategy, monitoring strategy, and lessons learned.
 
 ## Reference assets
 

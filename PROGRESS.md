@@ -116,7 +116,7 @@ Check items off as you complete them. A chapter counts when you've done its hand
 |---|------|----------|
 | CS01 | | |
 
-*(Add a row per completed case study, CS01–CS50.)*
+*(Add a row per completed case study, CS01–CS56. CS51–CS56 are the classical-ML track; CS24, CS30, CS45 are also classical-primary.)*
 
 ## Milestones
 - [ ] Level 1 → 2: P01–P05 complete and pushed to your own repos
