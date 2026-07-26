@@ -17,19 +17,21 @@ prompt-library/
 
 ## Categories
 
-| Category | Contents |
-|----------|----------|
-| `rag/` | Grounded answering, citation formatting, no-context refusal, query rewriting |
-| `extraction/` | Structured extraction to JSON schemas, table extraction, classification |
-| `summarization/` | Meeting minutes, document digests, executive briefs, map-reduce summarization |
-| `agents/` | Agent system prompts, tool-selection guidance, reflection/self-check prompts |
-| `evaluation/` | LLM-as-judge rubrics: faithfulness, relevance, tone, safety |
-| `safety/` | Input screening, output policy checks, PII detection assist |
-| `writing/` | Report generation, tone transformation, style guides |
+One exemplar prompt ships per category; the *wanted* column is the contribution surface (see [CONTRIBUTING](../CONTRIBUTING.md)).
+
+| Category | Ships today | Wanted — contributions welcome |
+|----------|-------------|-------------------------------|
+| `rag/` | [Grounded answering](rag/grounded-answering/) | Citation formatting, no-context refusal, query rewriting |
+| `extraction/` | [Structured extraction](extraction/structured-extraction/) | Table extraction, classification |
+| `summarization/` | [Meeting minutes](summarization/meeting-minutes/) | Document digests, executive briefs, map-reduce summarization |
+| `agents/` | [Agent system prompt](agents/agent-system-prompt/) | Tool-selection guidance, reflection/self-check prompts |
+| `evaluation/` | [Faithfulness judge](evaluation/faithfulness-judge/) | Relevance, tone, and safety judges |
+| `safety/` | [Input screening](safety/input-screening/) | Output policy checks, PII detection assist |
+| `writing/` | [Report generation](writing/report-generation/) | Tone transformation, style guides |
 
 ## Rules
 
 1. **No prompt without a README** — an undocumented prompt is a liability, not an asset.
-2. **No change without eval evidence** — record the before/after in the CHANGELOG.
+2. **No change without eval evidence** — record the before/after in the CHANGELOG. The shipped CHANGELOGs model this discipline with **worked-example numbers, marked illustrative** — no golden sets or harnesses ship with this repository; contributions of real, reproducible eval evidence (harness + dataset reference) supersede the illustrative entries.
 3. **Provider-neutral by default** — note model-specific behavior in the README when unavoidable.
 4. **Variables are typed** — the README states each variable's type, source, and whether it can contain untrusted content (if so, the prompt must delimit it as data — see [security checklist](../checklists/security-checklist.md)).

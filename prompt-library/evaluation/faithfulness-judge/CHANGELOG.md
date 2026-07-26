@@ -1,5 +1,7 @@
 # Changelog: Faithfulness Judge
 
+> **Illustrative history.** This changelog models the eval-evidence discipline the library requires ([Rules](../../README.md)): every change justified by a before/after measurement. The runs, sample sizes, and deltas below are worked examples, not records of executed evaluations — no golden sets or harnesses ship with this repository. Your fork's changelog should contain real ones.
+
 ## v1.3 — 2026-07-10
 - Added explicit causal-claim anchors after a judge-model upgrade dropped agreement (the new model was laxer about "X caused Y" vs. "Y occurred after X").
 - **Eval evidence:** human-agreement restored from 71% to 88% on the calibration set after adding the anchors. (Triggered by the mandatory re-calibration on judge-model change.)

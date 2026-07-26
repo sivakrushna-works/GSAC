@@ -1,5 +1,7 @@
 # Changelog: Input Screening
 
+> **Illustrative history.** This changelog models the eval-evidence discipline the library requires ([Rules](../../README.md)): every change justified by a before/after measurement. The runs, sample sizes, and deltas below are worked examples, not records of executed evaluations — no golden sets or harnesses ship with this repository. Your fork's changelog should contain real ones.
+
 ## v1.2 — 2026-07-10
 - Added the fence label (classify-as-data) after an early version was itself manipulated by input claiming to be policy.
 - **Eval evidence:** classifier-manipulation probe 0/20 after change; per-category precision/recall unchanged (within noise).

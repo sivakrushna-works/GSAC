@@ -46,4 +46,4 @@
 
 ---
 
-**Calibration note:** In production, this judge scored 86% agreement with human labels on the faithfulness dimension (chance-corrected), clearing the 80% gate bar. On a judge-model upgrade, agreement dropped to 71% (the new model was laxer about causal-claim support) — caught by the mandatory re-calibration, fixed by adding explicit causal-claim anchors to the rubric (the Meridian episode from [4.7](../../../curriculum/part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)).
+**Calibration note (illustrative scenario):** a judge like this one might score, say, 86% agreement with human labels on the faithfulness dimension (chance-corrected), clearing an 80% gate bar — then drop to 71% on a judge-model upgrade (the new model laxer about causal-claim support), caught by mandatory re-calibration and fixed by adding explicit causal-claim anchors to the rubric. That failure shape is the Meridian episode from [4.7](../../../curriculum/part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md); the numbers here are worked-example values, not measurements — run your own calibration before trusting any judge as a gate.
