@@ -1,8 +1,8 @@
 {
-  "generated": "2026-07-26T06:55:04+00:00",
+  "generated": "2026-07-26T07:03:05+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
-    "chapters": 86,
+    "chapters": 88,
     "caseStudies": 56,
     "projects": 22
   },
@@ -144,6 +144,16 @@
             {
               "path": "curriculum/part-2-artificial-intelligence/chapter-15-mlops-engineering.md",
               "title": "Chapter 2.15 — MLOps Engineering",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-16-perception-systems.md",
+              "title": "Chapter 2.16 — Perception Systems: Vision, OCR & Speech",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-2-artificial-intelligence/chapter-17-online-experimentation.md",
+              "title": "Chapter 2.17 — Online Experimentation & A/B Testing",
               "kind": "chapter"
             }
           ]
