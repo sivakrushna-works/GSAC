@@ -1,10 +1,10 @@
 {
-  "generated": "2026-07-26T07:10:29+00:00",
+  "generated": "2026-07-26T07:15:42+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
     "chapters": 90,
     "caseStudies": 56,
-    "projects": 22
+    "projects": 25
   },
   "sections": [
     {
@@ -977,6 +977,11 @@
               "path": "projects/p21-churn-prediction-service/README.md",
               "title": "Project P21 — Churn Prediction Service (Classical ML Track)",
               "kind": "project"
+            },
+            {
+              "path": "projects/p23-demand-forecasting-service/README.md",
+              "title": "Project P23 — Demand Forecasting Service (Classical ML Track)",
+              "kind": "project"
             }
           ]
         },
@@ -1012,6 +1017,16 @@
             {
               "path": "projects/p22-hybrid-claims-intake/README.md",
               "title": "Project P22 — Hybrid Claims Intake (Vision + Classical ML + GenAI)",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p24-two-stage-recommender/README.md",
+              "title": "Project P24 — Two-Stage Product Recommender (Classical ML Track)",
+              "kind": "project"
+            },
+            {
+              "path": "projects/p25-ml-delivery-platform/README.md",
+              "title": "Project P25 — ML Delivery Platform (Classical ML Track)",
               "kind": "project"
             }
           ]

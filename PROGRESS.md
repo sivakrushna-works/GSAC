@@ -117,6 +117,7 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] P16 Multi-tenant Platform · [ ] P17 Banking Assistant · [ ] P18 Sovereign/Hybrid RAG · [ ] P19 Agent Orchestration Platform · [ ] P20 AI CoE Reference Architecture
 - [ ] P21 Churn Prediction Service (Classical ML Track)
 - [ ] P22 Hybrid Claims Intake (Vision + Classical ML + GenAI)
+- [ ] P23 Demand Forecasting Service · [ ] P24 Two-Stage Product Recommender · [ ] P25 ML Delivery Platform (Classical ML Track)
 
 ## Case studies (log the date + one takeaway)
 

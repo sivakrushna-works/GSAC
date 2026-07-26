@@ -1,6 +1,6 @@
-# Projects — Twenty-two projects across four tiers.
+# Projects — Twenty-five projects across four tiers.
 
-Twenty-two projects across four tiers. Every project uses the [project template](../templates/project-template.md) and must satisfy its **Definition of Done** — including evals, threat model, monitoring, and a cost estimate. Do them in tier order; within a tier, pick by interest.
+Twenty-five projects across four tiers — nineteen on the GenAI lane, five on the classical-ML lane (P21, P23 in Tier 2; P22, P24, P25 in Tier 3), one portfolio capstone spanning both (P20). Every project uses the [project template](../templates/project-template.md) and must satisfy its **Definition of Done** — including evals, threat model, monitoring, and a cost estimate. Do them in tier order; within a tier, pick by interest.
 
 Each project gets its own directory (`p01-document-qa-assistant/`, …) containing the filled template plus source code.
 
@@ -28,6 +28,7 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 | P09 | **Multilingual Support Assistant** — customer-facing bot with language detection, guardrails, escalation | Guardrails, safety, multilingual evals | 4.8 |
 | P10 | **Evaluation Harness** — reusable eval service: golden sets, LLM-as-judge, CI gate, dashboards | Eval design, judge validation, regression detection | 4.7 |
 | P21 | **Churn Prediction Service** — classical ML end-to-end: point-in-time features, GBT, batch scoring, drift, champion–challenger | Classical ML systems, MLOps, drift monitoring | 2.9, 2.10 |
+| P23 | **Demand Forecasting Service** — quantile forecasts with an honest rolling-origin backtest harness, baselines-forever, censoring handling | Forecasting, backtesting, calibration, batch pipelines | 2.13, 2.12 |
 
 ## Tier 3 — Advanced (Level 3: Engineer)
 
@@ -41,6 +42,8 @@ Each project gets its own directory (`p01-document-qa-assistant/`, …) containi
 | P14 | **Compliance-aware RAG** — PII redaction, audit trail, retention, right-to-be-forgotten | Privacy engineering, governance evidence | 4.14 |
 | P15 | **Real-time Voice Assistant** — speech in/out with latency budget, barge-in, and graceful degradation | Streaming, latency engineering, multimodal | 3.9, 4.12 |
 | P22 | **Hybrid Claims Intake** — vision extraction → rules → classical risk scoring → routing → grounded letters with human approval | Per-stage approach assignment, hybrid architecture, per-stage evals | 2.11, 2.9, 4.3 |
+| P24 | **Two-Stage Product Recommender** — impression logging first, candidate generation + GBT ranking, funnel diagnostics, simulated A/B harness | Implicit feedback, funnel localization, guarded metrics, experimentation | 2.14, 2.17 |
+| P25 | **ML Delivery Platform** — orchestrated pipelines, tracking, registry, gated promotion, shadow lane, and drift-triggered retraining serving P21+P23 | MLOps platform engineering, failure drills, risk-scaled autonomy | 2.15, 2.12 |
 
 ## Tier 4 — Architect (Level 4: Architect)
 
