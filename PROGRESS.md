@@ -85,6 +85,7 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] 6.8 Legacy Modernization & AI Adoption Strategy
 - [ ] 6.9 Architecture Governance: Boards, Reviews & Standards
 - [ ] 6.10 TCO & the Business Case for AI
+- [ ] 6.11 Model Risk Management & AI Regulatory Governance
 
 ## Part 7 — Enterprise AI Architecture Patterns
 - [ ] 7.1 A Pattern Language for GenAI
@@ -97,6 +98,7 @@ Check items off as you complete them. A chapter counts when you've done its hand
 - [ ] 7.8 Cost & Performance Patterns
 - [ ] 7.9 Platform & Multi-tenancy Patterns
 - [ ] 7.10 Anti-patterns
+- [ ] 7.11 Predictive & Scoring Patterns
 
 ## Part 8 — Professional Excellence & Career Development
 - [ ] 8.1 The GenAI Solution Architect Role & Market

@@ -32,8 +32,8 @@ This curriculum emphasizes **timeless concepts over frameworks**. Tools change e
 | [3](curriculum/part-3-core-building-blocks-of-genai/) | Core Building Blocks of Generative AI | LLMs, prompting, embeddings, RAG, tool use, agents, multimodal |
 | [4](curriculum/part-4-enterprise-genai-systems/) | Enterprise GenAI Systems | Production RAG, agents at scale, evaluation, security, observability, cost |
 | [5](curriculum/part-5-cloud-infrastructure-platform/) | Cloud, Infrastructure & Platform Engineering | Compute, serving, data architecture, scalability, reliability, LLMOps |
-| [6](curriculum/part-6-enterprise-architecture/) | Enterprise Architecture | EA frameworks, views, governance, integration, security architecture, TCO |
-| [7](curriculum/part-7-enterprise-ai-architecture-patterns/) | Enterprise AI Architecture Patterns | A pattern language for GenAI systems, plus anti-patterns |
+| [6](curriculum/part-6-enterprise-architecture/) | Enterprise Architecture | EA frameworks, views, governance, integration, security architecture, TCO, model risk management |
+| [7](curriculum/part-7-enterprise-ai-architecture-patterns/) | Enterprise AI Architecture Patterns | A pattern language for AI systems — GenAI families, predictive & scoring patterns, anti-patterns |
 | [8](curriculum/part-8-professional-excellence/) | Professional Excellence & Career Development | Role, portfolio, interviews, consulting, mentoring |
 
 Each chapter follows a single mandatory [chapter template](templates/chapter-template.md): learning objectives, business motivation, theory, architecture perspective, real-world example, hands-on exercise, enterprise considerations, trade-offs, common mistakes, best practices, architecture checklist, interview questions, further reading, summary.

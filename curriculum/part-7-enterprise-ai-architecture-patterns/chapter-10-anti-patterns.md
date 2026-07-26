@@ -192,4 +192,4 @@ For avoiding the anti-patterns:
 
 ---
 
-**Previous:** [Chapter 7.9 — Platform & Multi-tenancy Patterns](chapter-09-platform-multitenancy-patterns.md) · **Next:** [Part 8 — Professional Excellence & Career Development](../part-8-professional-excellence/) · **Related:** [7.1 A Pattern Language for GenAI](chapter-01-pattern-language.md), [3.8 Agents](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)
+**Previous:** [Chapter 7.9 — Platform & Multi-tenancy Patterns](chapter-09-platform-multitenancy-patterns.md) · **Next:** [Chapter 7.11 — Predictive & Scoring Patterns](chapter-11-predictive-scoring-patterns.md) · **Related:** [7.1 A Pattern Language for GenAI](chapter-01-pattern-language.md), [3.8 Agents](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md), [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)

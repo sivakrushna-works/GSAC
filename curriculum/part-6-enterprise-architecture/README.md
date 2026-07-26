@@ -18,6 +18,7 @@ Zoom out from one system to the portfolio: how large organizations decide, integ
 | 6.8 | [Legacy Modernization & AI Adoption Strategy](chapter-08-legacy-modernization-ai-adoption.md) | 4 | Sequence AI adoption in a legacy estate; build vs. buy vs. wait; pilot-to-platform paths |
 | 6.9 | [Architecture Governance: Boards, Reviews & Standards](chapter-09-architecture-governance.md) | 4 | Run review boards that help instead of block; define standards and exception processes |
 | 6.10 | [TCO & the Business Case for AI](chapter-10-tco-business-case.md) | 4 | Build a full business case: TCO, value quantification, risk-adjusted ROI, and the pitch |
+| 6.11 | [Model Risk Management & AI Regulatory Governance](chapter-11-model-risk-management.md) | 4 | Run MRM across both lanes: tiered inventory, independent validation with pipeline-produced evidence, and one control set mapped to SR 11-7 / EU AI Act / NIST AI RMF / ISO 42001 |
 
 ## Exit criteria
 

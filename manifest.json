@@ -1,8 +1,8 @@
 {
-  "generated": "2026-07-26T07:03:05+00:00",
+  "generated": "2026-07-26T07:10:29+00:00",
   "title": "GSAC — GenAI Solution Architect Curriculum",
   "counts": {
-    "chapters": 88,
+    "chapters": 90,
     "caseStudies": 56,
     "projects": 22
   },
@@ -424,6 +424,11 @@
               "path": "curriculum/part-6-enterprise-architecture/chapter-10-tco-business-case.md",
               "title": "Chapter 6.10 — TCO & the Business Case for AI",
               "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-6-enterprise-architecture/chapter-11-model-risk-management.md",
+              "title": "Chapter 6.11 — Model Risk Management & AI Regulatory Governance",
+              "kind": "chapter"
             }
           ]
         },
@@ -484,6 +489,11 @@
             {
               "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-10-anti-patterns.md",
               "title": "Chapter 7.10 — Anti-patterns",
+              "kind": "chapter"
+            },
+            {
+              "path": "curriculum/part-7-enterprise-ai-architecture-patterns/chapter-11-predictive-scoring-patterns.md",
+              "title": "Chapter 7.11 — Predictive & Scoring Patterns",
               "kind": "chapter"
             }
           ]

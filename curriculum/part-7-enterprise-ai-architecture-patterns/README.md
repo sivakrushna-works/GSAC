@@ -1,6 +1,6 @@
 # Part 7 — Enterprise AI Architecture Patterns
 
-A pattern language for GenAI systems. Each pattern chapter uses a consistent form: **Context → Problem → Forces → Solution → Structure (diagram) → Consequences → Known uses → Related patterns**. Patterns are how architects compress experience; this part is the curriculum's reference core, cross-linked from every case study.
+A pattern language for AI systems — the GenAI families (7.2–7.9), the classical predictive & scoring family (7.11), and the anti-patterns (7.10). Each pattern chapter uses a consistent form: **Context → Problem → Forces → Solution → Structure (diagram) → Consequences → Known uses → Related patterns**. Patterns are how architects compress experience; this part is the curriculum's reference core, cross-linked from every case study. (7.11 is numbered after the anti-patterns to preserve existing links; read it with the family chapters, and keep 7.10 as the closing read.)
 
 **Maturity target:** Level 4 · **Estimated effort:** 4–5 weeks
 
@@ -18,6 +18,7 @@ A pattern language for GenAI systems. Each pattern chapter uses a consistent for
 | 7.8 | [Cost & Performance Patterns](chapter-08-cost-performance-patterns.md) | 4 | Model tiering/routing, semantic caching, prompt compression, batch lanes, budget enforcement |
 | 7.9 | [Platform & Multi-tenancy Patterns](chapter-09-platform-multitenancy-patterns.md) | 4 | GenAI gateway, shared eval service, prompt registry, usage metering & chargeback, central model governance |
 | 7.10 | [Anti-patterns](chapter-10-anti-patterns.md) | 4 | Agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, unbounded autonomy |
+| 7.11 | [Predictive & Scoring Patterns](chapter-11-predictive-scoring-patterns.md) | 4 | Batch scoring, online feature-served inference, two-stage retrieve-then-rank, champion–challenger, shadow scoring, drift-triggered retraining, exploration slice |
 
 ## Exit criteria
 
