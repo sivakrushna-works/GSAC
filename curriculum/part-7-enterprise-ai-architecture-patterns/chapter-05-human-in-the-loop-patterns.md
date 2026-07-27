@@ -5,186 +5,258 @@
 | **Part** | 7 — Enterprise AI Architecture Patterns |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | ~1 hour 40 min (reading ~40 min, exercise ~60 min) |
 | **Prerequisites** | [3.1 LLM Capabilities & Limits](../part-3-core-building-blocks-of-genai/chapter-01-llm-capabilities-limits.md); [4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md); [2.8](../part-2-artificial-intelligence/chapter-08-responsible-ai.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Apply the human-in-the-loop pattern family in pattern-language form: approval gate, review sampling, escalation, confidence-based routing, and draft-not-send.
-2. Select the HITL pattern matched to the oversight need, using each pattern's context, forces, and consequences.
-3. Design human oversight that works, avoiding the rubber-stamp (2.8/4.4) and the bottleneck.
-4. Recognize the HITL patterns in the case studies, the oversight that makes probabilistic systems deployable.
+1. Apply the human-in-the-loop pattern family in pattern-language form: Reversibility Ladder, Approval Gate, Draft-Not-Send, Escalation, Confidence-Based Routing, Review Sampling, Oversight Telemetry, and Correction Capture.
+2. Choose an action's autonomy rung from two independent inputs — consequence severity and undo cost — not from how confident the model appears.
+3. Detect rubber-stamping with evidence (review-time distributions, disagreement trends, seeded probes, sampled re-review) and design against it.
+4. Size the human tier as an architectural constraint: escalation rate × review time is a headcount number that belongs in the business case.
+5. Convert human corrections into labeled evaluation data rather than audit-log exhaust.
 
 ## Introduction
 
-This chapter catalogs the human-in-the-loop pattern family — the human-oversight patterns that Parts 3–4 built (3.1's capability limits demanding oversight, 4.4's approval queues, 2.8's oversight-that-works), in pattern-language form (7.1). These are the patterns that make probabilistic systems (3.1) deployable by keeping humans in the loop where the stakes demand it, and this chapter is the reference for the oversight patterns — designed to work (2.8's oversight-effectiveness), not rubber-stamp.
+Every other component in an AI architecture fails by breaking. The human tier fails by *agreeing*. A reviewer who approves everything leaves the same records as one who reads everything, costs more than the automation they supervise, and supplies confidence the organization has not earned — worse than no gate, because an ungated system is at least known to be ungated.
 
-The framing: **human-in-the-loop patterns keep humans in the loop where the stakes demand, designed to work** — the patterns (approval gate, review sampling, escalation, confidence routing, draft-not-send) that place human oversight where the capability limits (3.1) and stakes (the consequential — 3.7, the regulated — 2.8) demand it, designed to be effective (2.8's disagreement support, not rubber-stamp) and not a bottleneck (4.4's SLA'd queues), and this chapter is the reference.
+That asymmetry organizes the family. **Placement patterns** decide where the human sits — Approval Gate, Draft-Not-Send, Escalation, Confidence-Based Routing, Review Sampling — and most designs get placement roughly right. **Integrity patterns** decide whether the human is actually looking — Oversight Telemetry, Correction Capture — and their absence is the standard review finding. Upstream of both sits the Reversibility Ladder, answering what placement assumes settled: how much autonomy has this action earned?
+
+Two facts about people constrain the rest. Attention is finite and depletes across a shift. And vigilance decays fastest where automation performs best — the long run of correct outputs that makes a system valuable is the run that teaches its reviewer to stop reading.
 
 ## Business Motivation
 
-The human-in-the-loop patterns are what make probabilistic systems deployable in the high-stakes enterprise — the oversight that lets the enterprise deploy GenAI where the stakes demand human accountability (the consequential actions — 3.7, the regulated decisions — 2.8/4.14). Without effective HITL: the probabilistic system's errors (3.1) reach the consequential outcome un-caught (the hallucinated value acted on — 3.4, the wrong decision — 2.8), or the oversight is theater (the rubber-stamp — 2.8/4.4, the human approving at 97% without reviewing — the oversight that doesn't oversee). With effective HITL: the human catches the errors where the stakes demand (the approval gate on the consequential — 3.7, the review of the regulated — 2.8), designed to work (the disagreement support — 2.8, not rubber-stamp) and not a bottleneck (the SLA'd queues — 4.4). The business case is the deployability-and-accountability one: the effective HITL patterns make the probabilistic system deployable in the high-stakes enterprise (the human accountability where the stakes demand — 2.8/4.14's oversight obligations), designed to work (2.8's effectiveness) and not obstruct (4.4's SLA), and the HITL pattern family is the reference for the oversight that makes GenAI deployable where it matters most.
+The human tier is usually the most expensive component in a GenAI system and the only one that cannot be scaled by editing a config value. Its cost is arithmetic owed to the business case before the design review. A workflow handling 10,000 items a day that escalates 30% at 8 minutes each consumes 400 review-hours daily; against a realistic 5–6 hours of sustained review per person-day, that is roughly 70 reviewers. This is not an operations detail discovered in month four — it is frequently the dominant [TCO](../../GLOSSARY.md) line ([6.10](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)), and halving review time through queue design is worth more than any model upgrade on the table.
+
+The second cost is unbudgeted: false assurance. When Corvid's declaration-approval queue reached 96% approval, it was still fully staffed and fully paid — it had simply stopped catching anything ([4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md)). The organization was buying the cost of oversight and the risk of none, at once. Regulators test the same seam: high-risk-tier obligations ask whether oversight is *effective*, not whether a human appears in the flow diagram ([2.8](../part-2-artificial-intelligence/chapter-08-responsible-ai.md), [4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)). A gate that cannot evidence its own effectiveness is a liability wearing a control's uniform.
 
 ## Theory — The Human-in-the-Loop Pattern Catalog
 
-### Pattern: Approval Gate
+### Choosing the rung
 
-- **Context** — a consequential action the AI proposes but a human must approve (3.7's consequence gates, 4.4's approval queues).
-- **Problem** — the consequential action that shouldn't execute on the AI's judgment alone (3.7 — the irreversible, the high-stakes).
-- **Forces** — the automation (the speed) vs. the accountability (the human approval — 2.8), the queue latency (4.4).
-- **Solution** — the AI proposes, the human approves before execution (3.7/4.4), with context-rich queue items (4.4 — what, why, cost-of-error), SLA'd (4.4), rubber-stamp-monitored (2.8/4.4 — seeded probes).
-- **Structure** — AI proposes → approval queue (context-rich, SLA'd) → human approves → execute (4.4).
-- **Consequences** — the human accountability on the consequential (2.8); the queue latency and the rubber-stamp risk (4.4 — SLA and monitoring).
-- **Known uses** — Corvid's customs-filing approval (4.4), Vantora's password-reset gate (3.7), CS06 (RM copilot suitability approval).
-- **Related** — Confidence Routing (the gate condition), the consequence gates (3.7), the tool sandbox (7.4).
+#### Pattern: Reversibility Ladder
 
-### Pattern: Review Sampling
+- **Context** — a capability about to receive autonomy, where "human in the loop or not" is being argued as a binary.
+- **Problem** — the binary is wrong both ways: reviewing trivially reversible actions burns attention needed elsewhere; automating irreversible ones is a wager on a probabilistic system.
+- **Forces** — consequence severity vs. undo cost, which are independent (a wrong deletion is severe *because* undo is impossible; a wrong draft sentence is cheap because the writer deletes it); velocity vs. accountability; and the organizational pull toward the highest rung the demo appeared to support.
+- **Solution** — place each action class on four explicit rungs and justify the choice. **Suggest**: output appears, human takes or ignores it. **Draft-for-approval**: nothing happens until a human commits. **Act-then-notify**: it executes, the human is told, a real undo window exists. **Autonomous**: executes silently, audited afterward. Climbing requires a measured error rate for that class plus an owner who accepts the residual risk; descending is always available and is not a failure.
+- **Structure** — action class → severity × undo-cost assessment → rung → the placement pattern implementing it.
+- **Consequences** — attention concentrates where it changes outcomes, because cheap-to-undo actions stop consuming it. Costs: per-class design work, and an uncomfortable conversation about who signs for each rung. Act-then-notify is the commonly botched rung — honest only if the undo path is implemented and tested, not merely described.
+- **Known uses** — mail clients offering a short "undo send" window instead of a pre-send confirmation; editors that auto-format on save while dependency-update bots open a pull request rather than pushing to the default branch; spam filters that quarantine rather than delete.
+- **Related** — every placement pattern below; consequence classes ([3.7](../part-3-core-building-blocks-of-genai/chapter-07-function-calling-tool-use.md)); the tool sandbox (7.4).
 
-- **Context** — a high-volume output where full review is a bottleneck but no review is a risk (4.4/2.8).
-- **Problem** — the volume that makes full review theater (the rubber-stamp — 2.8) but no review risky (4.4).
-- **Forces** — the coverage vs. the cost (the sampling — 4.4), the risk (the un-sampled error).
-- **Solution** — sample the outputs for human review (4.4's sampling policy — the disagreements, the outliers, the random baseline, the new-deploy windows), feeding the failure taxonomy (4.4).
-- **Structure** — outputs → sampling policy → human review → failure taxonomy (4.4).
-- **Consequences** — the coverage where it matters (the sampled) at the affordable cost; the un-sampled risk (accepted, monitored — 4.4).
-- **Known uses** — the agent-fleet trajectory sampling (4.4), CS11 (product catalog enrichment quality sampling).
-- **Related** — Approval Gate (the full-review alternative for the consequential), the eval sampling (4.7).
+### Placement patterns — where the human sits
 
-### Pattern: Escalation
+#### Pattern: Approval Gate
 
-- **Context** — a case the AI can't handle or shouldn't (the low-confidence, the out-of-scope, the high-stakes — 3.1/3.8).
-- **Problem** — the case beyond the AI's competence that needs a human (3.1's capability limits, 3.6's refusal).
-- **Forces** — the escalation (the human handling) vs. the context loss (4.4 — the escalation-as-log-dumping anti-pattern).
-- **Solution** — the AI escalates with resumable context (4.4 — the trajectory summary, the blocking question, the state), the human resolves and the task resumes (4.4/4.6).
-- **Structure** — AI (can't handle) → escalate (resumable context — 4.4) → human resolves → resume (4.6).
-- **Consequences** — the human handling of the beyond-competence cases; the escalation quality (the resumable context, not log-dumping — 4.4).
-- **Known uses** — Meridian's pharmacy-line escalation (3.6), CS02 (patient triage escalation to nurses), all designed-refusal systems (3.6).
-- **Related** — Confidence Routing (the escalation trigger), the designed refusal (3.6), the checkpoint-and-resume (7.4).
+- **Context** — an action on the draft-for-approval rung: a payment released, a filing submitted, a record written to a system of authority.
+- **Problem** — the action must not execute on the model's judgment alone, and the approval must be a decision rather than a reflex.
+- **Forces** — throughput vs. scrutiny; queue latency vs. batching (reviewers are faster per item in a batch and worse per item late in a long one); and the decisive one, effort asymmetry — approving is a click, rejecting is an argument, so the default drifts toward approval unless the design fights it.
+- **Solution** — the model proposes, a human commits. The queue item carries the proposed action, its evidence, the model's uncertainty, and the cost of being wrong. Rejection costs what approval costs, and overrides in either direction record a short reason. Classes with sustained error-free history earn value-capped auto-approval, leaving the queue its judgment-requiring residue ([4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md)).
+- **Structure** — propose → queue (evidence, uncertainty, blast radius, SLA) → approve / reject-with-reason → execute → outcome logged against the decision.
+- **Consequences** — accountability lands on a named person and the audit trail is genuine. The costs are blunt: reviewer capacity becomes a hard throughput ceiling, queue latency is added to every gated action, and this is the family's most rubber-stampable pattern precisely because approval is the low-effort path. A gate without Oversight Telemetry is unfalsifiable.
+- **Known uses** — pharmacist verification of prescriber orders before dispensing; branch protection requiring a reviewer's approval before merge; step-up authentication holding a flagged card transaction until the cardholder confirms. *Worked instance (fictional):* Corvid's declaration-submission gate ([4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md)).
+- **Related** — Confidence-Based Routing (chooses which items arrive); Reversibility Ladder (decides whether a gate is the right rung); Oversight Telemetry (the only proof it works).
 
-### Pattern: Confidence-Based Routing
+#### Pattern: Draft-Not-Send
 
-- **Context** — outputs of varying confidence where the low-confidence needs human review (3.1/2.8).
-- **Problem** — the uniform treatment of varying-confidence outputs (the low-confidence treated as the high-confidence — the error reaches the outcome).
-- **Forces** — the confidence signal quality vs. the routing (the low-confidence to human, the high-confidence automated).
-- **Solution** — route by confidence (the high-confidence automated, the low-confidence to human review/approval — 2.8's confidence-based oversight, 4.4's evidence-based auto-approval).
-- **Structure** — output + confidence → route (high → automate, low → human) (2.8/4.4).
-- **Consequences** — the human review where the confidence is low (the risk-proportionate oversight); the confidence-signal quality (the calibration — 2.7).
-- **Known uses** — Bellhaven's low-confidence extraction to underwriter review (3.4/4.4), Corvid's evidence-based auto-approval (4.4).
-- **Related** — Approval Gate (the low-confidence route), Escalation (the low-confidence escalation), the calibration (2.7).
+- **Context** — the suggest rung applied to authored artifacts: correspondence, reports, clinical notes, code, translations.
+- **Problem** — generated text is fluent enough to be adopted without being read, and once it goes out under a person's name the organization owns it.
+- **Forces** — drafting economics (editing is cheaper than authoring — [3.1](../part-3-core-building-blocks-of-genai/chapter-01-llm-capabilities-limits.md)) vs. anchoring: a plausible draft narrows what the human considers, so the assistant's errors become the human's more often than an independent-review model predicts. Fluency also masks uncertainty — the draft reads equally confident where it is guessing.
+- **Solution** — make the human the author, not the approver: the artifact opens in an editable surface, editing is the normal path rather than a rejection, and nothing leaves without a deliberate send. Uncertain spans are marked and generated claims carry sources, so the human can check instead of trust. Where the artifact enters a record of consequence, sign-off is explicit and attributed.
+- **Structure** — generate → editable surface (uncertainty marked, sources attached) → human edits and owns → send → edit deltas retained.
+- **Consequences** — throughput rises without transferring authorship to the model, and the edit stream is the family's richest feedback signal. Cost: review time never reaches zero and should not — a drafting tool whose users have stopped editing is an unmonitored autonomous system with a person's name on the output. Anchoring means the pattern cuts effort more reliably than it cuts error.
+- **Known uses** — inline sentence completion in mail clients (Gmail's Smart Compose) and inline code suggestion in IDEs (GitHub Copilot), where a suggestion is offered and the human accepts, edits, or ignores it; ambient clinical documentation tools requiring clinician review and attestation before a note enters the record; machine-translation post-editing as a defined production tier. *Worked instance (fictional):* Kestrel's adjuster correspondence ([1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md)).
+- **Related** — Approval Gate (when a second person is needed, not just an author); Correction Capture (consumes the edit deltas); Confidence-Based Routing (sets how closely a draft is read).
 
-### Pattern: Draft-Not-Send
+#### Pattern: Escalation
 
-- **Context** — a communication or action the AI drafts but a human owns before it goes out (3.1's drafting, Kestrel's correspondence).
-- **Problem** — the AI's output going out un-owned (the un-reviewed communication, the un-owned action — 3.1's consequential).
-- **Forces** — the drafting value (the editing-cheaper-than-authoring — 3.1) vs. the human ownership (the final artifact owned by a human).
-- **Solution** — the AI drafts, a human reviews/edits/owns before it goes out (3.1's draft-not-send, Kestrel's adjuster review).
-- **Structure** — AI drafts → human reviews/edits/owns → send (3.1).
-- **Consequences** — the drafting value (the editing-cheaper — 3.1) with the human ownership; the review effort (the human owns the final).
-- **Known uses** — Kestrel's correspondence drafting (1.6/2.6), CS46 (HR case-management drafting), most customer-communication AI.
-- **Related** — Approval Gate (the send-approval), Human review of the drafted output.
+- **Context** — a case the system cannot handle or should not attempt: outside its knowledge, outside its authority, or serious enough that a person must own it.
+- **Problem** — the handoff discards everything already established, so the human restarts from zero while the user repeats themselves — and a costly, humiliating escalation path teaches everyone to avoid escalating.
+- **Forces** — escalation rate vs. human capacity, the throughput equation in its rawest form; handoff completeness vs. handoff length — dumping a raw trajectory is as unhelpful as sending nothing, and the reviewer pays the difference in reading time.
+- **Solution** — escalate with a resumable package: what the user wants, what was established, the specific blocking question, and the state needed to continue. The receiving human resolves and the work resumes rather than restarts. Refusal is designed as a routed action — "I can't answer that; here is who can, one tap" — so escalation is a service rather than a dead end ([3.6](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md)).
+- **Structure** — detect (low confidence ∨ out of scope ∨ policy ∨ user request) → package context → route to the right skill tier → resolve → resume, resolution recorded.
+- **Consequences** — hard cases reach competent people quickly, and the escalation stream is a free backlog of what the system cannot yet do. The underestimated costs: escalation rate directly sets specialist headcount; escalations arrive in the bursts that already stress the human tier; a rate drifting upward after a model change is a silent staffing problem. Escalation targets are usually the scarcest people in the organization.
+- **Known uses** — contact-centre warm transfer, where the assistant's transcript and case context travel with the customer to a live agent; nurse triage lines receiving routed patient questions; tiered technical support with a documented handoff record. *Worked instance (fictional):* Meridian's clinical pharmacology routing ([3.6](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md)).
+- **Related** — Confidence-Based Routing (the usual trigger); checkpoint-and-resume (7.4); designed refusal ([3.6](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md)).
+
+#### Pattern: Confidence-Based Routing
+
+- **Context** — high-volume output where quality varies item to item and reviewer attention must be allocated rather than spread.
+- **Problem** — uniform treatment spends scarce attention on items that did not need it while giving hard ones no more scrutiny than easy ones.
+- **Forces** — signal reliability vs. the consequence of trusting it, and this is the pattern's honest weakness: self-reported model confidence is often poorly [calibrated](../../GLOSSARY.md), and confidently wrong outputs are exactly what routing sends down the automated lane. Stakes and novelty are independent axes, and frequently better predictors of where review pays.
+- **Solution** — route on a composite of confidence, stakes, and novelty. High-confidence, low-stakes, familiar items automate; anything high-stakes is reviewed regardless of confidence; anything novel — new document type, new segment, the weeks after a model or prompt change — is reviewed regardless of confidence. Prefer verifiable signals (retrieval score, schema validation, a cross-check against a system of record) over the model's self-estimate, and recalibrate thresholds against measured error rates on every change ([2.7](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md)).
+- **Structure** — output + signals → route (automate / light review / full review / gate) → outcome logged with the routing decision → periodic calibration check, including a sampled audit of the automated lane.
+- **Consequences** — review capacity concentrates where it changes outcomes, the single largest lever on the throughput equation. Costs: the fast lane is seen by no human, so its error rate must be sampled or it is unknown; thresholds decay silently as inputs shift; and a miscalibrated signal turns an oversight design into a filter that reliably hides its own mistakes.
+- **Known uses** — document capture and payment processing, where fields below a recognition-confidence threshold route to human keying while the rest post automatically; spam filtering routing by score to inbox, quarantine, or block; content moderation where classifiers auto-action clear cases and queue borderline ones for human reviewers. *Worked instance (fictional):* Bellhaven's low-confidence extractions to underwriter review ([3.4](../part-3-core-building-blocks-of-genai/chapter-04-structured-outputs.md)).
+- **Related** — Review Sampling (measures the automated lane); Escalation and Approval Gate (the review destinations); [calibration](../../GLOSSARY.md) ([2.7](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md)).
+
+#### Pattern: Review Sampling
+
+- **Context** — volume at which full review is arithmetically impossible, and the real choice is between honest partial coverage and pretended total coverage.
+- **Problem** — no review means customers find the errors; nominal full review at volume means seconds per item, which is not review.
+- **Forces** — statistical coverage vs. cost; random sampling (defensible, estimates the true rate) vs. targeted sampling (finds more defects, estimates nothing). Both are needed, and mixing them without labels corrupts both purposes.
+- **Solution** — a written policy with named strata: a **random** slice sized to bound the error estimate, a **targeted** slice (low-confidence, high-value, unusual, complained-about), and a **change-window** slice after every model, prompt, or corpus change. Findings land in a shared failure taxonomy rather than individual tickets, so patterns become visible ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)). Residual risk on the unsampled majority is stated and accepted by a named owner.
+- **Structure** — population → strata (random / targeted / change-window) → reviewer queue → findings → taxonomy → fixes and [eval](../../GLOSSARY.md) cases.
+- **Consequences** — a defensible error-rate estimate for a fixed, plannable review budget, plus a steady supply of real failure examples. Costs: sampling reviewers see mostly correct output, the strongest driver of automation bias there is, so this pattern needs seeded probes more than any other; and the honest answer to "did we catch every error?" becomes "no — here is our measured rate", which some sponsors need preparing for.
+- **Known uses** — technology-assisted review in e-discovery, where a human-reviewed validation sample is the accepted evidence that a classifier's cutoff is defensible; contact-centre quality monitoring scoring a sampled percentage of interactions; acceptance sampling in manufacturing quality control, the discipline this pattern borrows from. *Worked instance (fictional):* Averline's catalog-enrichment sampling ([CS11](../../case-studies/cs11-product-catalog-enrichment.md)).
+- **Related** — Confidence-Based Routing (defines the strata); Oversight Telemetry (watches the samplers); the Exploration Slice ([7.11](chapter-11-predictive-scoring-patterns.md) — the classical-lane sibling).
+
+### Integrity patterns — what keeps the human tier real
+
+#### Pattern: Oversight Telemetry
+
+- **Context** — any deployed oversight mechanism whose effectiveness is currently asserted rather than measured.
+- **Problem** — automation bias is not a character flaw but the predictable result of asking a person to check a system that is usually right. Rubber-stamping therefore emerges over time in mechanisms that worked at launch, and it emerges invisibly: a stamping reviewer and a diligent one leave identical approval records.
+- **Forces** — measuring reviewers vs. trusting them (these metrics are performance-adjacent employee data with real consultation and privacy implications — [1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md), [4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)); and a diagnostic ambiguity — a falling disagreement rate means an improving model *or* a decaying reviewer, and the two demand opposite responses.
+- **Solution** — instrument the oversight, not just the model. Track **review-time distributions** (the left tail is the signal: decisions faster than the item can be read), **disagreement rate per reviewer and per class** as a trend, **seeded probes** — deliberately flawed items injected at a low rate, whose catch rate directly measures the mechanism — and **sampled re-review**, a second reviewer independently judging approved items. Design against the bias too: surface uncertainty instead of a bare conclusion, show the evidence needed to disagree, require a stated reason on override. Treat findings as design defects — better queue UX or a raised auto-approval threshold, never continued theatre.
+- **Structure** — oversight events → telemetry (time, verdict, edits, reasons) + probe injection + re-review sample → effectiveness dashboard with thresholds → scheduled review of the *mechanism*.
+- **Consequences** — the gate becomes falsifiable and its effectiveness becomes evidence an auditor can be shown. Costs: probes consume reviewer time on work that was never real, re-review multiplies cost on the sampled slice, and the metrics need a governance agreement — published as system-quality measurement, not individual surveillance, or reviewers will resist and game them. Expect the first honest measurement to be uncomfortable.
+- **Known uses** — the human-factors research tradition on automation bias, which established that unsupported monitors of reliable automation miss errors at high rates; hospital programmes measuring alarm response and alarm-fatigue indicators; disengagement reporting required of automated-vehicle testing, which measures the human supervisor rather than the system. *Worked instance (fictional):* Corvid's seeded probes catching two sail-throughs ([4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md)).
+- **Related** — every placement pattern (each needs this); oversight effectiveness ([2.8](../part-2-artificial-intelligence/chapter-08-responsible-ai.md)); governance reporting ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)).
+
+#### Pattern: Correction Capture
+
+- **Context** — an oversight mechanism already producing thousands of human judgements a month: approvals, rejections, edits, escalation resolutions.
+- **Problem** — those judgements are the most expensive labels the organization will ever buy, and by default they land in an audit log nobody reads — so the system repeats a mistake indefinitely while people are paid to catch it each time.
+- **Forces** — capture richness vs. reviewer burden (every field is time multiplied by volume, and mandatory free-text justification degrades into "ok" within weeks); label quality vs. quantity — reviewers are not infallible annotators, and their corrections carry the same automation bias the telemetry watches for.
+- **Solution** — capture the *diff*, not just the verdict: what changed, plus a reason from a short structured taxonomy with optional free text. Route corrections to three destinations — the [evaluation](../../GLOSSARY.md) set as regression cases, the prompt and retrieval backlog as fixes, and rung evidence showing whether a class has earned more autonomy. Close the loop visibly: reviewers who see their corrections change behaviour keep correcting carefully; those who see nothing happen stop bothering.
+- **Structure** — human decision → diff + structured reason → triage → eval cases ∥ backlog items ∥ rung evidence → effect reported back to reviewers.
+- **Consequences** — oversight cost partly converts into a durable asset, and rung promotions become evidence-based rather than optimistic. Costs: capture friction is charged to the scarcest resource in the system, triage must be staffed by someone with authority to act, and the correction set is biased toward what reviewers happen to notice — it complements a golden set, never replaces one.
+- **Known uses** — suggestion acceptance and edit rates as the primary quality telemetry of code-completion assistants; post-editing distance in machine translation, used to price work and target engine improvement; moderation appeal reversals fed back as corrected labels.
+- **Related** — Draft-Not-Send (richest correction source); Review Sampling (feeds the taxonomy); Reversibility Ladder (corrections are the evidence for climbing); eval architecture ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)).
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart TD
-    OUTPUT[AI output/action] --> CONF{Confidence Routing<br/>by confidence — 2.8/4.4}
-    CONF -->|high| AUTO[Automated]
-    CONF -->|low| HUMAN[Human review]
-    OUTPUT -->|consequential| GATE[Approval Gate<br/>propose → approve — 3.7/4.4]
-    OUTPUT -->|high-volume| SAMPLE[Review Sampling<br/>sample → taxonomy — 4.4]
-    OUTPUT -->|communication| DRAFT[Draft-Not-Send<br/>draft → human owns — 3.1]
-    OUTPUT -->|beyond competence| ESCALATE[Escalation<br/>resumable context — 4.4]
-    ALL[All designed to work — 2.8<br/>disagreement support, SLA'd, monitored] -.the effectiveness.-> GATE & SAMPLE & ESCALATE & DRAFT & HUMAN
+    ACT[Proposed output or action] --> LADDER{Reversibility Ladder<br/>severity × undo cost}
+    LADDER -->|suggest| DNS[Draft-Not-Send<br/>human authors and owns]
+    LADDER -->|draft-for-approval| ROUTE{Confidence-Based Routing<br/>confidence + stakes + novelty}
+    LADDER -->|act-then-notify| UNDO[Execute + undo window]
+    LADDER -->|autonomous| AUTO[Execute + audit]
+    ROUTE -->|high stakes / low confidence| GATE[Approval Gate<br/>reason on override]
+    ROUTE -->|beyond competence| ESC[Escalation<br/>resumable package]
+    ROUTE -->|automated lane| AUTO
+    UNDO --> SAMPLE[Review Sampling<br/>random + targeted + change-window]
+    AUTO --> SAMPLE
+    GATE --> CAP[Correction Capture<br/>diffs to evals, backlog, rung evidence]
+    ESC --> CAP
+    DNS --> CAP
+    SAMPLE --> CAP
+    TEL[Oversight Telemetry<br/>review times · disagreement · probes · re-review] -.measures.-> GATE & ESC & DNS & SAMPLE
+    CAP -.evidence to climb or descend.-> LADDER
 ```
 
-Readings. **The HITL patterns place oversight by the stakes and confidence** — the approval gate (the consequential — 3.7), the review sampling (the high-volume — 4.4), the escalation (the beyond-competence — 3.1), the confidence routing (the low-confidence — 2.8), the draft-not-send (the communication — 3.1) — each placing the human where the stakes and confidence demand (the risk-proportionate oversight — 2.8). **All designed to work, not rubber-stamp** — the effectiveness (2.8's disagreement support — the human sees what they need to disagree, the SLA'd queues — 4.4 avoiding the bottleneck, the rubber-stamp monitoring — 2.8/4.4's seeded probes, the auto-approval for the earned classes — 4.4) — the oversight designed to be effective (2.8's oversight-effectiveness), not the theater (the rubber-stamp — 2.8/4.4). **And the patterns combine** — a system combines the HITL patterns (the confidence routing gating to the approval gate for the low-confidence consequential, the draft-not-send with the approval gate — 7.1's combination), the oversight architecture as a combination of HITL patterns (matched to the stakes and confidence).
+Three readings. **The ladder is upstream of placement** — most oversight arguments in design reviews are unstated disagreements about the rung; settle severity and undo cost first and the placement pattern follows. **Every path that bypasses a human ends at Review Sampling** — the automated lane is not the un-reviewed lane but the statistically reviewed one, and a fast lane without sampling has an unmeasured error rate by construction. **The loop closes or the design decays** — corrections feed evidence back to the ladder, which is how a system earns autonomy; without that arrow the rung never changes, review cost never falls, and the business case erodes as volume grows against fixed reviewer capacity.
 
 ## Real-world Example
 
-**Kestrel Assurance** (the recurring correspondence system — 1.6, 2.6) built its oversight as a HITL-pattern composition, and the composition is the human-in-the-loop pattern family applied with the effectiveness discipline. The draft-not-send pattern (3.1) was the core (the correspondence drafted, the adjuster reviews/edits/owns before sending — Kestrel's adjuster review — 1.6). The confidence routing (2.8/4.4) layered on (the low-confidence drafts to closer review, the high-confidence to lighter — the risk-proportionate). The approval gate (3.7/4.4) gated the consequential (the liability-line-flagged drafts to mandatory review — 4.8's guardrail-to-approval). The escalation (4.4) handled the beyond-competence (the complex claims the AI couldn't draft well escalated to senior adjusters with resumable context — 4.4). And the effectiveness discipline was central (2.8): the oversight was designed to work (the adjusters saw the draft, the flags, the source — the disagreement support — 2.8; the queues SLA'd — 4.4; the rubber-stamp monitored — 2.8/4.4's seeded probes — the deliberately-flawed draft catching the sail-throughs). The HITL-pattern composition was the oversight architecture: draft-not-send (the core) + confidence routing (the risk-proportionate) + approval gate (the consequential) + escalation (the beyond-competence) — all designed to work (2.8's effectiveness), not rubber-stamp — the oversight that made Kestrel's probabilistic correspondence system deployable (the human accountability where the regulatory stakes demanded — 2.8/4.14). Marta's HITL-patterns note: *"Our correspondence oversight is a HITL-pattern composition: draft-not-send (the adjuster owns the letter), confidence routing (the low-confidence to closer review), approval gate (the liability-flagged to mandatory review), escalation (the complex to senior adjusters). All designed to work — the disagreement support (2.8 — the adjuster sees the draft, flags, source), the SLA'd queues (4.4 — not a bottleneck), the rubber-stamp monitoring (the seeded probes catching the sail-throughs). The HITL patterns are what made the probabilistic system deployable — the human accountability where the stakes demanded, designed to be effective, not theater. That's the oversight that makes GenAI deployable where it matters: place the human by the stakes, and design the oversight to actually oversee."*
+**Kestrel Assurance** (the workplace-injury insurer of [1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md); fictional) built claims-correspondence drafting, and the instructive part is the year *after* launch. Placement was sound: Draft-Not-Send at the core (adjusters edit and send, owning the letter), Confidence-Based Routing setting review depth, an Approval Gate on liability-flagged drafts, Escalation to senior adjusters on complex claims. Placement was also not enough.
+
+Month five brought the finding. Median review time on routed drafts had fallen from just over four minutes to under one, and edit rates had fallen with it — the team's first reading was that the model had improved, which was partly true and entirely convenient. Seeded probes settled it: a weekly injected draft carrying a materially wrong benefit period that any reading adjuster would catch. The first quarter's catch rate was under half. The response was three design changes, none of them a memo about diligence. The queue was rebuilt to show uncertainty and evidence rather than clean prose — the source policy clause beside every quoted figure, uncertain spans marked, and the independently computed benefit period displayed next to the drafted one. Rejection became one click, matching approval, with a four-code reason taxonomy. And the correction diffs, previously written to a table nobody read, were triaged weekly: the top reason code proved to be a single retrieval error affecting one policy family, fixed in a fortnight, which had been costing adjusters hundreds of small edits a month.
+
+The capacity number moved too, which is what leadership cared about. Routing was re-cut on stakes and novelty rather than confidence alone, moving a large low-stakes class into light review and freeing the attention that made the remaining reviews genuine — review times on the gated class roughly doubled, which is what a working gate looks like. Reviewer headcount in the business case was revised upward once, honestly, then held flat as volume grew.
 
 ## Hands-on Exercise
 
-**Compose human-in-the-loop patterns.** ~90 minutes. For a GenAI system with oversight needs (real or a case study).
+**Design and stress-test a human-in-the-loop tier.** ~60 minutes. Use a system you know or a case study with real oversight needs.
 
-1. **Oversight-need analysis (25 min).** For a GenAI system, analyze the oversight needs by stakes and confidence: what's consequential (needs an approval gate), high-volume (needs review sampling), beyond-competence (needs escalation), varying-confidence (needs confidence routing), communication (needs draft-not-send). Map the needs to the patterns.
-2. **The pattern-language form (20 min).** For one selected pattern, write its full pattern-language form.
-3. **The effectiveness design (30 min).** For the oversight, design the effectiveness (2.8): the disagreement support (what the human sees to disagree), the SLA (the queue not a bottleneck — 4.4), the rubber-stamp monitoring (the seeded probes — 2.8/4.4), the auto-approval for the earned classes (4.4). Show how it avoids the rubber-stamp and the bottleneck.
-4. **The composition (15 min).** Compose the HITL patterns into the oversight architecture (matched to the stakes and confidence), all designed to work.
+1. **Rung assignment (10 min).** List 5–8 distinct action classes. Score consequence severity and undo cost separately for each, assign a rung, and name the evidence that would justify climbing one.
+2. **Placement and capacity (20 min).** Choose the placement pattern implementing each rung. Then compute the tier: volume × review rate × minutes per review for each reviewed class, totalled and converted to reviewers at 5–6 sustained review hours per person-day. Write headcount and annual cost as a line item.
+3. **Rubber-stamp design review (20 min).** Take the highest-volume reviewed class and specify: the seeded-probe design (what a probe looks like, injection rate, who owns the catch rate), two telemetry thresholds that would trip an investigation, and three concrete changes to what the reviewer sees — uncertainty, evidence, and a reason taxonomy of at most five codes.
+4. **Close the loop (10 min).** Specify where corrections go: which become regression [eval](../../GLOSSARY.md) cases, which become backlog items, and what evidence would move one class up a rung within six months.
 
 **Acceptance criteria:**
-- [ ] Oversight needs mapped to the HITL patterns (by stakes and confidence)
-- [ ] One pattern in the full pattern-language form
-- [ ] The effectiveness designed (disagreement support, SLA, rubber-stamp monitoring, auto-approval — 2.8/4.4)
-- [ ] The oversight architecture as a HITL-pattern composition, designed to work
+- [ ] Every action class has a rung, with severity and undo cost scored separately
+- [ ] Reviewer headcount and annual cost computed from stated volume and review-time assumptions
+- [ ] Seeded-probe design specified, including injection rate and the owner of the catch rate
+- [ ] Two named telemetry thresholds that would trigger investigation
+- [ ] Reviewer-facing changes name the uncertainty and evidence shown, plus a reason taxonomy of ≤5 codes
+- [ ] Correction routing specified to evals, backlog, and rung evidence
 
 ## Enterprise Considerations
 
-The human-in-the-loop patterns are the enterprise's oversight reference, connecting to the responsible-AI and compliance obligations. **They're the oversight reference** (2.8/4.14/7.1): the HITL pattern family is the enterprise's reference for the human oversight (2.8's oversight-that-works, 4.14's oversight obligations), the patterns that make the probabilistic systems deployable in the high-stakes enterprise. **They meet the responsible-AI and compliance oversight obligations** (2.8/4.14): the HITL patterns are how the enterprise meets the human-oversight obligations (2.8's high-risk-tier oversight, 4.14's compliance oversight), so the HITL patterns are compliance-and-responsible-AI controls (the oversight the regulations require — 2.8/4.14). **The effectiveness is a governance concern** (2.8/6.9): the oversight-effectiveness (2.8 — the rubber-stamp monitoring, the disagreement support) is governed (6.9 — the regulators test the oversight effectiveness — 2.8), so the HITL patterns' effectiveness is a governance concern (the effective oversight, not theater). **And the supervision cost is a business-case line** (4.4/6.10): the HITL patterns' human cost (the review queues, the approval — 4.4's supervision cost) is a business-case line (6.10's organizational TCO — the supervision as real headcount — 4.4), so the HITL patterns connect to the business case (the supervision cost priced — 6.10).
+Three enterprise realities reshape these patterns. **Oversight metrics are employee data** — per-reviewer approval rates and decision times are performance-adjacent, and where works councils or equivalent bodies exist they are consultable before deployment, not after ([1.6](../part-1-professional-foundation/chapter-06-requirements-stakeholders.md), [4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)); governed as system-quality measurement with defined access the programme survives, framed as individual scorecards reviewers optimize the metric instead of the outcome. **Effectiveness is the audit question** — high-risk-tier regimes ask what oversight *achieved*, and the answerable form is probe catch rates, re-review agreement, and override reasons ([2.8](../part-2-artificial-intelligence/chapter-08-responsible-ai.md), [6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)). **The tier is an operational commitment, not a launch cost** — reviewer capacity needs a rota, holiday and attrition cover, a training pipeline for a domain-skilled role, and a surge plan, because escalation bursts correlate with the incidents already straining the organization. When review volume outgrows capacity there are two honest forks: raise the rung on classes with the evidence, or reduce input volume. Silently shrinking review time per item is the third, and it is how oversight becomes theatre without anyone deciding to make it so.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Oversight for the consequential | Approval gate (full review) | Confidence routing (sampled) | The action is high-stakes/irreversible (3.7) | The volume makes full review theater and the confidence signal is good (4.4) |
-| High-volume oversight | Review sampling | Full review | The volume makes full review a bottleneck (4.4) | Low volume, high stakes — full review affordable |
-| Oversight effectiveness | Designed to work (disagreement support, monitoring) | Rubber-stamp (nominal human) | Always — the effective oversight (2.8) | Never rubber-stamp; the theater fails the obligations (2.8/4.14) |
-| Auto-approval | Evidence-based for earned classes (4.4) | Human approval for all | The class has earned it (the sustained zero-edit — 4.4) | Early life, new classes, regulated — human approval (4.4) |
+| Autonomy rung | Draft-for-approval (gate) | Act-then-notify (undo window) | Severe consequence, or undo is expensive/impossible | Undo is cheap and tested, and gate latency would break the use case |
+| Coverage at volume | Review Sampling with stated residual risk | Nominal full review | Volume forces per-item review under a minute | Volume is genuinely reviewable at the time the work needs |
+| Routing signal | Model confidence | Stakes + novelty, confidence as one input | The signal is calibrated against measured error rates | Confidence is uncalibrated, or the costly errors are the confident ones |
+| Rubber-stamp response | Fix the design (queue UX, uncertainty display, raise the rung) | Exhort reviewers to be diligent | Always — automation bias is structural, not attitudinal | Never; exhortation has no measurable half-life |
+| Capacity shortfall | Raise the rung on evidenced classes, or cut input volume | Reduce review time per item | The evidence exists, or the volume is genuinely optional | Never deliberately — this is where theatre begins |
 
 ## Common Mistakes
 
-1. **The rubber-stamp** — the nominal human oversight (the 97%-approval-in-5-seconds — 2.8/4.4), the theater; the effective oversight (2.8 — the disagreement support, the rubber-stamp monitoring).
-2. **The bottleneck** — the oversight queue that backs up (the un-SLA'd approval — 4.4), the velocity killer; the SLA'd queues (4.4), the auto-approval for the earned classes (4.4).
-3. **Escalation-as-log-dumping** — the escalation handing the human raw context (4.4); the resumable context (the trajectory summary, the blocking question — 4.4).
-4. **Uniform treatment of varying confidence** — the low-confidence treated as the high-confidence (the error reaches the outcome); the confidence routing (2.8/4.4).
-5. **No oversight on the consequential** — the consequential action on the AI's judgment alone (3.7); the approval gate (3.7/4.4).
-6. **The un-owned communication** — the AI's communication going out un-owned (3.1); the draft-not-send (3.1 — the human owns the final).
-7. **Ignoring the supervision cost** — the HITL patterns' human cost un-priced (4.4/6.10); the supervision cost in the business case (6.10's organizational TCO).
+1. **Rubber-stamping treated as a people problem** — it is the predictable output of asking humans to check reliable automation; the fixes are design fixes (uncertainty surfaced, evidence shown, reasons required, rung raised where earned), never reminders.
+2. **The unmeasured gate** — no probes, no re-review, no review-time distribution; effectiveness is asserted, and asserted controls fail audits and incidents together.
+3. **Falling disagreement read as success** — it means an improving model *or* a decaying reviewer, and only probes or sampled re-review distinguish them ([2.8](../part-2-artificial-intelligence/chapter-08-responsible-ai.md)).
+4. **Unstaffed escalation** — a 30% escalation rate designed without the headcount to absorb it; the queue backs up, SLAs break, and the pressure resolves itself as approvals.
+5. **Routing on uncalibrated confidence alone** — the automated lane fills with confidently wrong outputs and is never sampled, so the true error rate is unknown ([2.7](../part-2-artificial-intelligence/chapter-07-evaluating-ml-systems.md)).
+6. **Escalation as log-dumping** — the raw trajectory pasted into a ticket; the receiving human pays in reading time, and the cost teaches the organization not to escalate.
+7. **Corrections written and never read** — the most expensive labels in the system decaying in an audit table while the same defect is caught by hand every week.
+8. **Supervision cost missing from the business case** — an "automated" workflow whose queue consumes 70 people is a 70-person workflow; sometimes an excellent trade, but only when priced ([6.10](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)).
+9. **Act-then-notify with a theoretical undo** — the rung is honest only if the undo path is implemented and tested.
 
 ## Best Practices
 
-1. **Place the oversight by the stakes and confidence** — the approval gate (the consequential — 3.7), the review sampling (the high-volume — 4.4), the escalation (the beyond-competence — 3.1), the confidence routing (the low-confidence — 2.8), the draft-not-send (the communication — 3.1).
-2. **Design the oversight to work** — the disagreement support (2.8 — what the human sees to disagree), the SLA (4.4 — not a bottleneck), the rubber-stamp monitoring (2.8/4.4 — seeded probes), the auto-approval for the earned classes (4.4).
-3. **Make escalation resumable** — the resumable context (4.4 — the trajectory summary, the state), not log-dumping.
-4. **Route by confidence** — the low-confidence to human, the high-confidence automated (2.8/4.4), with the calibrated confidence signal (2.7).
-5. **Own the communication with draft-not-send** — the human owns the final artifact (3.1), the drafting value (the editing-cheaper — 3.1).
-6. **Monitor the oversight effectiveness** — the rubber-stamp monitoring (2.8/4.4 — the seeded probes, the approval rates), the governance concern (6.9).
-7. **Price the supervision cost** — the HITL human cost in the business case (4.4/6.10's organizational TCO).
+1. **Assign the rung before the pattern** — severity and undo cost scored separately per action class; placement then follows.
+2. **Size the tier in the design review** — escalation rate × review time → hours → reviewers → annual cost, stated with assumptions and revisited when volumes move.
+3. **Instrument the oversight, not only the model** — review-time distributions, disagreement trends by reviewer and class, seeded probes with an owned catch rate, sampled re-review.
+4. **Show uncertainty and evidence, not conclusions** — the reviewer needs what they would need in order to disagree: sources, the contrary indicator, the independently computed value beside the generated one.
+5. **Make rejection as cheap as approval** — one click, a short reason taxonomy, no social cost; asymmetric effort is the mechanical cause of drift toward approval.
+6. **Sample every automated lane** — random for the estimate, targeted for the defects, change-window after every model, prompt, or corpus change, with residual risk accepted by a named owner.
+7. **Route corrections where they change behaviour** — regression [evals](../../GLOSSARY.md), a triaged backlog, rung evidence — and report the effect back to the reviewers who produced them.
+8. **Earn autonomy with evidence, and descend without shame** — climb on measured error rates for that class; drop the moment the evidence reverses.
 
 ## Architecture Checklist
 
 For applying the human-in-the-loop patterns:
 
-- [ ] The oversight placed by the stakes and confidence (approval gate — consequential, review sampling — high-volume, escalation — beyond-competence, confidence routing — low-confidence, draft-not-send — communication)
-- [ ] The oversight designed to work (disagreement support — 2.8, SLA'd queues — 4.4, rubber-stamp monitoring — 2.8/4.4, auto-approval for earned classes — 4.4)
-- [ ] Escalation resumable (the context, not log-dumping — 4.4)
-- [ ] Confidence routing with a calibrated signal (2.7)
-- [ ] The oversight-effectiveness monitored (the rubber-stamp monitoring — governance — 6.9)
-- [ ] The supervision cost priced (the business case — 4.4/6.10)
-- [ ] The HITL patterns meet the responsible-AI and compliance oversight obligations (2.8/4.14)
+- [ ] Each action class has a rung, severity and undo cost scored separately, promotion evidence named
+- [ ] Act-then-notify rungs have an implemented, tested undo path
+- [ ] Reviewer capacity computed (rate × time → headcount) and carried as a [TCO](../../GLOSSARY.md) line ([6.10](../part-6-enterprise-architecture/chapter-10-tco-business-case.md))
+- [ ] Queue items show uncertainty and evidence, not conclusions alone; rejection costs what approval costs
+- [ ] Overrides record a reason from a short taxonomy, in both directions
+- [ ] Seeded probes running, with an injection rate and a named owner of the catch rate
+- [ ] Review-time and disagreement telemetry monitored against thresholds that trigger investigation
+- [ ] Sampled re-review in place for the highest-volume reviewed class
+- [ ] Every automated lane has a sampling policy and a named acceptor of residual risk
+- [ ] Routing thresholds re-validated on model, prompt, or corpus change
+- [ ] Escalations carry resumable context; escalation volume staffed, including surge
+- [ ] Corrections routed to evals, backlog, and rung evidence, with the effect reported back
+- [ ] Reviewer metrics governed as system-quality data, with any required consultation completed
 
 ## Interview Questions
 
-1. *"Walk me through the human-in-the-loop patterns and when you'd use each."* — Strong answers give the family (approval gate — the consequential, review sampling — the high-volume, escalation — the beyond-competence, confidence routing — the low-confidence, draft-not-send — the communication), each placing the human by the stakes and confidence (the risk-proportionate oversight — 2.8).
-2. *"How do you design human oversight that works, not rubber-stamps?"* — Strong answers give the effectiveness (2.8 — the disagreement support, the human sees what they need to disagree; the SLA'd queues — 4.4, not a bottleneck; the rubber-stamp monitoring — 2.8/4.4, the seeded probes; the auto-approval for the earned classes — 4.4), the oversight designed to actually oversee (Kestrel's effectiveness).
-3. *"How do you keep human oversight from becoming a bottleneck?"* — Strong answers give the SLA'd queues (4.4), the review sampling (4.4 — sample the high-volume, not full review), the confidence routing (2.8/4.4 — only the low-confidence to human), and the auto-approval for the earned classes (4.4 — the sustained zero-edit classes) — the oversight scaled without the bottleneck.
-4. *"How do you compose HITL patterns into an oversight architecture?"* — Strong answers give the composition (draft-not-send + confidence routing + approval gate + escalation — matched to the stakes and confidence — 7.1's combination), all designed to work (2.8's effectiveness), Kestrel's correspondence oversight.
+1. *"Your approval queue runs at 98% approval with 5-second median decisions. Assess."* — Strong answers call it theatre and keep going: diagnose with seeded probes and sampled re-review to separate "model improved" from "reviewer stopped reading", then prescribe design fixes (uncertainty and evidence in the queue, symmetric reject cost, reason capture) and the honest fork of raising the rung on evidenced classes. Weak answers propose reviewer training.
+2. *"How much does human oversight cost in your design?"* — Strong answers produce arithmetic unprompted — volume × review rate × minutes, converted to reviewers at realistic sustained review hours — and treat it as a first-class business-case line with a stated plan for when volume doubles.
+3. *"How do you decide how much autonomy an action gets?"* — Strong answers separate consequence severity from undo cost, walk the four rungs, and name the evidence and accountable owner required to climb one. Bonus for an action they *lowered* a rung on after seeing data.
+4. *"Your routing sends 70% of items straight through. How do you know that lane is safe?"* — Strong answers question the signal's calibration, note that confidently wrong outputs are exactly what such routing hides, and require random sampling of the automated lane as the only way its error rate becomes knowable.
+5. *"Where do the human corrections go?"* — Strong answers name three destinations (regression evals, fix backlog, rung evidence), the low-friction capture design, and the feedback to reviewers that keeps correction quality high.
 
 ## Further Reading
 
-- 2.8 Responsible AI (the oversight-that-works, the disagreement support), 4.4 Agent Architectures (the approval queues, the rubber-stamp monitoring) — the chapters this pattern family formalizes.
-- The human-computer-interaction and human-AI-teaming literature (the automation-bias and decision-support research) — the oversight-effectiveness basis (2.8's disagreement support).
-- 3.1 LLM Capabilities & Limits (the capability limits demanding oversight) and 3.6 RAG Fundamentals (the designed refusal) — the source of the oversight need.
-- The [case studies](../../case-studies/README.md) — the HITL patterns' known uses (the high-stakes case studies).
+- [2.8 Responsible AI](../part-2-artificial-intelligence/chapter-08-responsible-ai.md) — oversight as a component with metrics on the humans; the disagreement-support discipline the integrity patterns implement.
+- [4.4 Agent Architectures in Production](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md) — approval queues as an engineered product: context-rich items, SLAs, seeded probes, evidence-based auto-approval, supervision cost.
+- The human-factors literature on automation bias and complacency — Parasuraman & Riley on use, misuse, disuse and abuse of automation; Skitka and colleagues on automation-induced omission and commission errors. The empirical basis for the claims here about why undesigned review fails.
+- [7.11 Predictive & Scoring Patterns](chapter-11-predictive-scoring-patterns.md) — the Exploration Slice, the classical-lane sibling of Review Sampling.
+- [6.10 TCO & Business Case](../part-6-enterprise-architecture/chapter-10-tco-business-case.md) — where reviewer headcount belongs, and what an omitted line does to a case.
+- The [GLOSSARY](../../GLOSSARY.md) — calibration, evals, and TCO as used here.
 
 ## Summary
 
-- The **human-in-the-loop pattern family** places human oversight by the stakes and confidence — approval gate (the consequential — 3.7), review sampling (the high-volume — 4.4), escalation (the beyond-competence — 3.1), confidence routing (the low-confidence — 2.8), draft-not-send (the communication — 3.1) — the oversight that makes probabilistic systems (3.1) deployable.
-- **All designed to work, not rubber-stamp** — the effectiveness (2.8's disagreement support, the SLA'd queues — 4.4, the rubber-stamp monitoring — 2.8/4.4's seeded probes, the auto-approval for the earned classes — 4.4) — the oversight designed to actually oversee (2.8's oversight-effectiveness).
-- The patterns **combine into the oversight architecture** — the confidence routing gating to the approval gate, the draft-not-send with the approval gate (7.1's combination) — matched to the stakes and confidence (Kestrel's correspondence oversight).
-- The HITL patterns **meet the responsible-AI and compliance oversight obligations** (2.8/4.14) — the oversight the regulations require, the effectiveness a governance concern (6.9), the supervision cost a business-case line (6.10).
-- The HITL patterns are the enterprise's **oversight reference** — the patterns that make GenAI deployable where the stakes demand human accountability, designed to be effective. The safety patterns that constrain the AI's outputs and actions are next: **safety & guardrail patterns** (7.6).
+- The family splits into **placement patterns** (Approval Gate, Draft-Not-Send, Escalation, Confidence-Based Routing, Review Sampling — where the human sits) and **integrity patterns** (Oversight Telemetry, Correction Capture — whether the human is looking), with the **Reversibility Ladder** upstream of both, setting the rung from consequence severity and undo cost.
+- **Rubber-stamping is the central failure mode**, structural rather than attitudinal: reliable automation reliably erodes vigilance. Detect it with review-time distributions, disagreement trends, seeded probes, and sampled re-review; design against it by surfacing uncertainty, showing evidence, and requiring a reason on override.
+- **Reviewer capacity is an architectural constraint** — escalation rate × review time is a headcount number and a business-case line. A design that escalates 30% at 8 minutes each is a hiring plan.
+- **Selective review beats uniform review**, but confidence signals are themselves unreliable: route on stakes and novelty as well as confidence, and sample every automated lane, because an unsampled fast lane has an unmeasured error rate.
+- **Corrections are the most expensive labels the organization buys** — capture the diff and a short reason, route them to evals, backlog, and rung evidence, and show reviewers the effect.
+- Next: the patterns that constrain what the AI can output and do in the first place — **safety & guardrail patterns** (7.6).
 
 ---
 

@@ -5,190 +5,296 @@
 | **Part** | 7 — Enterprise AI Architecture Patterns |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 75 min) |
 | **Prerequisites** | Parts 3–6 (the anti-patterns are the mistakes those chapters warned against) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Recognize the GenAI anti-patterns in pattern-language form: agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, and unbounded autonomy.
-2. Identify the anti-patterns in proposed and existing systems, using each anti-pattern's context, symptoms, and refactoring.
-3. Prevent the anti-patterns through the patterns (7.2–7.9) that avoid them.
-4. Use the anti-patterns as the reference for what to avoid, as valuable as the patterns for what to do.
+1. Read any entry in its load-bearing parts — the seduction, the checkable symptom, the cost, and the refactoring that replaces it.
+2. Sort the catalog into its three families — unearned complexity, unearned confidence, ungoverned accretion — and use the family to pick the review's first question.
+3. Detect the twelve anti-patterns from evidence in a design or a running system, not from the architect's description of it.
+4. Separate each anti-pattern from the legitimate use of the same technology, and extend the catalog in the same form.
 
 ## Introduction
 
-This closing chapter of Part 7 catalogs the anti-patterns — the recurring GenAI mistakes the curriculum warned against, named and presented in pattern form (7.1). An *anti-pattern* is a recurring solution that looks reasonable but produces bad outcomes — the tempting mistake, named so it can be recognized and avoided. The anti-patterns are as valuable as the patterns (7.1): the patterns show what to do, the anti-patterns show what to avoid, and the architect needs both.
+An anti-pattern is a recurring solution that looks reasonable and produces bad outcomes. The second half is why the catalog exists; the first half is why writing it is hard. A mistake that announced itself would not survive a review, so an entry that fails to explain the *seduction* is useless — the reader will never recognize the moment they are being seduced. Every entry below therefore leads with why a competent architect chooses it, then gives a symptom you can check, a cost you can price, and a refactoring you can schedule.
 
-The framing: **anti-patterns are the recurring mistakes named, as valuable as the patterns** — the tempting mistakes (agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, unbounded autonomy) that look reasonable but produce bad outcomes, named so they can be recognized and avoided, and this chapter is the reference for what to avoid.
+Three families organize the catalog, each with its own opening question. **Unearned complexity** — machinery adopted before the simpler thing was shown to fail: *what did you try first, and how did it fail?* **Unearned confidence** — shipping on evidence that could not have failed: *what result would have stopped this?* **Ungoverned accretion** — artifacts that grow without an owner, a version, or an expiry: *who deletes things, and on what rule?*
+
+Half these entries are the mistakes of the first production wave. The other half were added because the estate changed underneath them: retrieval became a reflex, agent fleets became a default topology, leaderboards became a procurement instrument, fine-tuning became a one-click product, eval suites became something to display rather than to fail, and agent memory became persistent state nobody owns ([7.1](chapter-01-pattern-language.md)'s living-catalog rule).
 
 ## Business Motivation
 
-The anti-patterns are the recurring failure modes that cost the enterprise — the tempting mistakes that produce the incidents, the waste, and the failures the curriculum documented. Recognizing the anti-patterns prevents the costs: the agent-for-everything (the agent complexity and cost where a workflow fit — 3.8), the demo-driven architecture (the demo that didn't scale — 1.7), the eval-free shipping (the ungated regressions — 4.7), the prompt spaghetti (the un-versioned prompt chaos — 3.3), the framework lock-in (the lock-in cost — 7.10), the unbounded autonomy (the runaway — 3.8/4.4). The business case is the failure-prevention one: the anti-patterns are the recurring, costly failure modes, named so the architect recognizes and avoids them (the prevention — the incidents, waste, and failures avoided), and the anti-pattern family is the reference for what to avoid — the mistakes named, the failure-prevention the enterprise needs as much as the success-patterns.
+The costs come in three shapes, and the shape sets the urgency.
+
+**Waste** is complexity bought that changes no outcome: the fleet whose accuracy matches one prompted call, the retrieval stage installed against a failure class nobody measured, the fine-tune of behavior a system prompt already carried. It arrives as an invoice and a slower roadmap — the cheapest failure, and the most common, because every item on that list is defensible in a slide.
+
+**Exposure** is shipping on evidence that could not fail, and its cost lands in law and press rather than in the error budget. The publicly reported class of incident is instructive because it is boring: a customer-facing assistant states a policy that does not exist, a customer relies on it, and the company is held to the answer. No novel capability, no adversary — and the missing control was a gate on a change nobody classified as risky. The [prompt injection](../../GLOSSARY.md) literature describes the same shape with the payload inside ordinary retrieved content, where the only real question is what the agent was permitted to do next.
+
+**Drag** is accretion: prompts nobody can roll back, a framework whose semantics became your architecture, a store that only grows. It causes no incident on the day it is created and makes every later change more expensive, which is why it is under-priced in the estimate ([1.7](../part-1-professional-foundation/chapter-07-estimation.md)).
+
+Against all three the catalog is cheap, because its real function is conversion: it turns *I don't like this design* into a named symptom, a priced cost, and a scheduled refactoring — which is what makes governance land as engineering rather than as taste.
 
 ## Theory — The Anti-pattern Catalog
 
-### Anti-pattern: Agent-for-Everything
+### Family 1 — Unearned complexity
 
-- **Context** — a GenAI problem where an agent is proposed (3.8).
-- **Symptoms** — the agent used where a workflow pattern fits (3.8's spectrum — the fixed path, the reaching-for-agents because it's fashionable), the un-needed complexity and cost.
-- **Why it's tempting** — the agent is fashionable, the "agentic" framing appealing (3.8).
-- **Consequences** — the un-needed agent complexity, cost, and variance (3.8 — the workflow would have been simpler, cheaper, debuggable).
-- **Refactoring** — the autonomy-grid check (3.8), the workflow patterns (7.3) where the path is fixed, the agent only where undiscoverable (3.8's spectrum).
-- **Avoided by** — the workflow patterns (7.3), the autonomy grid (3.8).
+#### Anti-pattern: Agent-for-Everything
 
-### Anti-pattern: Demo-Driven Architecture
+- **Context** — a task whose steps are fixed or predictable, for which an agent is proposed.
+- **Why it's tempting** — autonomy generalizes. A workflow must be re-specified as requirements move; an agent seems to absorb that for free, and watching it reason is the better demo.
+- **Symptoms** — the happy path is drawable as a flowchart; traces repeat one tool sequence; debugging means reading transcripts rather than inspecting a failed step.
+- **Consequences** — cost multiplies with the loop, latency turns unpredictable, and evaluation drops from per-step assertions to end-to-end impressions. Variance is the real bill: a fixed pipeline fails the same way twice and gets fixed once.
+- **Refactoring** — run the autonomy-grid check ([3.8](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md)); build fixed paths as a chain or router ([7.3](chapter-03-workflow-patterns.md)); keep the agent for the genuinely undiscoverable slice.
+- **Avoided by** — workflows as the default; the agent as an escalation with a written reason.
 
-- **Context** — a GenAI system whose architecture is driven by the demo (1.7).
-- **Symptoms** — the impressive demo that doesn't scale to production (1.7's demo-to-production gap — the demo-region-not-operating-region — 3.1, the pilot-that-went-nowhere — 6.8).
-- **Why it's tempting** — the demo impresses, the demo-to-production multiplier under-appreciated (1.7).
-- **Consequences** — the demo that didn't productionize (1.7's ambush — the 4-10× multiplier, the missing evals/governance/scale).
-- **Refactoring** — the demo-to-production discipline (1.7 — the full estimate, Part 4's industrialization), the pilot-to-platform sequencing (6.8).
-- **Avoided by** — the estimation (1.7), the pilot-to-platform (6.8), the production disciplines (Part 4).
+#### Anti-pattern: Multi-Agent by Default
 
-### Anti-pattern: Eval-Free Shipping
+- **Context** — a problem split into a fleet of specialists before one agent has been built and measured.
+- **Why it's tempting** — the decomposition mirrors how a competent human team divides work, so it feels like design rather than fashion; each prompt stays short and legible; and an org chart is a diagram executives already know how to read.
+- **Symptoms** — no single-agent baseline on the same golden set; failures described as "the handoff was bad" rather than localized; a trace nobody can read end to end; token spend several times the single-call figure with no quality delta.
+- **Consequences** — coordination overhead is paid per request, and per-step error compounds along the chain rather than averaging out, so a fleet of decent agents can land below one careful agent. Attribution collapses — nobody can say which agent regressed — which leaves the system undebuggable and effectively un-gateable.
+- **Refactoring** — earn each agent: measure the single-agent baseline, then add the second only where the fleet beats it on the same set, with per-agent evaluation in place first ([4.5](../part-4-enterprise-genai-systems/chapter-05-multi-agent-systems.md)). A fixed sequence of specialists is a workflow, not a fleet.
+- **Avoided by** — the baseline as an admission requirement; a bounded loop around each survivor ([7.4](chapter-04-agentic-patterns.md)).
 
-- **Context** — a GenAI system shipped without evals (4.7).
-- **Symptoms** — the changes shipped ungated (4.7 — the prompt hotfix, the silent model change, the majority-of-incidents cause), the demo-based "evaluation" (2.7's fluency-flattered impressions).
-- **Why it's tempting** — the evals seem optional, the demo impressive (2.7).
-- **Consequences** — the ungated regressions (4.7 — the majority of production incidents), the un-measured quality (2.7).
-- **Refactoring** — the eval systems (4.7 — the golden sets, the gates), the eval-as-tests (5.7 — the LLMOps gates), the eval-before-feature (4.7).
-- **Avoided by** — the evaluation patterns (4.7), the LLMOps (5.7), the evaluation discipline (2.7).
+#### Anti-pattern: RAG-for-Everything (Context Stuffing)
 
-### Anti-pattern: Prompt Spaghetti
+- **Context** — retrieval bolted onto a problem that is not a knowledge problem, or a stack "improved" by putting more into the window instead of the right thing.
+- **Why it's tempting** — [RAG](../../GLOSSARY.md) fixed the first and worst GenAI failure, so it becomes the reflex for every later one; and with long windows cheap enough to abuse, stuffing feels safer than choosing — if the answer is in there somewhere, surely the model finds it.
+- **Symptoms** — retrieval added to a task whose difficulty is style, judgment, or arithmetic; a stage whose removal does not move the score; prompts near the window limit by construction; per-query cost rising while quality is flat; nobody can name the failure class the last three changes addressed.
+- **Consequences** — money burned on tokens carrying no signal, plus a quality *decline*: models attend unevenly across a long window and recover buried material least reliably, so real evidence competes with padding and sometimes loses. The stage becomes unfalsifiable — nobody dares remove it.
+- **Refactoring** — apply the named-failure-class discipline of [4.2](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md): taxonomize the misses, name the class, install the technique that targets it, re-measure per class. Ablate every stage once; a stage that cannot show its lift is deleted.
+- **Avoided by** — requirement classification before architecture ([4.13](../part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md)); per-class metrics; a token budget with an owner.
 
-- **Context** — a GenAI system with un-versioned, accreted prompts (3.3).
-- **Symptoms** — the prompts scattered, un-versioned, live-edited, accreted (3.3's live-edit and rule-pile anti-patterns — the 9K-token barnacle — 2.5's Vantora, the prompt chaos).
-- **Why it's tempting** — the prompts seem like simple strings, the live-edit quick (3.3).
-- **Consequences** — the un-versioned prompt chaos (3.3 — the un-rollbackable, un-tested, un-owned prompts, the drift).
-- **Refactoring** — the prompt engineering discipline (3.3 — versioned, owned, suite-covered, deployed-not-edited), the prompt registry (7.9/5.7).
-- **Avoided by** — the prompt engineering (3.3), the prompt registry (7.9), the LLMOps (5.7).
+#### Anti-pattern: Fine-Tune-First
 
-### Anti-pattern: Framework Lock-in
+- **Context** — a quality gap that prompting and retrieval have not been seriously tried against, met with a proposal to fine-tune.
+- **Why it's tempting** — it sounds like the serious engineering answer and is now one click on several platforms. It promises consistency permanently rather than by argument with a prompt, it shortens the prompt (a real cost win), and "we trained our own model" is the sentence executives repeat.
+- **Symptoms** — no measured prompting baseline, or one built from a first-draft prompt; the thing being trained in is *knowledge* ("fine-tune on the policy manuals") rather than behavior; a training set assembled from reachable text rather than quality demonstrations; no plan for base-model deprecation.
+- **Consequences** — you buy a training pipeline, a data-rights position on the demonstrations, a standing refresh obligation as behavior drifts, and migration debt: every deprecation becomes a re-training project instead of a config change. Knowledge in weights is also uncitable and stale by construction, forfeiting the audit trail regulated work needs.
+- **Refactoring** — apply [4.13](../part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md)'s escalation test in full — demonstrable behavior, a *measured* prompting ceiling, volume that justifies the project, no cheaper lever left. Knowledge goes to retrieval, hard lines to guardrails.
+- **Avoided by** — a mandatory prompted baseline; the deprecation drill priced into the decision ([3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)).
 
-- **Context** — a GenAI system built on a heavily-locking framework (7.10).
-- **Symptoms** — the framework fixing the trajectory format, the checkpoint model, the gate semantics (4.4/4.6 — the framework adopted by demo appeal, the lock-in), especially the central components (the gateway — 5.4, the platform — 5.10).
-- **Why it's tempting** — the framework is convenient, the demo appealing (1.4).
-- **Consequences** — the lock-in cost (the framework hard to change, especially the central components — 5.4/5.10), the constrained architecture.
-- **Refactoring** — the build-vs-buy discipline (1.4/6.8 — the framework evaluated against the requirements, the lock-in weighed), the abstraction (the gateway abstracting the model — 5.4/3.10).
-- **Avoided by** — the trade-off analysis (1.4), the model selection (3.10 — the reversibility), the platform patterns (7.9 — the abstraction).
+### Family 2 — Unearned confidence
 
-### Anti-pattern: Unbounded Autonomy
+#### Anti-pattern: Demo-Driven Architecture
 
-- **Context** — an agent without the governors (3.8/4.4).
-- **Symptoms** — the agent without the caps, budgets, stuck detector, kill switch (3.8's governors — the unbounded loop, the runaway — 4.4's 3am tail, the denial-of-wallet — 4.9).
-- **Why it's tempting** — the autonomy seems powerful, the governors seem restrictive (3.8).
-- **Consequences** — the runaway (the unbounded cost, the runaway loop — 3.8/4.4), the uncontained blast radius (4.9).
-- **Refactoring** — the bounded agent loop (7.4 — the governors), the production envelope (4.4 — the budgets, the kill switch), the autonomy grid (3.8).
-- **Avoided by** — the agentic patterns (7.4 — the bounded loop), the governors (3.8/4.4).
+- **Context** — an architecture whose shape was set by what made the pilot work, carried forward as the production design.
+- **Why it's tempting** — the demo is the only working artifact anyone has seen, and it *did* work. Sunk effort, executive enthusiasm, and a real speed advantage all argue for keeping its shape; proposing a rebuild sounds like self-indulgence.
+- **Symptoms** — no evals, no failure taxonomy, no cost model, but a launch date; the pilot's region, data snapshot, or single-tenant assumption still in the design; scale, permissions, and support deferred to "phase two"; the plan's total is roughly the pilot's total.
+- **Consequences** — the demo-to-production multiplier ([1.7](../part-1-professional-foundation/chapter-07-estimation.md)) arrives as an ambush after the date is public, and what gets cut to save the date is exactly the evaluation, permissioning, and observability the demo never needed. The usual outcome is not a failed launch but a stalled pilot estate.
+- **Refactoring** — estimate the production system (evals, guardrails, permissioning, observability, support), and sequence pilot-to-platform so the second system inherits infrastructure rather than repeating the pilot ([6.8](../part-6-enterprise-architecture/chapter-08-legacy-modernization-ai-adoption.md)).
+- **Avoided by** — the full estimate at proposal time; Part 4's disciplines as scope, not follow-up.
+
+#### Anti-pattern: Eval-Free Shipping
+
+- **Context** — prompt edits, model swaps, and retrieval changes reaching production without a gate.
+- **Why it's tempting** — prompt changes feel like copy edits, not deploys; no compiler fails and no test goes red, so the ceremony feels disproportionate. Early on everything genuinely works, which teaches the wrong lesson fast.
+- **Symptoms** — a change path (a prompt file, a model version pin, a chunking parameter) with no gate on it; "we checked a few examples" as release evidence; regressions found by users; no golden set for last month's feature.
+- **Consequences** — the ordinary cause of GenAI production incidents ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)), and where exposure lands: an assistant that states a policy the company does not have can create an obligation the company must honor. Meanwhile quality drifts invisibly, because nothing measures it.
+- **Refactoring** — a golden set per feature before the feature ships; suites wired as CI gates on every change path, model pins included ([5.7](../part-5-cloud-infrastructure-platform/chapter-07-llmops.md)); release evidence is a diff of scores, not an anecdote.
+- **Avoided by** — eval-before-feature as policy; the change path, not the changed artifact, as the unit of gating.
+
+#### Anti-pattern: Evaluation Theatre
+
+- **Context** — a system that *has* an eval suite, and the suite always passes.
+- **Why it's tempting** — this is the anti-pattern of teams doing the right thing, which is what makes it dangerous. A green dashboard satisfies reviewers, unblocks releases, and rewards its builders; and every individual compromise is locally reasonable — that flaky case really was ambiguous, that threshold really was too aggressive for launch.
+- **Symptoms** — a golden set unchanged for two quarters while the product added features; incidents that never became cases; a judge never calibrated against human labels, or calibrated once at inception; thresholds set *after* seeing the candidate's scores; failures quarantined as "known ambiguous" and never revisited.
+- **Consequences** — worse than no evals, because the suite manufactures confidence and consumes the review's attention. The gate becomes a formality regressions pass through while the organization believes quality is measured, and an uncalibrated judge drifts silently toward rewarding something other than what users value.
+- **Refactoring** — make the suite capable of failing: incidents become cases within the week, the set grows with the feature surface, judges are re-calibrated on a schedule with agreement reported ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)), thresholds are version-controlled before scoring, quarantined cases carry an owner and an expiry.
+- **Avoided by** — suite-health metrics (growth, incident coverage, judge agreement) reviewed beside the pass rate.
+
+#### Anti-pattern: Benchmark-Driven Model Selection
+
+- **Context** — a model chosen, or a migration triggered, on public leaderboard position.
+- **Why it's tempting** — leaderboards are free, current, quantitative, and comparable, which is exactly what a procurement decision appears to need. They settle arguments in an afternoon, where a private harness costs weeks before it answers anything.
+- **Symptoms** — an ADR whose evidence is a rank; no golden set from your own traffic in the comparison; one winner declared org-wide rather than per task class; a shortlist containing only models above the team's instinct tier; a migration proposed days after a launch announcement.
+- **Consequences** — three independent defects, each sufficient to invalidate the decision: contamination (public test material leaks into pretraining corpora, so the score partly measures memorization), distribution mismatch (your extraction task over your documents is not the benchmark's task), and optimization pressure (providers tune toward what they are ranked on). Practically: frontier prices for tasks a cheaper tier handles at parity, or a cheap model on a task that punishes it, misdiagnosed for months as a prompt problem.
+- **Refactoring** — use public signals for triage only, then decide on private evals over your own golden sets per task class, and output a *portfolio* — primary, cross-provider fallback, routing policy, named re-evaluation triggers ([3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md)).
+- **Avoided by** — a reusable bake-off harness; a gateway that keeps the choice reversible ([5.4](../part-5-cloud-infrastructure-platform/chapter-04-api-integration-layer.md)).
+
+### Family 3 — Ungoverned accretion
+
+#### Anti-pattern: Prompt Spaghetti
+
+- **Context** — prompts living as strings across a codebase, a console, and a few notebooks, edited in place.
+- **Why it's tempting** — a prompt is text, and text feels weightless. Live editing is the fastest fix in the stack — minutes against a deploy cycle — and during an incident that speed is genuinely valuable, which is how the best engineers establish the habit.
+- **Symptoms** — nobody can answer "what prompt served this response?" for a request from last week; the same instruction appears in three places with two wordings; rules accumulate as a pile because each incident added a line and none removed one; no owner, version, or test suite per prompt.
+- **Consequences** — an un-rollbackable production surface. Regressions cannot be bisected without history; the pile costs tokens and dilutes attention on every call (2.5's multi-thousand-token barnacle); and behavior drifts as instructions contradict each other in ways nobody sees at once.
+- **Refactoring** — treat prompts as deployed artifacts: versioned, owned, reviewed, eval-covered, released through the code path ([3.3](../part-3-core-building-blocks-of-genai/chapter-03-prompt-engineering.md)); a registry makes the serving version answerable at request time ([7.9](chapter-09-platform-multitenancy-patterns.md)).
+- **Avoided by** — no console editing in production; the registry as the only serving source.
+
+#### Anti-pattern: Agent Memory as a Junk Drawer
+
+- **Context** — an agent given persistent memory across sessions, with a write path and no policy governing it.
+- **Why it's tempting** — memory is what makes an assistant feel like a colleague rather than a stranger, and the cheapest implementation — append everything, retrieve by similarity — demos beautifully in week one and requires no product decisions. Deciding what *not* to remember is hard design work with no visible payoff.
+- **Symptoms** — the store grows monotonically and nothing has been deleted; no write policy separating a durable fact from a passing remark; no expiry, confidence, or provenance on entries; retrieved memories that are stale or mutually contradictory; a deletion request nobody can honor because entry lineage is unknown.
+- **Consequences** — retrieval degrades as the store grows, since relevant memories compete with years of noise, and the agent acts on superseded facts confidently. Sharper still, memory is a persistence path: content injected once through a document or a ticket can be *written* to memory and re-read every session, turning a one-shot injection into a durable instruction the agent trusts ([4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md)).
+- **Refactoring** — govern memory as a data store: an explicit write policy (what qualifies, who may write, at what confidence), expiry and supersession rules, provenance per entry, and a deletion path built at the start — [7.7](chapter-07-knowledge-data-patterns.md)'s Forgetting/Deletion applied to memory, not only to the corpus. Memory is untrusted input on read, never instruction. Note the gap: [7.4](chapter-04-agentic-patterns.md)'s bounded loop governs a single run, while memory is the state that outlives it, and the write policy is the pattern Part 7 does not yet name.
+- **Avoided by** — memory reviewed as a data-governance surface, with retention, provenance, and deletion specified before launch.
+
+#### Anti-pattern: Framework Lock-in
+
+- **Context** — an orchestration or agent framework adopted at a central position: the gateway, the platform, the trajectory store.
+- **Why it's tempting** — it compresses weeks of plumbing into an afternoon, and at the start it *only* helps. Its abstractions are also the vocabulary the team learns first, so its model of the world quietly becomes the team's model of the problem.
+- **Symptoms** — its trajectory format, checkpoint model, and gate semantics have become your architecture's semantics; a requirement (per-task credentials, typed exits, budget hierarchies) is declined because the framework cannot express it; no adoption ADR, or one whose evidence is a demo; no answer to "what would leaving cost?"
+- **Consequences** — the binding constraint moves from your requirements to someone else's roadmap, and exit cost compounds with every system built on it. At the center of the estate this is the expensive kind: a gateway or platform swap touches every consumer, so the decision becomes irreversible while its quality was never tested.
+- **Refactoring** — evaluate frameworks against your envelope requirements rather than demo appeal ([1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md)); hold your own abstraction at the seams that matter so the model, and ideally the orchestrator, stay swappable ([5.4](../part-5-cloud-infrastructure-platform/chapter-04-api-integration-layer.md)); write the exit cost into the ADR while it is still small.
+- **Avoided by** — reversibility as an explicit selection criterion; central components held to a higher bar than leaf ones.
+
+#### Anti-pattern: Unbounded Autonomy
+
+- **Context** — an agent in production without caps, budgets, a stuck detector, or a kill switch.
+- **Why it's tempting** — governors look like distrust of a system the team has watched behave well for weeks; each costs engineering time and occasionally fires on a legitimate long-running task. Removing them smooths the demo, and nothing bad happens for a while.
+- **Symptoms** — no per-run step or token cap; no per-tenant or per-day budget; no detector for a loop that has stopped making progress; no single control that halts the fleet; a broad, long-lived credential.
+- **Consequences** — the tail is where the money is: a small fraction of runs looping overnight can dominate a month's spend, discovered on the invoice ([4.11](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md)). The security consequence is larger — with a broad credential and no kill switch, the blast radius of one injection or one bad tool election is the credential's entire scope, with no fast way to stop it.
+- **Refactoring** — the bounded agent loop ([7.4](chapter-04-agentic-patterns.md)) with all four governors, plus per-task, user-scoped, short-lived credentials and a kill switch exercised in a drill ([7.6](chapter-06-safety-guardrail-patterns.md)).
+- **Avoided by** — autonomy as a budgeted, revocable grant per agent type, sized to its risk classification.
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart TD
-    subgraph ANTIPATTERNS [The anti-patterns — recurring mistakes]
-        AGENT[Agent-for-Everything<br/>→ workflow patterns 7.3]
-        DEMO[Demo-Driven Architecture<br/>→ estimation 1.7, pilot-to-platform 6.8]
-        EVALFREE[Eval-Free Shipping<br/>→ eval systems 4.7, LLMOps 5.7]
-        SPAGHETTI[Prompt Spaghetti<br/>→ prompt engineering 3.3, registry 7.9]
-        LOCKIN[Framework Lock-in<br/>→ trade-off analysis 1.4, abstraction 5.4]
-        UNBOUNDED[Unbounded Autonomy<br/>→ agentic patterns 7.4, governors 3.8/4.4]
+    subgraph F1 [Unearned complexity — what did you try first?]
+        A1[Agent-for-Everything]
+        A2[Multi-Agent by Default]
+        A3[RAG-for-Everything / Context Stuffing]
+        A4[Fine-Tune-First]
     end
-    ANTIPATTERNS -.each avoided by.-> PATTERNS[The patterns 7.2-7.9<br/>+ the disciplines]
+    subgraph F2 [Unearned confidence — what would have stopped this?]
+        B1[Demo-Driven Architecture]
+        B2[Eval-Free Shipping]
+        B3[Evaluation Theatre]
+        B4[Benchmark-Driven Model Selection]
+    end
+    subgraph F3 [Ungoverned accretion — who deletes, on what rule?]
+        C1[Prompt Spaghetti]
+        C2[Agent Memory as a Junk Drawer]
+        C3[Framework Lock-in]
+        C4[Unbounded Autonomy]
+    end
+    F1 -->|refactor toward| R1[The simpler option, earned:<br/>workflows 7.3, failure classes 4.2,<br/>escalation tests 3.8 / 4.13]
+    F2 -->|refactor toward| R2[Evidence that can fail:<br/>golden sets and gates 4.7 / 5.7,<br/>private evals and portfolio 3.10]
+    F3 -->|refactor toward| R3[Owned, versioned, expiring artifacts:<br/>registries 7.9, deletion 7.7,<br/>governors 7.4 / 7.6]
 ```
 
-Readings. **Each anti-pattern is avoided by a pattern or discipline** — the agent-for-everything by the workflow patterns (7.3), the demo-driven architecture by the estimation (1.7) and pilot-to-platform (6.8), the eval-free shipping by the eval systems (4.7) and LLMOps (5.7), the prompt spaghetti by the prompt engineering (3.3) and registry (7.9), the framework lock-in by the trade-off analysis (1.4) and abstraction (5.4), the unbounded autonomy by the agentic patterns (7.4) and governors (3.8/4.4) — the anti-patterns and the patterns as the two sides (7.1 — the patterns show what to do, the anti-patterns show what to avoid). **The anti-patterns are the recurring mistakes named** — the tempting mistakes (the fashionable agent, the impressive demo, the optional evals, the simple prompts, the convenient framework, the powerful autonomy) that look reasonable but produce bad outcomes (the complexity, the un-scaling, the regressions, the chaos, the lock-in, the runaway), named so they can be recognized and avoided (7.1's anti-patterns). **And the anti-patterns are the governance's risk-surfacing** — the anti-patterns are what the governance (6.9) surfaces (the review catching the anti-patterns — 6.9's risk-surfacing), so the anti-patterns are the reference for what the governance avoids (6.9).
+**The family predicts the refactoring.** You rarely need twelve remedies: complexity entries are fixed by making the simple option the default and the complex one an escalation with evidence; confidence entries by building evidence capable of failing; accretion entries by giving an artifact an owner, a version, and an expiry.
+
+**Symptoms beat self-description.** Every entry is written so a reviewer can check it against a trace, a repository, an ADR, or a dashboard. No team calls its own suite theatre — but the golden set's growth over two quarters is checkable in a minute, which is what makes the catalog usable in the governance lane ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)) instead of turning a review into an argument about intent.
+
+**Anti-patterns cluster**, being failures of the same missing discipline: demo-driven architecture almost always ships eval-free; agent-for-everything and unbounded autonomy share an absent autonomy grid; evaluation theatre is what eval-free shipping becomes after the first incident forces a suite into existence. One finding is a lead, not a conclusion.
 
 ## Real-world Example
 
-**The recurring companies** illustrate the anti-patterns avoided — the case studies' architects recognizing and avoiding the anti-patterns. Halvard & Roth avoided the agent-for-everything (4.5's rejected persona-agents — the workflow patterns preferred — 7.3, the 90/10 shape) and the unbounded autonomy (3.8/4.4's governors on the investigation agent). Bellhaven avoided the demo-driven architecture (1.7's full estimate on the intake platform, the pilot-to-platform — 6.8) and the eval-free shipping (4.7's evals on the extraction). Vantora avoided the prompt spaghetti (3.3's prompt engineering, the prompt registry — 7.9, after the early live-edit incident — 3.3) and the framework lock-in (5.4's gateway abstracting the model — 3.10's reversibility, the build-vs-buy — 1.4). Kestrel avoided the eval-free shipping (4.7's evals on the correspondence) and the unbounded autonomy (the human-in-the-loop — 7.5, the draft-not-send). The anti-patterns-avoided note (across the companies): *"The case studies' architects recognized and avoided the anti-patterns. Halvard & Roth avoided agent-for-everything (the persona-agents rejected, the workflow patterns — 7.3) and unbounded autonomy (the governors). Bellhaven avoided demo-driven architecture (the full estimate — 1.7, the pilot-to-platform — 6.8) and eval-free shipping (the evals — 4.7). Vantora avoided prompt spaghetti (the prompt engineering — 3.3, after the early live-edit) and framework lock-in (the gateway abstraction — 5.4). Kestrel avoided eval-free shipping and unbounded autonomy (the human-in-the-loop — 7.5). The anti-patterns are the recurring mistakes named — the tempting mistakes that look reasonable but produce bad outcomes. Recognizing them (and applying the patterns that avoid them) is as valuable as knowing the patterns — the architect needs both: what to do (the patterns — 7.2-7.9) and what to avoid (the anti-patterns — 7.10)."*
+**Vantora Systems** ($, eleven product teams) ran this catalog as a review form, and the findings clustered exactly as the families predict.
+
+The first review of the pre-gateway estate returned three entries at once. **Prompt Spaghetti** was the visible one — prompts live-edited in a console, one a multi-thousand-token rule pile grown an incident at a time, with no way to say which version served last Tuesday's complaint. Under it sat **Benchmark-Driven Model Selection**: six models across eleven teams, the flagship team's choice traceable to a conference demo, no private eval anywhere. With no golden sets there was no gate either — **Eval-Free Shipping** by construction rather than by decision. Three findings, one missing discipline: nothing in the estate was an owned, versioned, measured artifact.
+
+The refactoring took the family's shape. A registry gave prompts versions and owners. A bake-off harness over the estate's own traffic replaced rank with per-task-class evidence and produced a portfolio with routing, moving most frontier traffic down a tier at measured parity. Those same suites then became CI gates, closing the third finding.
+
+The instructive part is the review a year later, which found a new entry. Six features had shipped; the golden sets had not moved; the judge had never been re-calibrated; two incidents were fixed in prompts and never became cases. The pass rate was 100%, and had been for months. **Evaluation Theatre** appears specifically in organizations that fixed eval-free shipping — which is why the review asks not "do you have evals?" but "when did your evals last fail?"
 
 ## Hands-on Exercise
 
-**Identify and refactor the anti-patterns.** ~90 minutes. For a GenAI system (real or a case study), or a set of proposed designs.
+**Run the catalog as a review form.** ~75 minutes. Use a GenAI system you can inspect, or a case study plus its architecture section.
 
-1. **Anti-pattern identification (30 min).** For a GenAI system or proposed design, identify the anti-patterns: the agent-for-everything (the agent where a workflow fits — 3.8), the demo-driven architecture (the un-scaling demo — 1.7), the eval-free shipping (the ungated changes — 4.7), the prompt spaghetti (the un-versioned prompts — 3.3), the framework lock-in (the locking framework — 1.4), the unbounded autonomy (the un-governed agent — 3.8/4.4). List the anti-patterns present or risked.
-2. **The anti-pattern form (20 min).** For one identified anti-pattern, write its full anti-pattern form (Context, Symptoms, Why it's tempting, Consequences, Refactoring, Avoided by).
-3. **The refactoring (25 min).** For the identified anti-patterns, design the refactoring (the pattern or discipline that avoids each — the workflow patterns for agent-for-everything, the eval systems for eval-free shipping, etc.). Show how each anti-pattern is avoided.
-4. **The prevention (15 min).** Describe how the governance (6.9) would surface and prevent the anti-patterns (the review's risk-surfacing — 6.9).
+1. **Symptom sweep (25 min).** Walk all twelve entries. Record *found / not found / cannot tell*, and cite the evidence you checked — a trace, a repository path, an ADR, a dashboard, a golden-set size. Self-description does not count; "cannot tell" is a legitimate finding.
+2. **One full entry (15 min).** Take your most serious finding and write it in the catalog's form (Context, Why it's tempting, Symptoms, Consequences, Refactoring, Avoided by). The seduction must be one you would defend to the team that made the choice.
+3. **Priced refactoring (20 min).** For your top three findings, write the refactoring with an owner, a rough effort, and the cost shape it addresses (waste / exposure / drag). Order by cost shape, not by annoyance.
+4. **The defense (15 min).** Pick one finding and argue the opposite: describe the context in which the same choice is correct. If you cannot construct it, you have probably mis-identified the anti-pattern.
 
 **Acceptance criteria:**
-- [ ] The anti-patterns identified in the system/design
-- [ ] One anti-pattern in the full anti-pattern form
-- [ ] The refactoring designed (the pattern/discipline that avoids each anti-pattern)
-- [ ] The governance prevention described (6.9's risk-surfacing)
+- [ ] All twelve entries assessed, each with a cited evidence source rather than a statement of intent
+- [ ] At least one "cannot tell" recorded, naming the artifact that would settle it
+- [ ] One finding written in the full six-part form, including a defensible seduction paragraph
+- [ ] Top three findings each carry an owner, an effort estimate, and a cost shape
+- [ ] One finding argued in the opposite direction, with the legitimate context stated concretely
 
 ## Enterprise Considerations
 
-The anti-patterns are the enterprise's what-to-avoid reference, surfaced by the governance. **They're the what-to-avoid reference** (7.1): the anti-pattern family is the enterprise's reference for the recurring mistakes to avoid (the failure-prevention), as valuable as the patterns (the success). **They're the governance's risk-surfacing** (6.9): the anti-patterns are what the governance (6.9) surfaces and prevents (the review catching the agent-for-everything, the eval-free shipping — 6.9's risk-surfacing), so the anti-patterns are the governance's checklist of what to avoid (6.9). **They're the review-and-onboarding reference** (6.9/8.7): the anti-patterns are the reference for the architecture review (6.9 — the anti-patterns the review catches) and the onboarding (8.7 — the new architect learning the anti-patterns to avoid), so the anti-patterns are the review and onboarding asset. **And the anti-patterns evolve** (7.1's living catalog): the anti-patterns evolve as new mistakes emerge (the pattern catalog living — 7.1), so the anti-pattern family is a living reference (the emerging mistakes named).
+The catalog earns its keep in four lanes. **Governance** ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)): a board working from named symptoms produces findings that reproduce across reviewers, and the symptom-not-intent rule keeps the conversation technical when the design belongs to a senior person. **Procurement**: two entries are purchasing decisions in disguise — benchmark-driven selection is a sourcing failure, framework lock-in a contract-term failure — and both belong in third-party risk assessment, which already knows how to ask what exit costs. **Onboarding**: this is the fastest transfer of hard-won judgment to a new architect, because each entry carries the seduction as well as the verdict, and recognizing the moment of temptation is the actual skill. **Maintenance**: your own incidents produce entries this chapter lacks; a catalog that gained nothing in a year is not stable, it is unmaintained.
 
 ## Trade-offs
 
-The anti-patterns are mistakes to avoid, not trades — but recognizing them involves the trade-off discipline:
+Each anti-pattern is a legitimate technique used outside its context. Telling them apart:
 
-| Recognizing | The anti-pattern | The pattern/discipline | The tell |
-|----------|----------|----------|----------|
-| Agent vs. workflow | Agent-for-everything | Workflow patterns (7.3), autonomy grid (3.8) | The path is fixed but an agent is proposed |
-| Demo vs. production | Demo-driven architecture | Estimation (1.7), pilot-to-platform (6.8) | The demo impresses but the production plan is missing |
-| Evals | Eval-free shipping | Eval systems (4.7), LLMOps (5.7) | The change ships ungated, the "eval" is a demo |
-| Prompts | Prompt spaghetti | Prompt engineering (3.3), registry (7.9) | The prompts are live-edited, un-versioned, accreted |
-| Framework | Framework lock-in | Trade-off analysis (1.4), abstraction (5.4) | The framework is adopted by demo appeal, the lock-in un-weighed |
-| Autonomy | Unbounded autonomy | Agentic patterns (7.4), governors (3.8/4.4) | The agent lacks the caps, budgets, kill switch |
+| Anti-pattern | The checkable tell | Correct when… |
+|---|---|---|
+| Agent-for-Everything | The happy path is drawable; traces repeat one sequence | The path is genuinely undiscoverable and varies per request |
+| Multi-Agent by Default | No single-agent baseline on the same set | The fleet beats that baseline, with per-agent attribution |
+| RAG-for-Everything | Removing the stage doesn't move the score | The need is current, citable knowledge and the lift is measured |
+| Fine-Tune-First | No measured prompting ceiling; the target is knowledge | All four escalation conditions hold |
+| Demo-Driven Architecture | The production plan totals the pilot's cost | The pilot was scoped as disposable and is being discarded |
+| Eval-Free Shipping | A change path with no gate | Never in production — this entry has no legitimate context |
+| Evaluation Theatre | The set hasn't grown in two quarters; nothing fails | The set grows with the surface and recently failed a real candidate |
+| Benchmark-Driven Model Selection | The ADR's evidence is a rank | Leaderboards shortlist 3–5 candidates for private evaluation |
+| Prompt Spaghetti | "Which prompt served this?" is unanswerable | Prompts are versioned artifacts released through the code path |
+| Agent Memory as a Junk Drawer | Nothing deleted; no write policy | Writes are policied, entries carry provenance and expiry, deletion works |
+| Framework Lock-in | No answer to "what would leaving cost?" | The exit cost is written down, small, and at the edge, not the center |
+| Unbounded Autonomy | No cap, budget, stuck detector, or exercised kill switch | Never; governors scale with risk tier but never reach zero |
 
-## Common Mistakes (Meta: the mistakes about the anti-patterns)
+## Common Mistakes — Using the Catalog Badly
 
-1. **Not knowing the anti-patterns** — the architect who knows the patterns but not the anti-patterns (the what-to-do without the what-to-avoid); the anti-patterns as valuable as the patterns (7.1).
-2. **Recognizing too late** — the anti-pattern recognized after the incident (the un-caught anti-pattern); the governance's risk-surfacing (6.9 — the anti-patterns caught in review).
-3. **The anti-pattern's temptation** — falling for the anti-pattern's appeal (the fashionable agent, the impressive demo — the temptation); the discipline (the autonomy grid, the estimation — the anti-pattern's refactoring).
-4. **The un-refactored anti-pattern** — the anti-pattern recognized but not refactored (the known-but-not-fixed); the refactoring (the pattern that avoids it).
-5. **The static anti-pattern catalog** — the anti-patterns not evolving (the new mistakes un-named); the living catalog (7.1 — the emerging anti-patterns).
-6. **The anti-pattern as a purity test** — treating every use of an agent/framework as the anti-pattern (the over-application); the anti-pattern's context (the agent-for-everything is the agent-*where-a-workflow-fits*, not all agents).
-7. **Ignoring the governance's role** — not using the governance to surface the anti-patterns (6.9); the governance's risk-surfacing (the anti-patterns caught in review).
+1. **The purity test** — treating every agent, framework, or fine-tune as a finding. Each entry is a mistake *in context*; strip the context and the review becomes an obstacle teams route around.
+2. **Reviewing intent instead of evidence** — accepting "we have evals" as an answer; ask for the set's size history, the ADR, the trace.
+3. **Finding one and stopping** — entries cluster by missing discipline, so the first is a lead.
+4. **Naming without scheduling** — a finding recorded and never refactored is worse than none, because the organization now believes it is handled. Owner, effort, date.
+5. **Pricing every finding alike** — drag and exposure are not comparable urgencies; sort by cost shape before effort.
+6. **Catching them only post-incident** — the value is pre-commitment detection; a catalog used only in postmortems is a vocabulary, not a control.
+7. **Letting the catalog freeze** — if no local entry appeared this year, someone stopped writing them down.
 
 ## Best Practices
 
-1. **Know the anti-patterns as well as the patterns** — the what-to-avoid (7.10) as valuable as the what-to-do (7.2-7.9), the architect needs both.
-2. **Recognize the anti-patterns early** — the governance's risk-surfacing (6.9 — the anti-patterns caught in review, not after the incident).
-3. **Resist the anti-pattern's temptation with the discipline** — the autonomy grid (3.8) against the agent-for-everything, the estimation (1.7) against the demo-driven, the eval systems (4.7) against the eval-free.
-4. **Refactor the anti-patterns with the patterns** — the workflow patterns (7.3) for the agent-for-everything, the prompt engineering (3.3) for the prompt spaghetti, etc.
-5. **Use the governance to surface the anti-patterns** — the review's risk-surfacing (6.9), the anti-patterns as the governance's checklist.
-6. **Apply the anti-pattern's context** — the anti-pattern is the mistake-in-context (the agent-*where-a-workflow-fits*), not the over-applied purity test.
-7. **Keep the anti-pattern catalog living** — the emerging anti-patterns named (7.1's living catalog).
+1. **Lead with the seduction** — an anti-pattern nobody can imagine choosing is one they will not notice themselves choosing.
+2. **Write symptoms as checks, not adjectives** — "the golden set has not grown in two quarters" is reviewable; "insufficient rigor" is an opinion.
+3. **Make the simple option the default and complexity an escalation with evidence** — the single fix for the whole first family.
+4. **Require evidence that could have failed** — ask what result would have stopped the launch before asking to see results.
+5. **Give every accreting artifact an owner, a version, and an expiry** — prompts, memory entries, quarantined cases, framework dependencies.
+6. **Hunt the family after the first finding**, and record the missing discipline rather than only the symptom.
+7. **Add an entry after every incident that surprised you**, with the seduction written honestly.
 
 ## Architecture Checklist
 
-For avoiding the anti-patterns:
+For reviewing a GenAI design against the catalog:
 
-- [ ] Agent-for-everything avoided (the autonomy grid — 3.8, the workflow patterns — 7.3 where the path is fixed)
-- [ ] Demo-driven architecture avoided (the full estimate — 1.7, the pilot-to-platform — 6.8, the production disciplines — Part 4)
-- [ ] Eval-free shipping avoided (the eval systems — 4.7, the LLMOps gates — 5.7)
-- [ ] Prompt spaghetti avoided (the prompt engineering — 3.3, the prompt registry — 7.9)
-- [ ] Framework lock-in avoided (the trade-off analysis — 1.4, the abstraction — 5.4, the reversibility — 3.10)
-- [ ] Unbounded autonomy avoided (the agentic patterns — 7.4, the governors — 3.8/4.4)
-- [ ] The governance surfaces the anti-patterns (6.9's risk-surfacing); the anti-pattern catalog living (7.1)
+- [ ] Autonomy grid applied; agents only where the path is undiscoverable
+- [ ] Single-agent baseline measured before any fleet; per-agent attribution in place
+- [ ] Every retrieval stage justified by a named failure class and shown to move the score
+- [ ] Fine-tuning, if present, passes all four escalation conditions against a measured ceiling
+- [ ] Production estimate covers evals, guardrails, permissioning, observability, and support
+- [ ] Every change path — prompt, model pin, retrieval parameter — carries an eval gate
+- [ ] Eval suite can fail: growing set, incident coverage, calibrated judge, thresholds fixed before scoring
+- [ ] Model choice rests on private evals per task class, with portfolio, fallback, and re-evaluation triggers
+- [ ] Prompts versioned, owned, served from a registry; no console editing in production
+- [ ] Agent memory has a write policy, provenance, expiry, and a working deletion path; untrusted on read
+- [ ] Framework exit cost written into the adoption ADR; central components held to the higher bar
+- [ ] All four governors present, credentials scoped and short-lived, kill switch exercised in a drill
+- [ ] Findings carry owner, effort, and cost shape; the local catalog gained entries this year
 
 ## Interview Questions
 
-1. *"What are the most common GenAI architecture anti-patterns?"* — Strong answers give the family (agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, unbounded autonomy), each with its symptoms and the pattern/discipline that avoids it (the workflow patterns, the estimation, the eval systems, the prompt engineering, the trade-off analysis, the governors).
-2. *"Why is agent-for-everything an anti-pattern?"* — Strong answers give the symptom (the agent used where a workflow pattern fits — 3.8's spectrum, the fashionable agent), the consequences (the un-needed complexity, cost, variance — the workflow would have been simpler), and the refactoring (the autonomy grid — 3.8, the workflow patterns — 7.3, the agent only where the path is undiscoverable).
-3. *"How do you prevent eval-free shipping?"* — Strong answers give the eval systems (4.7 — the golden sets, the gates), the eval-as-tests (5.7 — the LLMOps CI gates wired into the change paths), the eval-before-feature (4.7), so the changes are gated (the majority-of-incidents cause prevented — 4.7).
-4. *"Why are anti-patterns as valuable as patterns?"* — Strong answers give the two-sides (7.1 — the patterns show what to do, the anti-patterns show what to avoid), the recurring mistakes named (the tempting mistakes recognized and avoided), the governance's risk-surfacing (6.9 — the anti-patterns the review catches), the architect needing both.
+1. *"What are the most common GenAI architecture anti-patterns today?"* — Strong answers give families rather than a list and include post-2024 material: multi-agent by default, context stuffing, evaluation theatre, memory without a write policy. Naming each seduction, not just the verdict, is the senior signal.
+2. *"When is multi-agent the wrong architecture?"* — Strong answers demand the single-agent baseline first, explain compounding per-step error and coordination overhead, and note the attribution collapse that makes fleets un-gateable.
+3. *"A team shows you a green eval dashboard. What do you ask?"* — Strong answers go to falsifiability: when did the suite last fail, how has the set grown against the feature surface, when was the judge calibrated, were thresholds fixed before scoring, how many incidents became cases.
+4. *"Fine-tune or prompt better?"* — Strong answers route by requirement type first (knowledge → retrieval, behavior → prompting), then apply the four escalation conditions, and price fine-tuning's real bill: data rights, refresh obligation, migration debt.
 
 ## Further Reading
 
-- The chapters the anti-patterns draw from: 3.8 (agent-for-everything, unbounded autonomy), 1.7/6.8 (demo-driven architecture), 4.7 (eval-free shipping), 3.3 (prompt spaghetti), 1.4/5.4 (framework lock-in) — the source of the anti-patterns.
-- The AntiPatterns literature (Brown et al., *AntiPatterns*) — the anti-pattern concept and form this chapter adapts.
-- 7.1 A Pattern Language for GenAI (the pattern/anti-pattern two-sides) and 6.9 Architecture Governance (the risk-surfacing) — the framing chapters.
-- The [case studies](../../case-studies/README.md) — the anti-patterns avoided (the case studies' architects recognizing and avoiding them).
+- Brown et al., *AntiPatterns* — the concept and the entry form this chapter adapts.
+- [7.1 A Pattern Language for GenAI](chapter-01-pattern-language.md) and [6.9 Architecture Governance](../part-6-enterprise-architecture/chapter-09-architecture-governance.md) — the framing chapter and the lane where the catalog is used.
+- Source chapters for the refactorings: [3.8](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md)/[4.5](../part-4-enterprise-genai-systems/chapter-05-multi-agent-systems.md), [4.2](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md), [4.13](../part-4-enterprise-genai-systems/chapter-13-prompting-rag-finetuning.md), [4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)/[5.7](../part-5-cloud-infrastructure-platform/chapter-07-llmops.md), [3.10](../part-3-core-building-blocks-of-genai/chapter-10-model-selection-benchmarking.md), [4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md).
+- The published long-context evaluations on positional recall, and the indirect prompt-injection literature — external grounding for context stuffing and for memory as a persistence path.
+- The [architecture review checklist](../../checklists/architecture-review-checklist.md) — where these symptom checks become a form.
 
 ## Summary
 
-- **Anti-patterns are the recurring mistakes named** — agent-for-everything (the agent where a workflow fits — 3.8), demo-driven architecture (the un-scaling demo — 1.7), eval-free shipping (the ungated changes — 4.7), prompt spaghetti (the un-versioned prompts — 3.3), framework lock-in (the locking framework — 1.4), unbounded autonomy (the un-governed agent — 3.8/4.4) — the tempting mistakes that look reasonable but produce bad outcomes.
-- **Each anti-pattern is avoided by a pattern or discipline** — the workflow patterns (7.3), the estimation (1.7), the eval systems (4.7), the prompt engineering (3.3), the trade-off analysis (1.4), the governors (3.8/4.4) — the anti-patterns and the patterns as the two sides (7.1).
-- The anti-patterns are **as valuable as the patterns** — the patterns show what to do, the anti-patterns show what to avoid, the architect needs both.
-- The anti-patterns are the **governance's risk-surfacing** (6.9) — the recurring mistakes the review catches, the reference for what to avoid, applied in context (the mistake-in-context, not the over-applied purity test).
-- The anti-patterns close Part 7 — the pattern catalog (7.2-7.9, the what-to-do) and the anti-patterns (7.10, the what-to-avoid), the reference core cross-linked from the case studies. **Part 8** turns to the professional excellence that surrounds all this architecture.
+- An entry earns its place by explaining the **seduction** — why a competent architect chooses it — then giving a checkable symptom, a priced cost, and a scheduled refactoring.
+- Twelve entries in three families: **unearned complexity** (agent-for-everything, multi-agent by default, RAG-for-everything, fine-tune-first), **unearned confidence** (demo-driven architecture, eval-free shipping, evaluation theatre, benchmark-driven model selection), and **ungoverned accretion** (prompt spaghetti, agent memory as a junk drawer, framework lock-in, unbounded autonomy).
+- The family predicts the fix: make the simple option the default and complexity an escalation with evidence; require evidence capable of failing; give every accreting artifact an owner, a version, and an expiry.
+- **Review symptoms, not intent** — traces, repositories, ADRs, golden-set growth — and expect findings to cluster, since they share a missing discipline.
+- Every entry has a legitimate context, so the catalog is a diagnostic rather than a purity test — and half of these exist only because the estate changed, which is the argument for keeping it alive. **Part 8** turns to the professional excellence that surrounds all this architecture.
 
 ---
 

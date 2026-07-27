@@ -5,188 +5,223 @@
 | **Part** | 7 — Enterprise AI Architecture Patterns |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 75 min) |
 | **Prerequisites** | [3.8 Agents: Concepts & Control Flow](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md); [4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Apply the workflow pattern family in pattern-language form: prompt chaining, routing, parallelization, orchestrator-workers, and evaluator-optimizer.
-2. Select the workflow pattern matched to the task structure, using each pattern's context, forces, and consequences.
-3. Compose workflow patterns into control-flow architectures, the fixed-control-flow alternative to agents (3.8).
-4. Recognize the workflow patterns in the case studies, and prefer them to agents where the control flow is fixed (3.8's spectrum).
+1. Apply the workflow pattern family in pattern-language form: prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer, and the durable step boundary that makes all five production-grade.
+2. Price each pattern's consequences — latency, token spend, new failure classes, maintenance surface — not only its benefits.
+3. Walk a decision path from task shape to pattern, and state the input variability that would justify buying model-directed control flow instead.
+4. Specify a workflow's operational layer: idempotency, retries matched to LLM failure modes, checkpointing, partial-failure handling, per-step observability.
 
 ## Introduction
 
-This chapter catalogs the workflow pattern family — the fixed-control-flow patterns (3.8's workflows, where the code owns the control flow) that 3.8 introduced and 4.6 orchestrated, in pattern-language form (7.1). These are the patterns to reach for *before* agents (3.8's start-with-the-simplest-control-flow), and this chapter is the reference for the workflow patterns that solve most enterprise GenAI problems without the agent's complexity.
+This chapter is the pattern-language reference ([7.1](chapter-01-pattern-language.md)) for the control-flow toolkit where *your code* decides what happens next — the workflow end of the autonomy spectrum ([3.8](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md)), running on [4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md)'s durable substrate.
 
-The framing: **workflow patterns are the fixed-control-flow toolkit — reach for them before agents** — the patterns (chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer) where the code owns the control flow (3.8), which solve most problems more simply, cheaply, and debuggably than agents (3.8's spectrum, the 90/10 shape), and this chapter is the reference for selecting and composing them.
+State the organizing argument once, because the rest of the curriculum leans on it. **Fixed control flow in code is the default, and every increment of model-directed nondeterminism must be bought — the only currency accepted is genuine variability in the task's inputs.** The test is mechanical: after reading a representative input, can you name the next step? If yes, code names it — not the model, not a planner, not "a lightweight agent for flexibility." A branch the model chooses at runtime is a branch you cannot enumerate at design time, so it is one you cannot test, cannot cost-bound, and cannot localize a failure to. That is the price. Genuine input variability — subtask count and shape differ per input, or the path is discovered by acting — is what pays it. Requirements you haven't finished writing are not variability; they are a specification you owe. Nearly every system arriving labelled "agent" decomposes into the six patterns below, with a small bounded agent in the residue ([Glossary](../../GLOSSARY.md): *workflow* vs. *agent*).
 
 ## Business Motivation
 
-The workflow patterns are the enterprise's most-used GenAI control-flow toolkit — the patterns that solve most enterprise GenAI problems (3.8's finding: most "agent" requirements are workflows). Selecting the workflow pattern (over the agent) matters: the workflow patterns are simpler, cheaper, and more debuggable than agents (3.8's spectrum — the code owns the control flow, the deterministic flow, the per-step evaluation — 3.8), so applying the workflow pattern where it fits (versus the agent-for-everything anti-pattern — 3.8/7.10) delivers the solution more reliably and economically. The business case is the simplicity-and-reliability one: the workflow patterns solve most enterprise GenAI problems (3.8's 90% — the fixed-control-flow tasks) more simply, cheaply, and reliably than agents (3.8's spectrum), and the workflow pattern family is the reference for the control-flow architecture — the toolkit that solves the majority of enterprise GenAI problems without the agent's cost and complexity (the reach-for-workflows-first discipline — 3.8).
+Four numbers make the case in a design review. **Testability:** a five-step chain has five places to attach an eval set and one execution order, while a five-tool free loop has a trajectory space nobody enumerates — so evaluation degrades to end-to-end suites that report *that* it failed, never *where* ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)). **Cost predictability:** a workflow's bill is a known multiple of the input (N steps, K samples, W workers); an agent's is bounded only by its iteration budget, so you provision and often pay the ceiling rather than the mean ([4.11](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md)). **Time to diagnosis:** fixed control flow plus per-step traces turns "it's slow" and "it's wrong" into a query against a step name; model-directed control flow turns both into trajectory replay. **Change safety:** editing one handler behind a router regresses one input kind; editing the system prompt of an agent that owns its own routing regresses everything, silently.
+
+The honest case *for* buying nondeterminism is narrow and real: work whose decomposition depends on what the input turns out to contain, and investigations whose next question depends on the last answer. Buy it there. Everywhere else these patterns deliver the same outcome with a forecastable bill and a findable failure — [7.10](chapter-10-anti-patterns.md)'s agent-for-everything, stated as a positive.
 
 ## Theory — The Workflow Pattern Catalog
 
 ### Pattern: Prompt Chaining
 
-- **Context** — a task that decomposes into a fixed sequence of steps (3.8).
-- **Problem** — a complex task done poorly as one prompt (3.8's narrow-ask — one prompt doing five jobs does all five worse).
-- **Forces** — decomposition (per-step quality, evaluability) vs. latency (the sequential steps — 3.8).
-- **Solution** — a fixed sequence of steps, each step's typed output (3.4) feeding the next (3.8's chaining).
-- **Structure** — step 1 → typed output → step 2 → ... → result (3.8, the typed joints — 3.4).
-- **Consequences** — per-step quality and evaluability (3.8's component evals — 2.7); the latency (the sequential steps).
-- **Known uses** — CS03 (meeting minutes: transcript → summary → action items), most extraction-then-generate pipelines.
-- **Related** — Routing (the branching), the structured-output pattern (3.4, the typed joints).
+- **Context** — a task whose steps are known and ordered at design time: extract, normalize, judge, draft.
+- **Problem** — one prompt doing four jobs does all four worse, and leaves nowhere to attach a check, a gate, or an eval.
+- **Forces** — per-step accuracy vs. latency, which is *additive* (four tails sum; a chain fine at p50 misses its SLO at p95); granularity vs. context loss, since each typed joint discards whatever the schema didn't carry; and error compounding — 95% per step over five steps runs clean 77% of the time, so the per-step bar is derived backwards from the end-to-end target, never forwards from what feels good.
+- **Solution** — a fixed sequence joined by typed payloads ([3.4](../part-3-core-building-blocks-of-genai/chapter-04-structured-outputs.md)); deterministic code between model steps wherever code can do the work; a programmatic gate after any step whose failure is cheap to detect and expensive to propagate, short-circuiting to a human queue rather than feeding garbage forward.
+- **Structure** — step → typed payload → gate → step → result; one eval set per step plus an end-to-end suite; gate rejection rate monitored.
+- **Consequences** — buys per-step quality, evals, and localization. Costs N calls and N serial round trips, so latency is the real bill and it adds; costs N−1 schema contracts to version; makes every joint lossy; and compounds error multiplicatively, making chains past roughly five *model* steps a design smell.
+- **Known uses** — the first workflow documented in Anthropic's public *Building Effective Agents* engineering write-up, programmatic gate included; sequential extract → validate → normalize → load is standard enterprise document-pipeline practice, predating LLMs as ETL. Curriculum's own fictional instance: [P03](../../projects/p03-meeting-intelligence-pipeline/README.md)'s transcript → summary → action items.
+- **Related** — Routing (its handlers are usually chains); Durable Step Boundary; structured outputs.
 
 ### Pattern: Routing
 
-- **Context** — inputs that cluster into kinds needing different treatment (3.8, 4.6).
-- **Problem** — one handler for heterogeneous inputs handles each kind poorly (3.8).
-- **Forces** — the routing accuracy vs. the routing cost (the classifier step — 3.8).
-- **Solution** — a classifier step (cheap model, temperature 0 — 3.2) directs to specialized handlers (3.8/4.6).
-- **Structure** — input → classify → route to handler A/B/C → result (3.8).
-- **Consequences** — the right treatment per input kind (Bellhaven's tiered extraction — 1.4); the routing accuracy (the classifier's precision — 2.7).
-- **Known uses** — Bellhaven's submission routing (1.4/2.1), CS09 (support triage by language/intent), model tiering (7.8).
-- **Related** — Model Tiering (7.8, the cost-driven routing), Prompt Chaining (the handlers).
+- **Context** — heterogeneous inputs clustering into a small, stable, enumerable set of kinds, each better served by different instructions, a different model, or a different downstream system.
+- **Problem** — one handler carrying every kind's instructions serves each worse than a specialist would, and edits for one kind silently regress another.
+- **Forces** — routing accuracy vs. handler specialization, which pull against each other, since the more specialized the handlers the more a misroute costs, raising the precision the classifier must hit; classifier cost and latency vs. what it unlocks (ahead of price-tiered handlers it pays for itself; ahead of uniformly priced ones it is pure added latency on every request, including the easy ones); and a closed label set, which makes routing testable, vs. real inputs that fit no label.
+- **Solution** — exact rules first (file type, source system, language, tier), because a rule right every time beats a classifier right 97% of the time; then a cheap temperature-0 classifier over a closed label set that always includes `unknown`; specialized handlers per label; low-confidence and `unknown` to the general handler or a human, never a coin flip; the confusion matrix maintained as an eval artifact, its off-diagonal being this pattern's cost in one table.
+- **Structure** — input → rules → classifier → handler A/B/C/general; per-route volume, confidence distribution, and handler-reported out-of-scope rate monitored.
+- **Consequences** — buys per-kind quality and independently editable prompts. Costs an extra call on every request's critical path; costs permanent taxonomy maintenance, since the label set drifts with the business and each change re-labels the eval set; and the confident misroute, its characteristic failure, is *silent* unless handlers detect and report out-of-scope inputs.
+- **Known uses** — routing is documented as a core workflow in Anthropic's *Building Effective Agents*; intent classification ahead of specialized handlers is decades-old contact-centre and IVR practice; cost-driven model routing is widespread industry practice, catalogued here as Model Tiering ([7.8](chapter-08-cost-performance-patterns.md)). Curriculum instance: [CS09](../../case-studies/cs09-retail-bank-support-assistant.md)'s triage by intent and language.
+- **Related** — Model Tiering; Confidence Routing ([7.5](chapter-05-human-in-the-loop-patterns.md), the same shape with a human as one destination); Prompt Chaining.
 
 ### Pattern: Parallelization
 
-- **Context** — independent subtasks that can run concurrently, or a task benefiting from multiple runs (3.8, 2.7).
-- **Problem** — the sequential processing of independent parts (the latency), or the variance of a single run (2.7).
-- **Forces** — the latency/confidence benefit vs. the cost (the parallel calls — 3.8).
-- **Solution** — fan out independent subtasks concurrently (sectioning), or run the same task multiple times for vote/merge (3.8, 2.7's variance).
-- **Structure** — input → fan out → parallel subtasks → merge → result (3.8).
-- **Consequences** — the latency reduction (independent parts) or the confidence (the vote — 2.7); the cost (the parallel calls).
-- **Known uses** — CS24 (eDiscovery: parallel document classification), multi-document analysis (4.5's per-document fan-out).
-- **Related** — Orchestrator-Workers (the dynamic parallelization), the evaluator-optimizer (the vote).
+- **Context** — two situations sharing one shape. **Sectioning:** independent subtasks over disjoint parts of an input. **Voting:** the same task run K times to cut the variance of a single sample.
+- **Problem** — sequential processing makes latency scale with input size when the parts don't need each other; and one sample of a high-variance judgment hides its own uncertainty.
+- **Forces** — latency vs. token spend and rate limits, since fan-out converts a latency problem into a concurrency problem that lands on your quota and becomes a retry storm ([4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md)); genuine vs. assumed independence, because sections quietly needing each other's context merge cleanly and read inconsistently — far harder to detect than a crash; and voting's confidence vs. correlated error, because K samples of one model share its blind spots, so agreement evidences stability, never truth.
+- **Solution** — sectioning: partition, fan out under a concurrency semaphore sized to rate-limit headroom rather than to the input, merge in code where the merge is mechanical. Voting: pick the aggregation from the objective — union when screening for recall, majority when deciding an answer — and log inter-run disagreement, since a rising rate warns that the task drifted out of the model's competence.
+- **Structure** — partition → bounded fan-out → per-part results carrying status → merge; gaps declared, never dropped.
+- **Consequences** — buys latency near the slowest section, or measurable confidence. Costs spend linear in section count or K, so a 20-way fan-out is a 20× bill wearing a latency costume; makes your p99 the slowest shard's p99; forces a partial-failure policy into existence; and voting's gain flattens after a few samples while cost keeps climbing.
+- **Known uses** — sectioning and voting are documented as parallelization's two variants in Anthropic's *Building Effective Agents*; map-reduce summarization of long documents is standard practice, shipped as a named chain type in mainstream LLM frameworks; self-consistency, sampling several reasoning paths and taking the majority, is published and widely replicated (Wang et al., 2022). Curriculum instance: [CS24](../../case-studies/cs24-ediscovery-triage.md)'s per-document classification fan-out.
+- **Related** — Orchestrator-Workers (input-determined width); Evaluator-Optimizer; Batch Lanes ([7.8](chapter-08-cost-performance-patterns.md)).
 
 ### Pattern: Orchestrator-Workers
 
-- **Context** — a task whose subtasks are determined dynamically (not fixed in advance — 3.8, 4.5).
-- **Problem** — the task requiring dynamic decomposition that a fixed chain can't handle (4.5).
-- **Forces** — the dynamic decomposition (the flexibility) vs. the orchestrator's decomposition quality (4.5 — the orchestrator is the highest-leverage, highest-risk role).
-- **Solution** — a model (or code) plans the subtasks dynamically, workers execute, code owns the dispatch and merge (4.5's orchestrator-workers, the bridge pattern — 3.8).
-- **Structure** — orchestrator (decompose) → workers (execute, scoped briefs — 4.5) → merge (4.5).
-- **Consequences** — dynamic decomposition without a free agent loop (3.8); the decomposition quality (prefer deterministic where the structure is known — 4.5).
-- **Known uses** — Halvard & Roth's data-room review (4.5), CS16 (supplier document intelligence).
-- **Related** — Parallelization (the static version), the multi-agent patterns (7.4, the agentic version).
+- **Context** — a task whose subtask *count and shape* depend on the input and cannot be enumerated at design time, but become determinable once the input has been read.
+- **Problem** — a fixed chain cannot express "however many subtasks this input needs"; hard-coding the maximum wastes calls, hard-coding the minimum truncates.
+- **Forces** — flexibility vs. decomposition quality, an asymmetric pair, since an omitted subtask is unrecoverable downstream and no worker's excellence replaces a missing worker; model-authored vs. code-authored plans, because derivable structure — an index, a schema, a clause list — is planned better, cheaper, and deterministically by code ([4.5](../part-4-enterprise-genai-systems/chapter-05-multi-agent-systems.md)); isolation vs. shared context, because isolated workers cannot contaminate each other but also cannot notice that their findings contradict; and fan-out width, a cost multiplier disguised as a tuning parameter.
+- **Solution** — treat the plan as data: a typed list of scoped briefs carrying objective, scope boundary, output schema, and budget. Code authors the plan wherever structure is derivable, a model only where it is not. Code owns dispatch, the hard width cap, partial-failure policy, and merge. The plan is logged and evaluated as its own artifact.
+- **Structure** — input → plan (typed briefs, width-capped) → isolated workers → typed results with status → synthesis; spawn-graph attribution on every artifact.
+- **Consequences** — buys input-determined breadth without conceding the loop; the last stop before an agent, and often the right one. Costs a planning call plus a worker count the *input* chose, which makes the cap load-bearing; adds two failure classes a chain lacks — the missing subtask, and wrong synthesis over correct findings — each needing its own eval; and leaves a wrong claim untraceable without brief-to-finding attribution.
+- **Known uses** — orchestrator-workers is documented in Anthropic's *Building Effective Agents*, and Anthropic's public write-up on its multi-agent research system records the disciplines it needs in production: scoped self-contained briefs, and summarize-before-merge; dynamically-keyed map-reduce is ordinary classical data engineering. Curriculum instance: [4.5](../part-4-enterprise-genai-systems/chapter-05-multi-agent-systems.md)'s data-room review, where the index *is* the plan.
+- **Related** — Parallelization (prefer it whenever the width is fixed); the bounded agent loop ([7.4](chapter-04-agentic-patterns.md)); Durable Step Boundary.
 
 ### Pattern: Evaluator-Optimizer
 
-- **Context** — a task where critique is reliably easier than generation (3.8, 2.7).
-- **Problem** — the single-pass output that could be improved by critique-and-revise (3.8).
-- **Forces** — the quality improvement vs. the cost (the extra critique-revise rounds — 3.8), the bounded loop (3.8's fixed exit).
-- **Solution** — generate, critique against criteria, regenerate — a bounded loop with a fixed exit (score threshold or max rounds — 3.8, 2.7's judge inward).
-- **Structure** — generate → evaluate → (regenerate | done) — the bounded loop (3.8).
-- **Consequences** — the quality improvement (the critique-revise); the cost (the extra rounds — bounded).
-- **Known uses** — Halvard & Roth's red-flag triage (3.8), CS48 (FP&A narrative with faithfulness critique).
-- **Related** — the LLM-as-judge (4.7, the evaluator), the reflection pattern (7.4, the agentic version).
+- **Context** — tasks with articulable criteria where critique is reliably easier than generation: a playbook exists, a source of truth exists, or the defect is visible on inspection.
+- **Problem** — a single pass that a competent reviewer would improve in one round, at a volume and latency where no reviewer is available.
+- **Forces** — quality gain vs. round cost, two calls per round with gain decaying sharply after the first; evaluator independence vs. correlation, the force deciding whether the pattern works at all, since a model critiquing itself reliably catches format, completeness, and constraint violations and unreliably catches its own factual errors; improvement vs. termination, because a loop running until the judge is satisfied optimizes the judge; and rubric precision, since a vague rubric oscillates, round three undoing round two with both passing.
+- **Solution** — generate, evaluate against explicit written criteria into a typed verdict (pass, or specific defects), regenerate with the defects as input; hard exit at two or three rounds or a threshold. Prefer *programmatic* evaluators wherever the criterion is checkable in code — schema validity, figures matching the source table, citations resolving, disclosures present — because a deterministic check beats a model at a fraction of the cost and none of the correlation. Gate entry on a cheap first-pass check so good outputs skip the loop.
+- **Structure** — generate → programmatic checks → model critique → pass ∨ defects → regenerate → bounded exit; round-count distribution monitored.
+- **Consequences** — buys real quality on criteria-shaped work. Costs two to three times the calls and latency on every request that enters unconditionally, which is the argument for the entry gate; yields a pass verdict evidencing *criteria satisfaction*, not correctness; and can fail to converge, burning maximum rounds on every request — visible first in the round-count distribution.
+- **Known uses** — evaluator-optimizer is documented in Anthropic's *Building Effective Agents*; iterative refinement with self-generated feedback is published and replicated (Self-Refine, Madaan et al., 2023), with the reported caveat that gains concentrate early and depend on critique genuinely being easier than the task; validate-and-re-ask loops around structured output are standard practice in production LLM libraries. Curriculum instance: [CS48](../../case-studies/cs48-fpa-narrative-reporting.md)'s figure-faithfulness critique, where the evaluator is arithmetic.
+- **Related** — LLM-as-judge ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)); Reflection ([7.4](chapter-04-agentic-patterns.md), the unbounded agentic cousin); Approval Gate ([7.5](chapter-05-human-in-the-loop-patterns.md)).
+
+### Pattern: Durable Step Boundary
+
+Added here as the operational pattern that makes the other five production-grade; it composes with all of them rather than competing.
+
+- **Context** — any workflow whose run outlives a single request: multi-minute chains, fan-outs over thousands of items, anything containing a human step.
+- **Problem** — in-memory state dies with the process, so a deploy or brownout destroys work already paid for; and naive retry re-executes completed model calls, paying twice and possibly returning a *different* answer downstream steps already consumed.
+- **Forces** — durability machinery vs. simplicity, since a database table plus a worker loop often suffices while a durable-execution engine buys stronger guarantees and charges a determinism discipline teams underestimate; at-least-once delivery, what queues actually provide, vs. exactly-once effects, what business steps require — a gap closed only by consumer-side idempotency; retry aggression vs. cost, because a model call is not a database write and blind backoff over a policy refusal is ten bills for one non-answer; and trace granularity vs. storage and data exposure.
+- **Solution** — every step boundary is a transactional checkpoint of a typed payload; completed model outputs are recorded once and *reused* on resume, never re-rolled; side-effecting steps carry idempotency keys; retries are matched per failure class — transport, 5xx, and rate-limit errors back off with jitter; validation failures re-ask once or twice on a separate budget; refusals and policy trips route to a fallback or human queue, being usually deterministic for that input; budget exhaustion is a typed partial exit; partial failure merges what succeeded and declares gaps; every step emits step name, prompt and model version, latency, tokens, verdict, retry class.
+- **Structure** — step → typed output → checkpoint → next step; resume from the last checkpoint; side effects keyed; telemetry to the trace store ([4.10](../part-4-enterprise-genai-systems/chapter-10-observability.md)).
+- **Consequences** — buys resumability, honest cost accounting, and one-query localization. Costs a checkpoint store you must classify, retention-govern, and reach with deletion requests, since it holds everything the steps held; costs the determinism discipline under a replay engine, whose violation makes a workflow diverge from its own history; and costs real storage for per-step traces.
+- **Known uses** — durable-execution engines (Temporal, AWS Step Functions) are the standard enterprise answer for long-running, human-in-the-loop orchestration; idempotency keys on side-effecting API calls are long-established practice, publicly documented by payment APIs; at-least-once delivery with consumer-side deduplication is the documented contract of mainstream managed queue services. Curriculum instance: [4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md)'s Kestrel claims rebuild.
+- **Related** — all five patterns above; Checkpoint-and-Resume ([7.4](chapter-04-agentic-patterns.md)); the orchestration substrate itself.
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart TD
-    CHAIN[Prompt Chaining<br/>fixed sequence] 
-    ROUTE[Routing<br/>classify → handler]
-    PARALLEL[Parallelization<br/>fan out → merge]
-    ORCH[Orchestrator-Workers<br/>dynamic decompose]
-    EVAL[Evaluator-Optimizer<br/>generate → critique → revise]
-    ROUTE -.handlers are.-> CHAIN
-    ORCH -.workers are.-> CHAIN
-    PARALLEL -.dynamic version.-> ORCH
-    EVAL -.evaluator is.-> JUDGE[LLM-as-judge — 4.7]
-    ALL[All: code owns control flow — 3.8<br/>reach for before agents] -.the spectrum.-> AGENTS[Agents — 7.4<br/>only when path undiscoverable]
+    START([Read a representative input]) --> Q1{Can you name<br/>the next step?}
+    Q1 -->|No — path discovered by acting| AGENT[Bounded agent — 7.4<br/>the purchase, justified in writing]
+    Q1 -->|Yes| Q2{Small, stable set<br/>of input kinds?}
+    Q2 -->|Yes| ROUTE[Routing<br/>handlers re-enter here]
+    Q2 -->|No| Q3{Independent parts,<br/>or variance?}
+    Q3 -->|Parts| PAR[Parallelization — sectioning]
+    Q3 -->|Variance| VOTE[Parallelization — voting]
+    Q3 -->|Neither| Q4{Subtask count<br/>input-determined?}
+    Q4 -->|Yes, derivable after reading| ORCH[Orchestrator-Workers<br/>code plans derivable structure]
+    Q4 -->|No — steps fixed| CHAIN[Prompt Chaining]
+    ROUTE & PAR & VOTE & ORCH & CHAIN --> Q5{Articulable criteria,<br/>critique easier than generation?}
+    Q5 -->|Yes| EVAL[Wrap in Evaluator-Optimizer<br/>bounded, programmatic checks first]
+    Q5 -->|No| DONE[Compose]
+    EVAL --> DONE
+    DONE --> Q6{Run outlives<br/>one request?}
+    Q6 -->|Yes| DUR[Wrap in Durable Step Boundary]
+    Q6 -->|No| SHIP[Ship with per-step evals]
+    DUR --> SHIP
 ```
 
-Readings. **The workflow patterns are the fixed-control-flow toolkit** — chaining (the fixed sequence), routing (the branching), parallelization (the concurrency), orchestrator-workers (the dynamic decomposition), evaluator-optimizer (the critique-revise) — all with the code owning the control flow (3.8), the patterns to reach for before agents (3.8's spectrum, the 90/10 shape). **The patterns compose** — a workflow architecture composes the patterns (a router in front of an orchestrator whose workers are chains, with an evaluator gate — 3.8's composition), the patterns building the control-flow architecture (7.1's combination). **And the workflow-vs-agent boundary is the spectrum** (3.8) — the workflow patterns (the fixed control flow) vs. the agents (the model-directed control flow — 7.4), with the workflow patterns preferred where the control flow is fixed (3.8's spectrum, the reach-for-workflows-first — the production shape is 90% workflow, 10% agent).
+Three readings. **The agent box is deliberately hard to reach** — the first question is answerable for most enterprise tasks, and the right branch demands proof that the *input*, not the specification, is what you cannot enumerate. **The patterns compose by nesting, not sequencing** — typically a router whose handlers are chains, one of which fans out, with an evaluator-optimizer around the output-bearing step and a durable boundary around everything; each layer re-enters the path at its own scope. **And the operational layer is where the workflow argument becomes true** — a chain without checkpoints, per-step traces, matched retries, and declared partial results is not more debuggable than an agent, only cheaper.
 
 ## Real-world Example
 
-**Halvard & Roth** (the recurring law firm — 3.8, 4.5) built its due-diligence system as a workflow-pattern composition (3.8's 90/10 shape), and the composition is the workflow pattern family applied. The system was 90% workflow (3.8's finding): the clause extraction was routing (4.6 — route by document type) + prompt chaining (extract → validate → aggregate) + parallelization (4.5 — the per-document fan-out); the red-flag triage was evaluator-optimizer (3.8 — generate the flags, critique against the playbook, revise); and the synthesis was orchestrator-workers (4.5 — the dynamic decomposition). The agent (7.4) was the 10% (the multi-hop cross-reference investigation — 3.8/4.5). The workflow-pattern composition was the architecture: routing + chaining + parallelization + evaluator-optimizer (the 90% workflow) + a bounded agent for the hard 10% — the control-flow architecture as a composition of workflow patterns (3.8's composition), preferring the workflow patterns to agents where the control flow was fixed (3.8's spectrum — the persona-agents rejected, the workflow patterns preferred — 4.5). Yusuf's workflow-patterns note (echoing 4.5's 90/10): *"Our due-diligence system is 90% workflow patterns: routing (by document type), chaining (extract → validate → aggregate), parallelization (per-document fan-out), evaluator-optimizer (the red-flag critique-revise), orchestrator-workers (the synthesis). The agent is the 10% — the multi-hop investigation the path of which we couldn't write down. The workflow patterns are the toolkit I reach for first (3.8's spectrum) — simpler, cheaper, debuggable than agents. Most of the system is a composition of workflow patterns; the agent is the residue. That's the reach-for-workflows-first discipline — the patterns compose into the control-flow architecture, and the agent is only where the path is undiscoverable."*
+**Halvard & Roth** (the curriculum's recurring fictional law firm — [CS23](../../case-studies/cs23-contract-review-platform.md), [CS24](../../case-studies/cs24-ediscovery-triage.md)) built due diligence as a composition of these patterns, and the reasoning at each boundary is the point.
+
+Intake routes on deterministic rules first, because file type and matter metadata are exact; only unmatched documents reach a classifier whose `unknown` bucket lands in a paralegal queue. Clause extraction is a chain — extract to schema, validate programmatically, resolve party references in code, aggregate — and two of those four steps are not model calls, a reduction made after the first version paid a model to perform a lookup. Per-document work fans out under a concurrency cap sized to rate-limit headroom; when a provider degraded mid-run, the partial-failure policy merged completed documents and listed the gaps rather than failing the review, and durable checkpoints meant the retry re-ran twelve documents rather than the data room. Red-flag triage is evaluator-optimizer bound to the firm's written playbook, capped at two rounds and entered only when a cheap completeness check fails. Synthesis is orchestrator-workers where the data-room index authors the plan, because the index already *is* the decomposition.
+
+The agentic residue is small and named: multi-hop cross-reference investigation, where the next document depends on what the last one said — input-determined path discovery, bounded and traced accordingly ([7.4](chapter-04-agentic-patterns.md)). Yusuf's design note records the discipline: *"Every step where we let the model choose the next step, we had to write down what it bought us. Most of the time we couldn't, and that step became code."*
 
 ## Hands-on Exercise
 
-**Compose workflow patterns.** ~90 minutes. For a GenAI task (real or a case study).
+**Compose workflow patterns and price them.** ~75 minutes. Use a real task or a case study.
 
-1. **Pattern selection (30 min).** For a multi-step GenAI task, decompose it and select the workflow patterns (chaining for the fixed sequence, routing for the branching, parallelization for the concurrency, orchestrator-workers for the dynamic decomposition, evaluator-optimizer for the critique-revise). Justify each with the pattern's context.
-2. **The pattern-language form (20 min).** For one selected pattern, write its full pattern-language form for your task.
-3. **The composition (25 min).** Compose the workflow patterns into the control-flow architecture (the patterns composed — 3.8's composition, 7.1). Show the workflow-vs-agent boundary (which parts are workflow, which — if any — need an agent — 3.8's spectrum).
-4. **The reach-for-workflows-first check (15 min).** For any part you'd consider an agent, verify it genuinely needs one (3.8's autonomy grid — the path undiscoverable), or use a workflow pattern instead.
+1. **Walk the decision path (20 min).** Take one representative input and walk the Architecture Perspective path, recording your answer and its evidence at each question. Output: a pattern composition, plus the one place (if any) you reached the agent box, with the input variability that justified it named.
+2. **Price one pattern (20 min).** For the pattern carrying the most traffic, compute calls per request, serial round trips, expected end-to-end accuracy from your per-step assumptions (multiply them), and the cost multiple over a single-call baseline. State which number would kill the design if it doubled.
+3. **Full pattern form (15 min).** Write one selected pattern in complete pattern-language form for your task, Forces naming competing pressures in *your* system and Consequences stating what it costs.
+4. **Specify the operational layer (20 min).** Write the checkpoint boundaries; which steps are side-effecting and how they are keyed; the retry policy per failure class (transport / validation / refusal / exhaustion); the partial-failure policy for any fan-out; and the per-step telemetry fields.
 
 **Acceptance criteria:**
-- [ ] Workflow patterns selected matched to the task structure, with context
-- [ ] One pattern in the full pattern-language form
-- [ ] The control-flow architecture as a workflow-pattern composition (3.8's composition), with the workflow-vs-agent boundary
-- [ ] The reach-for-workflows-first check applied (agents only where the path is undiscoverable — 3.8)
+- [ ] Decision-path walk recorded with an answer and its evidence at each question
+- [ ] Agent usage absent, or justified by named input variability rather than requirement uncertainty
+- [ ] Four numbers computed for the highest-traffic pattern, with the breaking one identified
+- [ ] One pattern in full pattern-language form, Forces naming real competing pressures
+- [ ] Operational layer specified: checkpoints, idempotency keys, four retry classes, partial-failure policy, telemetry fields
 
 ## Enterprise Considerations
 
-The workflow patterns are the enterprise's most-used control-flow reference. **They're the default control-flow reference** (3.8/7.1): the workflow patterns are the enterprise's default for GenAI control flow (3.8's reach-for-workflows-first — most enterprise GenAI problems are workflows), the reference for the control-flow architecture (7.1). **They connect to the orchestration** (4.6): the workflow patterns run on the orchestration layer (4.6 — the durable execution, the queues, the human steps — the workflow patterns orchestrated), so the workflow patterns connect to the orchestration (4.6's machinery). **They're simpler to govern** (6.9): the workflow patterns (the fixed control flow, the per-step evaluation) are simpler to govern than agents (the deterministic flow, the evaluability — 3.8), so the governance (6.9) prefers the workflow patterns where they fit (the simpler-to-govern control flow). **And the agent-for-everything anti-pattern** (7.10) is the workflow patterns' counterpoint: the anti-pattern (reaching for agents where a workflow pattern fits — 3.8/7.10) is what the workflow patterns' reach-for-workflows-first prevents (the workflow patterns as the simpler alternative to the agent-for-everything anti-pattern).
+Workflows are cheaper to govern for a specific reason: fixed control flow is *auditable as a design artifact*. A reviewer reads the step list, the gates, and the eval sets and knows what the system will do — the evidence a review board wants ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)), and what an agent supplies only behaviourally, after the fact. Three realities shape delivery. The workflow layer usually **embeds in existing process machinery** rather than replacing it, so the boundary is an integration contract and the architecture must name which engine is system of record for which state — two engines both believing they own a case is a scheduled reconciliation incident. **Per-step observability is a data-classification event:** traces hold the payloads the steps processed, so the trace store inherits the source data's classification, retention schedule, and deletion obligations. And **step boundaries are where cost attribution becomes possible** — chargeback, per-tenant unit economics, and "which step got expensive after the prompt change" are answered from per-step token records or not at all.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Control flow | Workflow patterns (code owns) | Agents (model owns — 7.4) | Default — the path is fixed/discoverable (3.8's spectrum) | The path is genuinely undiscoverable in advance (3.8's autonomy grid) |
-| Decomposition | Prompt chaining (fixed) | Orchestrator-workers (dynamic) | The steps are fixed in advance | The subtasks are determined dynamically (4.5) |
-| Decomposition author | Deterministic (code) | Model (orchestrator) | The task structure is known (4.5 — code decomposes known structures better) | Genuinely novel structures (4.5) |
-| Quality improvement | Evaluator-optimizer (bounded) | Single pass | Critique is reliably easier than generation (3.8), quality matters | Simple tasks where the single pass suffices |
+| Control flow | Workflow patterns (code owns) | Bounded agent ([7.4](chapter-04-agentic-patterns.md)) | Default — you can name the next step after reading an input | The path is discovered by acting, and the input variability proving it is named |
+| Step implementation | Model call | Deterministic code | The step needs judgment, language, or ambiguity tolerance | The step is a lookup, parse, calculation, or format |
+| Plan authorship | Code derives the plan | Model derives the plan | The structure exists (index, schema, checklist) — the common case | Genuinely novel structures, with decomposition evals to prove it |
+| Evaluator | Programmatic check | Model critique | The criterion is checkable in code — always prefer this | The criterion is qualitative; accept correlated blind spots, bound the rounds |
+| Durability | Durable-execution engine | Queue plus state table | Long runs, human steps, audit weight; the team can absorb the determinism discipline | Short flows, existing queue expertise, maximum control |
 
 ## Common Mistakes
 
-1. **Agents where a workflow pattern fits** — the agent-for-everything anti-pattern (3.8/7.10 — reaching for agents where a workflow pattern is simpler); reach for workflows first (3.8's spectrum).
-2. **One prompt for a multi-step task** — the un-decomposed task (3.8's narrow-ask — one prompt doing five jobs); prompt chaining (the decomposition).
-3. **One handler for heterogeneous inputs** — the un-routed heterogeneous inputs (3.8); routing (the classify-and-route).
-4. **Model decomposition of known structures** — the orchestrator deriving a known plan (4.5 — the data-room index is the plan); deterministic decomposition of known structures (4.5).
-5. **The unbounded evaluator-optimizer** — the critique-revise loop without a fixed exit (3.8's bounded loop); the bounded loop (the score threshold or max rounds).
-6. **The un-composed patterns** — the workflow patterns applied without composing them (the un-designed control-flow architecture — 7.1); the composition (the patterns composed — 3.8).
-7. **Ignoring the per-step evaluation** — the workflow patterns without the per-step evals (3.8's component evals — 2.7); the per-step evaluation (the workflow patterns' evaluability advantage).
+1. **Buying nondeterminism with requirement uncertainty** — "we'll use an agent in case requirements change" converts a specification problem into a testing, cost, and debugging problem at once.
+2. **Setting per-step targets from the end-to-end target** — five steps at 95% is 77% end to end; derive the per-step bar backwards, then add gates or remove model steps when the arithmetic won't close.
+3. **Modelling steps that are code** — paying tokens, latency, and variance for a lookup, a sum, or a date format.
+4. **Routing without an `unknown` label** — a classifier forced to choose produces confident misroutes, silent unless handlers report out-of-scope inputs.
+5. **Fan-out sized to the input** — concurrency set by document count rather than rate-limit headroom, turning a latency optimization into a retry storm.
+6. **Silent partial failure** — a merge that drops failed sections without declaring them; the gap list belongs in the result schema.
+7. **Self-critique treated as verification** — a pass verdict evidences criteria satisfaction, not correctness; the evaluator shares the generator's blind spots by construction.
+8. **Re-rolling completed model steps on resume, and one retry policy for every failure** — paying twice for a different answer downstream already consumed, and retrying a policy refusal ten times.
 
 ## Best Practices
 
-1. **Reach for workflow patterns before agents** — the fixed-control-flow patterns (3.8's spectrum — most enterprise GenAI problems are workflows), agents only where the path is undiscoverable (3.8's autonomy grid).
-2. **Decompose with prompt chaining** — the fixed sequence with typed joints (3.4/3.8), per-step quality and evaluability (2.7).
-3. **Route heterogeneous inputs** — the classify-and-route (3.8/4.6), the right treatment per input kind.
-4. **Prefer deterministic decomposition** — code decomposes known structures better than the orchestrator (4.5); model decomposition for genuinely novel structures.
-5. **Bound the evaluator-optimizer** — the critique-revise with a fixed exit (3.8's bounded loop).
-6. **Compose the patterns deliberately** — the control-flow architecture as a workflow-pattern composition (3.8's composition, 7.1's design).
-7. **Evaluate per step** — the workflow patterns' evaluability advantage (3.8's component evals — 2.7), the per-step gates.
+1. **Let code name the next step until an input proves it cannot** — and write down what each model-directed branch buys, when you add it.
+2. **Un-model every step you can** — deterministic transforms between model steps are the cheapest quality and latency win available.
+3. **Rules before classifiers; programmatic checks before model evaluators** — exactness is free where it exists.
+4. **Gate the expensive loops** — enter evaluator-optimizer only when a cheap check fails, so good outputs skip the multiplier.
+5. **Cap fan-out width; size concurrency to rate-limit headroom** — width is a cost dial, not a tuning parameter.
+6. **Declare partial results** — merged output carries a gap list; the alternative is a confident lie about completeness.
+7. **Checkpoint typed payloads at every boundary, record model outputs once, key every side effect, match retries to failure class** — and watch round counts and disagreement rates, where the non-converging loop and the slow shard announce themselves first.
 
 ## Architecture Checklist
 
 For applying the workflow patterns:
 
-- [ ] The control flow uses workflow patterns where the path is fixed/discoverable (3.8's spectrum); agents only where undiscoverable
-- [ ] Multi-step tasks decomposed with prompt chaining (typed joints — 3.4)
-- [ ] Heterogeneous inputs routed (classify-and-route — 3.8/4.6)
-- [ ] Decomposition deterministic where the structure is known (4.5); model-driven for novel structures
-- [ ] Evaluator-optimizer bounded (fixed exit — 3.8)
-- [ ] The patterns composed into the control-flow architecture (7.1's design)
-- [ ] Per-step evaluation (the workflow patterns' evaluability — 3.8's component evals — 2.7)
+- [ ] Each model-directed branch justified in writing by named input variability; the rest is code
+- [ ] Per-step accuracy targets derived backwards from the end-to-end target; compounding computed
+- [ ] Lookups, parses, and calculations implemented as code, not prompts
+- [ ] Routers use exact rules first, a closed label set with `unknown`, and a maintained confusion matrix
+- [ ] Fan-out concurrency capped to rate-limit headroom; width hard-capped where input-determined
+- [ ] Partial-failure policy declared in the output schema for every fan-out and merge
+- [ ] Evaluator-optimizer bounded and entry-gated, programmatic checks before model critique
+- [ ] Orchestrator plans authored by code wherever structure is derivable; the plan logged and evaluated
+- [ ] Checkpoints at every step boundary; completed model outputs reused on resume; side effects keyed
+- [ ] Retry policy per failure class (transport / validation / refusal / exhaustion), with jitter and budgets
+- [ ] Per-step telemetry emitted and the trace store classified; per-step eval sets plus one end-to-end suite
 
 ## Interview Questions
 
-1. *"Walk me through the workflow patterns and when you'd use each."* — Strong answers give the family (prompt chaining — the fixed sequence, routing — the branching, parallelization — the concurrency, orchestrator-workers — the dynamic decomposition, evaluator-optimizer — the critique-revise), each with its context, and the reach-for-workflows-first discipline (3.8's spectrum — most problems are workflows).
-2. *"How do you decide between a workflow and an agent?"* — Strong answers give 3.8's spectrum and autonomy grid: workflow patterns (code owns the control flow) where the path is fixed/discoverable (most enterprise problems — the 90%), agents (model owns the control flow) only where the path is genuinely undiscoverable in advance (the 10%) — the reach-for-workflows-first.
-3. *"How do you compose workflow patterns into an architecture?"* — Strong answers give the composition (a router in front of an orchestrator whose workers are chains, with an evaluator gate — 3.8's composition, 7.1's design), the patterns composed deliberately (the forces balanced), Halvard & Roth's 90%-workflow due-diligence.
-4. *"When is orchestrator-workers better than prompt chaining?"* — Strong answers give the context distinction (orchestrator-workers for dynamic decomposition where the subtasks are determined at runtime — 4.5, prompt chaining for the fixed sequence known in advance), and the deterministic-decomposition preference (code decomposes known structures better — 4.5).
+1. *"How do you decide between a workflow and an agent?"* — Strong answers give the purchase test: after reading a representative input, can you name the next step? If yes, code names it. They price the purchase (testability, cost predictability, diagnosis time, change safety) and insist the justification be *input* variability, not requirement uncertainty.
+2. *"Your five-step chain scores 95% on every step's eval and users call it unreliable."* — Strong answers reach compounding immediately (0.95⁵ ≈ 0.77), then give remedies: fewer model steps, programmatic gates, per-step targets derived from the end-to-end goal — and note the missing end-to-end suite if this was a surprise.
+3. *"Walk me through making a fan-out production-grade."* — Strong answers cover concurrency sized to rate-limit headroom rather than input size, per-shard status in the result schema, declared gaps, checkpointing so a retry re-runs shards rather than the job, the tail owned by the slowest shard, and retry-storm damping.
+4. *"When does evaluator-optimizer not work?"* — Strong answers name the correlation problem (a model critiquing itself catches format failures far more reliably than factual ones), non-convergent rubrics, the cost multiple on requests already fine, and the preference for programmatic evaluators.
 
 ## Further Reading
 
-- 3.8 Agents: Concepts & Control Flow (the workflow-vs-agent spectrum, the patterns) and 4.6 Orchestration (the durable execution) — the chapters this pattern family formalizes.
-- Anthropic, *Building Effective Agents* (re-linked from 3.8) — the workflow patterns' source; the chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer patterns.
-- The [agent design checklist](../../checklists/agent-design-checklist.md) — the workflow-vs-agent decision the patterns inform.
-- The [case studies](../../case-studies/README.md) — the workflow patterns' known uses.
+- Anthropic, *Building Effective Agents* (anthropic.com/engineering) — the public write-up the five core patterns follow, including the between-step gate and the sectioning/voting distinction.
+- Anthropic's engineering write-up on its multi-agent research system — the production disciplines orchestrator-workers needs: scoped self-contained briefs, summarize-before-merge, partial-failure handling.
+- Temporal's durable-execution documentation and the AWS Step Functions service documentation — the two mainstream articulations of durable orchestration; read the determinism constraints even if you build on queues.
+- Wang et al., *Self-Consistency Improves Chain of Thought Reasoning* (2022) and Madaan et al., *Self-Refine* (2023) — the published bases for the voting and critique-revise variants, including where their gains stop.
+- [3.8](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md) and [4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md) — the chapters this family formalizes; the [agent design checklist](../../checklists/agent-design-checklist.md) is the review form.
 
 ## Summary
 
-- The **workflow pattern family** is the fixed-control-flow toolkit — prompt chaining (the fixed sequence), routing (the branching), parallelization (the concurrency), orchestrator-workers (the dynamic decomposition), evaluator-optimizer (the critique-revise) — all with the code owning the control flow (3.8).
-- **Reach for workflow patterns before agents** (3.8's spectrum, the 90/10 shape) — most enterprise GenAI problems are workflows, solved more simply, cheaply, and debuggably than agents; agents only where the path is undiscoverable (3.8's autonomy grid).
-- The patterns **compose into the control-flow architecture** — a router in front of an orchestrator whose workers are chains, with an evaluator gate (3.8's composition, 7.1's design) — Halvard & Roth's 90%-workflow due-diligence.
-- **Deterministic decomposition** is preferred where the structure is known (code decomposes known structures better than the orchestrator — 4.5), and the **evaluator-optimizer is bounded** (a fixed exit — 3.8).
-- The workflow patterns are the enterprise's **default control-flow reference** (3.8's reach-for-workflows-first), the counterpoint to the agent-for-everything anti-pattern (7.10), simpler to govern (6.9). The model-directed-control-flow patterns are next: **agentic patterns** (7.4).
+- **Fixed control flow in code is the default.** Every increment of model-directed nondeterminism is a purchase, and only genuine input variability is legal tender — requirement uncertainty is a specification you owe.
+- The family is six patterns: **Prompt Chaining** (fixed sequence, additive latency, multiplicative error), **Routing** (closed label set, silent-misroute risk, a call on every request), **Parallelization** (sectioning and voting, linear cost, tail owned by the slowest shard), **Orchestrator-Workers** (input-determined width, hard-capped, code planning derivable structure), **Evaluator-Optimizer** (bounded, entry-gated, programmatic checks first), and **Durable Step Boundary** (checkpoints, idempotency, matched retries, declared partial failure, per-step traces).
+- Each pattern's consequences are **priced in latency, tokens, failure classes, and maintenance surface** — the benefit alone never justifies a pattern.
+- The **operational layer is what makes the workflow argument true**: without per-step evals and traces, matched retries, and declared partial results, a chain is merely a cheaper opacity.
+- The decision path runs from task shape to pattern and makes the agent box **hard to reach on purpose**. The patterns for when you legitimately reach it are next: **agentic patterns** ([7.4](chapter-04-agentic-patterns.md)).
 
 ---
 

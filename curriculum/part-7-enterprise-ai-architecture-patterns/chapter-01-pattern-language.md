@@ -5,174 +5,237 @@
 | **Part** | 7 — Enterprise AI Architecture Patterns |
 | **Maturity level** | 3 — Engineer |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 2–3 hours (reading 90 min, exercise 60 min) |
+| **Estimated study time** | 1 h 15 min (reading 35 min, exercise 40 min) |
 | **Prerequisites** | Parts 3–6 (the patterns catalog draws on all of them) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Read, apply, and combine architecture patterns using the pattern-language form (Context → Problem → Forces → Solution → Structure → Consequences → Known uses → Related).
-2. Navigate the GenAI pattern catalog: the pattern families (7.2–7.9), the anti-patterns (7.10), and how they relate.
-3. Combine patterns into system architectures, understanding the pattern-combination discipline.
-4. Use patterns to compress and communicate architecture, the way architects encode and transfer experience.
+1. Use the pattern form (Context → Problem → Forces → Solution → Structure → Consequences → Known uses → Related patterns) as a thinking tool, with attention to the two elements that carry its weight.
+2. Apply a four-question test separating a genuine pattern from a technique, a product, and a fashion.
+3. Resolve conflicts between patterns that fight, by naming the dominant force and choosing a resolution move.
+4. Route from a named failure to the right pattern family, so Part 7 works as reference rather than reading.
+5. Recognize when a pattern has stopped matching reality, and retire it.
 
 ## Introduction
 
-Part 7 is the curriculum's reference core — the pattern language that compresses the architecture of Parts 3–6 into reusable, named, transferable form. Patterns are how architects encode experience: a *pattern* is a named, reusable solution to a recurring problem in a context, with its forces and consequences made explicit, so that the accumulated experience (the solution that works, the forces that shape it, the consequences to expect) transfers without re-deriving it. This chapter is the meta-chapter — how to read, apply, and combine patterns — and the map of the catalog (7.2–7.10) that follows.
+Part 7 is a reference. Chapters 7.2–7.11 are catalogs you consult mid-design, not chapters you read front to back. This chapter is the instruction manual for consulting them.
 
-The framing: **patterns compress experience into named, reusable, combinable form** — the pattern language (the vocabulary of named patterns) is how architects communicate and reuse architecture, and the GenAI pattern catalog (7.2–7.9, plus the anti-patterns of 7.10) is the compressed, reference form of the architecture the curriculum has built, cross-linked from every case study as the reference core.
+Pattern catalogs fail in three specific ways. Entries get written without their forces, so a reader cannot tell when the pattern is wrong. Entries get written without their costs, so the catalog reads as a menu of good ideas. And entries get combined without anyone checking whether they pull against each other, which is where the expensive failures live. A fourth arrives later: a catalog nobody prunes.
 
 ## Business Motivation
 
-Patterns are how architecture knowledge scales — the compression that lets experience transfer across architects, teams, and time. Without patterns: every architect re-derives the solutions (the RAG architecture re-invented, the agent loop re-designed — the re-derivation the patterns prevent), the knowledge is tribal (the solution in one architect's head, not transferable), and the communication is verbose (the architecture explained from scratch each time). With patterns: the solutions are named and reusable (the "orchestrator-workers pattern" — 4.5, the "semantic caching pattern" — 4.11, invoked by name), the knowledge transfers (the pattern language the architects share), and the communication is compressed (the architecture communicated in pattern vocabulary — "it's RAG with reranking and a human-in-the-loop approval gate" — the patterns compressing the architecture). The business case is the knowledge-scaling one: the pattern language is how the enterprise's architecture knowledge scales (the patterns transferring the experience across the architects and teams — the reuse, the communication, the onboarding — the new architect learning the pattern language rather than re-deriving), which is the reference core that makes the architecture knowledge an accessible, transferable asset (the pattern catalog as the enterprise's architecture knowledge base — the moat of accumulated architecture experience, compressed into patterns).
+An estate with no shared pattern vocabulary pays in repeated design work — every review starts from first principles, and the same argument about agent autonomy gets held in four teams in one quarter.
+
+An estate with a *bad* catalog pays more, and that is the case worth understanding. A bad catalog launders unexamined choices into institutional standards. A team citing an entry has transferred responsibility for the choice to whoever wrote it; if that entry has no forces section, nobody ever made the choice at all. Vantora Systems paid about $90k in honored-price goodwill for exactly this shape of failure (below).
+
+The return is review quality rather than review speed: a reviewer holding a pattern's forces asks the one question that matters — *does this trade bite in your context?* — instead of relitigating the design.
 
 ## Theory
 
-### The pattern-language form
+### The eight elements, and the two that do the work
 
-The form each pattern in the catalog uses (the classical pattern form — Alexander, the Gang of Four — adapted):
+- **Context** — the situation in which the pattern applies.
+- **Problem** — the recurring problem it solves.
+- **Forces** — the competing concerns the solution has to balance.
+- **Solution** — what to do.
+- **Structure** — the shape: components, flow, boundaries.
+- **Consequences** — what results, favorable and unfavorable.
+- **Known uses** — systems where it has actually been applied.
+- **Related patterns** — what it combines with, competes with, or presupposes.
 
-- **Context** — the situation the pattern applies in (when to consider it); the pattern's applicability.
-- **Problem** — the recurring problem the pattern solves; the pattern's purpose.
-- **Forces** — the competing concerns that shape the solution (the trade-offs — 1.4, the forces the solution balances); the pattern's tensions.
-- **Solution** — the reusable solution (the pattern's core — what to do); the pattern's answer.
-- **Structure** — the solution's structure (the diagram, the components); the pattern's shape.
-- **Consequences** — the results of applying the pattern (the benefits and the costs — 1.4's trade-offs, the consequences to expect); the pattern's outcomes.
-- **Known uses** — where the pattern is used (the case studies, the curriculum's examples); the pattern's evidence.
-- **Related patterns** — the patterns it combines with or relates to; the pattern's connections.
+Six of these are description. Two are the reason the form exists.
 
-The form's value: the pattern captures the *whole* solution (not just the what — the solution, but the when — the context, the why — the forces, the what-happens — the consequences, and the connections — the related), so the pattern transfers the full experience (the architect applying the pattern gets the context, forces, and consequences, not just the solution) — the pattern-language form that makes patterns genuinely reusable.
+**Forces is the element that makes something a pattern.** A force is not a goal. "We need accurate answers" is a goal; "answer currency versus token cost" is a force pair, because you cannot maximize both and every design sets the dial somewhere. The test is mechanical: name two concerns the solution cannot simultaneously maximize, then describe a context where the trade should go the other way. If you cannot do the second half, you are holding a technique — a thing that is simply better, with no dial. Chunking at a particular size is a technique. Two-stage retrieve-then-rank is a pattern, because recall and latency genuinely pull against each other and different catalogs settle it differently. This is why forces is the field a reviewer reads first: the solution says what the team built, the forces say whether they should have.
 
-### The GenAI pattern catalog
+**Consequences must include what the pattern costs**, and the money is usually the least interesting cost. The [approval gate](chapter-05-human-in-the-loop-patterns.md) costs a throughput ceiling set by human capacity, plus a queue that is a new failure mode with its own on-call. [Semantic caching](chapter-08-cost-performance-patterns.md) costs a window during which the system confidently says something that was true yesterday. Tenant isolation costs the ability to warm a shared cache. A consequences section containing nothing that would make a sponsor hesitate was written before the pattern reached production.
 
-The catalog (7.2–7.10), mapped:
+### Pattern literacy: four questions
 
-- **RAG patterns** (7.2) — the retrieval-augmented-generation patterns (basic RAG, hybrid, reranked, agentic retrieval, GraphRAG, citation-first); the knowledge-grounding patterns.
-- **Workflow patterns** (7.3) — the workflow patterns (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer); the fixed-control-flow patterns.
-- **Agentic patterns** (7.4) — the agent patterns (bounded agent loop, planner-executor, reflection, tool sandbox, checkpoint-and-resume); the model-directed-control-flow patterns.
-- **Human-in-the-loop patterns** (7.5) — the HITL patterns (approval gate, review sampling, escalation, confidence routing, draft-not-send); the human-oversight patterns.
-- **Safety & guardrail patterns** (7.6) — the safety patterns (layered filters, dual-model verification, constrained decoding, output quarantine, kill switch); the safety patterns.
-- **Knowledge & data patterns** (7.7) — the knowledge patterns (freshness pipeline, ACL-propagated index, tenant isolation, forgetting/deletion, feedback-to-dataset); the data patterns.
-- **Cost & performance patterns** (7.8) — the cost/performance patterns (model tiering/routing, semantic caching, prompt compression, batch lanes, budget enforcement); the efficiency patterns.
-- **Platform & multi-tenancy patterns** (7.9) — the platform patterns (GenAI gateway, shared eval service, prompt registry, usage metering, central model governance); the platform patterns.
-- **Anti-patterns** (7.10) — the anti-patterns (agent-for-everything, demo-driven architecture, eval-free shipping, prompt spaghetti, framework lock-in, unbounded autonomy); the patterns to avoid.
+Enterprise catalogs fill up with things that are not patterns. All four questions must answer yes:
 
-The catalog's organization: the pattern families (each a family of related patterns), covering the architecture the curriculum built (Parts 3–6, compressed into patterns), plus the anti-patterns (the patterns to avoid — the mistakes the curriculum warned against, named).
+1. **Recurrence** — has it solved the same problem in three systems sharing no vendor and no team? If no: it is an implementation, and belongs in a design doc.
+2. **Competing forces** — can you name two concerns it trades against each other, *and* a context where the trade reverses? If no: it is a technique. Use it freely; do not canonize it.
+3. **Substitutability** — does it survive swapping out every product inside it? If the entry's name contains a vendor's name, it is a product, and products get retired by procurement rather than by architects.
+4. **Stated cost** — can you say what it costs in something other than money? If no: it is a fashion. "Everything is an agent" failed this question in 2024 and is now [an anti-pattern](chapter-10-anti-patterns.md).
 
-### Combining patterns
+Their value is defensive: they stop a catalog accumulating entries that end arguments without settling them.
 
-The pattern-combination discipline:
+### Composition and conflict — the chapter's core method
 
-- **Patterns combine into architectures** — a system architecture is a combination of patterns (the RAG pattern + the reranking pattern + the human-in-the-loop approval pattern + the semantic caching pattern — the architecture as a pattern combination); the patterns compose (the architecture built from the patterns).
-- **The combination is a design** (1.4) — the pattern combination is a design decision (which patterns, how combined — the design — 1.4, the trade-offs — the forces of each pattern in the combination); the combination designed, not just assembled (the patterns combined deliberately, the forces balanced).
-- **The related-patterns links** — the patterns' related-patterns links guide the combination (the pattern's related patterns — the ones it combines with — the RAG pattern's related reranking, the agent pattern's related human-in-the-loop); the related links that guide the combination (the pattern language's connections).
+Patterns compose, and that part is mostly uninteresting: a system is [RAG](../../GLOSSARY.md) plus reranking plus an approval gate plus a cache, and the composition follows from the related-patterns links. What is not easy is that **some pairs fight** — two patterns, each correct in isolation, whose forces point in opposite directions. Neither entry warns you, because each was written about one pattern.
+
+**One: put both forces lists side by side.** Not the solutions. Conflicts are invisible at the solution level and obvious at the force level.
+
+**Two: find the shared concern with opposite signs.** That is the conflict axis. Aggressive caching and strict freshness both carry *answer currency*; one pushes it down for cost, the other holds it up for correctness. Full autonomy and human-in-the-loop gating both carry *reversibility*; one spends it for throughput, the other buys it back with latency.
+
+**Three: name the dominant force, and the business fact that makes it dominant.** This step is the whole method. The dominant force is not a property of either pattern — it is a property of your decision: what a wrong answer costs, how reversible the action is, who is exposed. When the answer is "a customer sees a stale FAQ entry for an hour," currency loses and the cache wins. When it is "a customer is quoted a price we then have to honor," currency dominates and the cache yields. Same pair, opposite resolutions, and the difference is a business fact — which makes that fact your **flip condition**. Write it down; when it changes, the resolution changes with it.
+
+**Four: choose a resolution move**, in rough order of preference. **Partition** — apply each pattern to a different slice; cache the volatility-stable questions, route the volatile ones straight through. **Sequence** — order them so one runs inside the other's boundary; the agent loop free over reversible steps, the gate at the irreversible edge. **Bound** — keep both, cap the weaker one with a TTL or a sampling rate. **Drop one** — and record why in an [ADR](../../GLOSSARY.md), because a future reader will otherwise re-add it.
+
+Conflicts recur across teams, so a **conflict register** — pair, axis, deciding question — is worth maintaining once:
+
+| Pattern pair | Conflict axis | The question that decides | Typical resolution |
+|---|---|---|---|
+| Semantic caching (7.8) × Freshness pipeline (7.7) | Answer currency vs. cost and latency | What does one stale answer cost, and who sees it? | Partition by volatility class; invalidate on corpus publish |
+| Bounded agent loop (7.4) × Approval gate (7.5) | Autonomy vs. reversibility | How expensive is undoing the action? | Sequence: autonomy inside the reversible boundary, gate at the irreversible edge |
+| ACL-propagated index (7.7) × Semantic caching (7.8) | Isolation vs. reuse | Can two users with different permissions share an answer? | Partition cache keys by permission set — never share across ACL groups |
+| Model tiering (7.8) × Dual-model verification (7.6) | Cost vs. independent checking | Are the checker's errors correlated with the drafter's? | Bound: tier the drafting, never route the verifier to the drafting model |
+| Prompt compression (7.8) × Citation-first RAG (7.2) | Token cost vs. attributability | Must this answer be defensible to a third party? | Drop compression on evidence spans; compress instructions instead |
+
+Eleven of the fourteen rows in Vantora's register came from incidents rather than foresight — a reason to inherit someone else's rather than rediscover it.
+
+### Selection: from a failure to a family
+
+Part 7 is usable as reference only if you can get from a problem to a family in one hop. The rule that makes the index work: **state the failure in one sentence before opening a family.** If you cannot, you have a requirements problem, and no pattern will help.
+
+| Family | The failure class it answers | Go to |
+|---|---|---|
+| RAG patterns | The model answers from memory — confident, unattributable, out of date | [7.2](chapter-02-rag-patterns.md) |
+| Workflow patterns | One prompt is asked to do four things; quality can't be attributed to a step | [7.3](chapter-03-workflow-patterns.md) |
+| Agentic patterns | The path can't be enumerated at design time — or the loop won't stop | [7.4](chapter-04-agentic-patterns.md) |
+| Human-in-the-loop patterns | The system is right often enough to be trusted and wrong expensively | [7.5](chapter-05-human-in-the-loop-patterns.md) |
+| Safety & guardrail patterns | Untrusted content reaches a privileged action, or harmful output reaches a user | [7.6](chapter-06-safety-guardrail-patterns.md) |
+| Knowledge & data patterns | The corpus is stale, over-shared, un-deletable, or cross-tenant | [7.7](chapter-07-knowledge-data-patterns.md) |
+| Cost & performance patterns | The bill scales with traffic, or the latency budget is blown | [7.8](chapter-08-cost-performance-patterns.md) |
+| Platform & multi-tenancy patterns | Many teams are building the same infrastructure differently | [7.9](chapter-09-platform-multitenancy-patterns.md) |
+| Anti-patterns | The design smells and you need the failure named before you can argue against it | [7.10](chapter-10-anti-patterns.md) |
+| Predictive & scoring patterns | A trained model scores structured decisions — and decays silently | [7.11](chapter-11-predictive-scoring-patterns.md) |
+
+### Honest limits: pattern languages ossify
+
+Alexander's languages were meant to be local and continually revised; copied wholesale into another context, they stop describing anything. Software catalogs decay the same way, and one that only grows becomes a record of what an organization used to believe, with nothing marking which half is current. Three retirement triggers:
+
+- **The forces repriced.** When one side of the trade gets an order of magnitude cheaper, the balance the pattern encodes is no longer right. Much of the 2023 prompt-compression discipline was repriced by context windows and cache pricing.
+- **No new known uses.** An entry that gained none in a year is either solving a problem you no longer have or is unusable as written.
+- **It is cited without its forces.** This is cargo-culting, and it is the most dangerous trigger because it looks like adoption. The symptom is a review in which naming the pattern ended the discussion.
+
+Deprecate rather than delete when live systems still run on the pattern — their maintainers need the reasoning. Delete when the entry is actively steering teams wrong.
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart TD
-    subgraph CATALOG [The GenAI pattern catalog]
-        RAG[RAG patterns — 7.2]
-        WF[Workflow patterns — 7.3]
-        AGENT[Agentic patterns — 7.4]
-        HITL[Human-in-the-loop — 7.5]
-        SAFETY[Safety & guardrail — 7.6]
-        KNOW[Knowledge & data — 7.7]
-        COST[Cost & performance — 7.8]
-        PLATFORM[Platform & multi-tenancy — 7.9]
-        ANTI[Anti-patterns — 7.10]
-    end
-    FORM[Pattern-language form<br/>Context→Problem→Forces→Solution→<br/>Structure→Consequences→Known uses→Related] -.each pattern.-> CATALOG
-    CATALOG -.combine into.-> ARCH[System architecture<br/>a pattern combination — 1.4]
-    ARCH -.cross-linked from.-> CASES[Case studies — the reference core]
+    FAIL[State the failure in one sentence] --> IDX[Family index<br/>failure class → family]
+    IDX --> CAND[Candidate pattern]
+    CAND --> LIT{Literacy test<br/>recurrence · competing forces ·<br/>substitutability · stated cost}
+    LIT -->|fails| NOTP[Technique, product, or fashion<br/>use it — don't canonize it]
+    LIT -->|passes| FORCE[Read the forces<br/>does this trade bite in my context?]
+    FORCE --> COMP[Compose with patterns already chosen]
+    COMP --> CONF{Any shared concern<br/>with opposite signs?}
+    CONF -->|yes| DOM[Name the dominant force<br/>+ the business fact behind it]
+    DOM --> MOVE[Partition · Sequence · Bound · Drop]
+    MOVE --> ADR[Record the combination<br/>and the flip condition — 6.3]
+    CONF -->|no| ADR
+    ADR --> USE[(Feed the known use<br/>back to the catalog)]
+    USE -.forces repriced · no new uses ·<br/>cited without forces.-> RET[Retirement review]
 ```
 
-Readings. **The pattern-language form captures the whole solution** — the context (when), the problem (what for), the forces (the trade-offs — 1.4), the solution (what), the structure (the shape), the consequences (the outcomes), the known uses (the evidence), and the related (the connections) — so the pattern transfers the full experience (not just the solution but the when, why, what-happens, and connections), which is what makes patterns genuinely reusable (the architect applying the pattern gets the whole experience). **The catalog compresses the curriculum's architecture into patterns** — the pattern families (7.2–7.9) cover the architecture the curriculum built (Parts 3–6, compressed into named, reusable patterns), plus the anti-patterns (7.10 — the mistakes named) — the reference core that makes the architecture knowledge an accessible, transferable asset (the pattern catalog as the compressed architecture knowledge base). **And patterns combine into architectures** — a system architecture is a pattern combination (the RAG + reranking + human-in-the-loop + caching — the architecture built from patterns), combined deliberately (the design — 1.4, the forces balanced) guided by the related-patterns links (the pattern language's connections) — the patterns as the building blocks of the architecture, and the pattern language as the vocabulary for communicating and reusing it.
+The closing edge at the bottom separates a maintained pattern language from a wiki. Known uses flowing back keep entries honest; the retirement review keeps the catalog smaller than the sum of everything anyone ever tried.
 
 ## Real-world Example
 
-**The GSAC case studies** (the [case-study catalog](../../case-studies/README.md)) are the pattern language's application — the 56 case studies (CS01–CS56) are each a pattern combination, and the pattern catalog (7.2–7.10) is the reference core cross-linked from them. Consider how the recurring companies' systems decompose into patterns: Bellhaven's submission-intake platform (2.1) is a pattern combination — the RAG pattern (7.2, the policy corpus), the structured-extraction pattern (the intake), the anti-corruption-layer pattern (6.4, the rating-engine integration), the human-in-the-loop approval pattern (7.5, the underwriter review), the model-tiering pattern (7.8, the tiered extraction — 1.4), the GenAI-gateway pattern (7.9, the platform), and the tenant-isolation pattern (7.7, the multi-market) — the architecture as a combination of named patterns, each with its context, forces, and consequences. Corvid's customs-exception agent (4.4) is another combination — the bounded-agent-loop pattern (7.4), the tool-sandbox pattern (7.4/4.4), the human-in-the-loop approval pattern (7.5, the customs-filing gate), the quarantine pattern (7.6/4.9, the untrusted-document processing) — the agent architecture as a pattern combination. And the anti-patterns (7.10) name the mistakes the case studies avoided (Halvard & Roth's rejected persona-agents — the agent-for-everything anti-pattern — 4.5/7.10, Vantora's rejected blocking governance — the mandate-that-gets-routed-around — 1.8/6.9/7.10). The pattern language is how the case studies are read and communicated: "Bellhaven's intake is RAG + structured extraction + anti-corruption layer + human-in-the-loop + model tiering + gateway + tenant isolation" — the architecture compressed into pattern vocabulary, the patterns transferring the experience (the context, forces, consequences of each), the case studies as the pattern language's known uses. The pattern-language note (the curriculum's reference-core framing): *"The 56 case studies are pattern combinations, and Part 7 is the reference core — the pattern catalog cross-linked from every case study. The architect reads a case study as a pattern combination (RAG + reranking + human-in-the-loop + caching — the named patterns), applies the patterns to new problems (the pattern's context, forces, consequences transferring), and communicates the architecture in pattern vocabulary (the compression). The pattern language is how the architecture knowledge scales — the accumulated experience of Parts 3–6, compressed into named, reusable, combinable patterns, the reference core of the whole curriculum."*
+**Vantora Systems** (the platform arc — [5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)) wrote its pattern catalog twice.
+
+The first attempt was twenty-three wiki entries, each with a name, a diagram, and a "when to use" bullet. It was popular within weeks, which was the first bad sign: a design review could now be won by naming an entry. No entry had a forces section, so nobody could ask when one was *wrong*. Three were named after products; four described techniques that traded nothing against anything.
+
+The bill arrived through a composition nobody had considered. The support assistant used both the semantic cache and the freshness pipeline; both were entries in good standing, and neither mentioned the other. When Vantora repriced its extended-warranty tiers, the corpus updated within the hour and the cache went on serving the previous wording for the rest of its 24-hour TTL. Roughly 1,900 customers were quoted the old price, and honoring those quotes cost about $90k. The postmortem's finding was not the TTL — it was that two patterns with opposing forces had been published as though they were independent.
+
+Then came the decision that cost something. The platform lead ruled that no entry would stay without a forces section naming two competing concerns and a consequences section naming at least one non-monetary cost. Nine of the twenty-three could not be rewritten that way and were removed. Two of those removals had teams standing on them: the sidecar embedding service was built into two production services, and retiring the entry meant roughly six engineer-weeks of migration each — paid by teams who had done exactly what the catalog told them. The platform team absorbed that complaint rather than keep an entry it could no longer defend.
+
+The rewrite added the conflict register, which started at three rows and reached fourteen over the following year, mostly by incident. Reviews changed shape measurably: "we're using the agent pattern" stopped counting as an answer, and reviewers began asking which force the pattern balanced and whether it bit here.
 
 ## Hands-on Exercise
 
-**Read a system as a pattern combination.** ~60 minutes. For a system you know or a case study.
+**Audit a pattern language and resolve a conflict.** ~40 minutes.
 
-1. **Pattern decomposition (25 min).** Take a GenAI system (real or a case study — e.g., Bellhaven's intake) and decompose it into patterns: identify the patterns it combines (RAG — 7.2, workflow — 7.3, agentic — 7.4, human-in-the-loop — 7.5, safety — 7.6, knowledge — 7.7, cost — 7.8, platform — 7.9). List the named patterns.
-2. **The pattern-language form (20 min).** For one of the patterns, write its pattern-language form (Context, Problem, Forces, Solution, Structure, Consequences, Known uses, Related). Show how the form captures the whole solution (not just the what).
-3. **The combination (15 min).** Describe how the patterns combine into the system architecture (the combination — 1.4, the forces balanced), and use the related-patterns links to identify a pattern that could improve the architecture.
+1. **Literacy audit (10 min).** Take five named "patterns" from your organization's wiki, a vendor's reference architecture, or a conference deck. Run the four questions on each and classify every one as pattern, technique, product, or fashion.
+2. **Conflict resolution (15 min).** Pick a pair from the conflict register — or from your own system — and work it in a system you know. Write both forces lists, name the axis, name the dominant force and the business fact behind it, choose a move, and state the flip condition.
+3. **Selection path (10 min).** Write three one-sentence failure statements taken from incidents you have seen. Route each through the family index to a family, then to a named pattern.
+4. **Retirement (5 min).** Nominate one pattern in the GSAC catalog you expect will not survive three years, naming the force whose price is moving.
 
 **Acceptance criteria:**
-- [ ] The system decomposed into named patterns from the catalog (7.2–7.9)
-- [ ] One pattern written in the full pattern-language form (all 8 elements)
-- [ ] The pattern combination described (the design — 1.4), with a related-pattern improvement identified
+- [ ] Five entries classified, with the failing question named for each non-pattern; at least one is not a pattern
+- [ ] Both forces lists written; the conflict axis is a single concern appearing in both
+- [ ] The dominant force is justified by a business fact, not a preference, and the flip condition is stated
+- [ ] One of the four moves chosen (partition / sequence / bound / drop), with the discarded alternatives named
+- [ ] Three failure statements, each routed to a family and to a named pattern
+- [ ] The retirement nomination names a force whose price is changing, not a technology you dislike
 
 ## Enterprise Considerations
 
-The pattern language is an enterprise architecture-knowledge asset. **It's the enterprise's architecture knowledge base** (6.1, 6.2): the pattern catalog (the named, reusable patterns) is the enterprise's compressed architecture knowledge (the accumulated experience — the patterns the enterprise's architects use), maintained (the pattern catalog as a living artifact — 6.2's documentation, the patterns evolving) as the reference core (the architecture knowledge base the architects reference and contribute to). **It's the communication and onboarding vocabulary** (1.5, 8.7): the pattern language is how the architects communicate (the architecture in pattern vocabulary — 1.5's compression) and how the new architects onboard (learning the pattern language rather than re-deriving — 8.7's team-building), so the pattern language is the enterprise's architecture communication and onboarding asset. **It connects to the governance** (6.9): the patterns embody the standards (the golden-path patterns — 5.10/6.9, the patterns the governance enables), and the anti-patterns (7.10) embody the things to avoid (the governance's risk-surfacing — 6.9), so the pattern language connects to the governance (the patterns as the enabling standards — 6.9). **And it's the reference core** (the curriculum's framing): the pattern catalog is cross-linked from the case studies (the reference core — the patterns the case studies apply), making it the curriculum's (and the enterprise's) architecture reference — the compressed, transferable form of the whole architecture.
+A pattern catalog is an owned artifact with a deprecation policy, or it is folklore with better formatting. Vantora's nine deletions were possible because someone held the authority to make them; catalogs without that role only accumulate.
+
+The relationship to golden paths ([5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)) deserves precision. A golden path is an opinionated composition with the defaults wired and the conflicts already resolved — it encodes somebody's dominant-force decisions, which makes it fast and makes those decisions invisible. When a team's context differs, the golden path is what needs the ADR, not the pattern.
+
+Governance ([6.9](../part-6-enterprise-architecture/chapter-09-architecture-governance.md)) inherits a specific hazard: a review board that accepts pattern names as evidence has been captured by its own vocabulary. Onboarding has its own asymmetry — an architect who learns pattern names without their consequences becomes confident faster than they become correct. And vendor reference architectures are *known uses*: one deployment, one vendor's products, one context. They are evidence, not patterns, and the giveaway is question three.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Architecture communication | Pattern vocabulary (compressed) | From-scratch explanation | Always where the audience shares the pattern language — the compression | The audience doesn't share the vocabulary (then teach the patterns) |
-| Solution approach | Apply a known pattern | Derive a novel solution | The problem matches a pattern's context — reuse the experience | Genuinely novel problem with no matching pattern (rare — then create a pattern) |
-| Pattern combination | Deliberate design (forces balanced — 1.4) | Assemble without design | Always — the combination is a design, the forces balanced | Never assemble-without-design; the un-designed combination ignores the forces |
-| Pattern catalog | Living, maintained, contributed-to | Static, point-in-time | Always — the pattern catalog evolves (6.2's living documentation) | Never static; the point-in-time catalog ossifies |
+| Entry authority | Pattern is a default; deviation needs an ADR | Pattern is a reference; every choice needs an ADR | Your failure mode is inconsistency across many teams | Your failure mode is cargo-culting — forcing the argument is worth the review time |
+| Conflicts | Maintain a conflict register | Leave conflicts to design review | The same pairs recur across teams, as they usually do | Compositions are few and highly context-specific; a register would ossify into rules |
+| Novel problem | Adapt the nearest pattern | Derive from first principles | The forces match even though the surface doesn't | The forces genuinely differ — then write a new pattern only after three known uses |
+| Aging entry | Delete it | Deprecate but keep it readable | It is actively steering teams wrong | Live systems still run on it and maintainers need the reasoning |
 
 ## Common Mistakes
 
-1. **Re-deriving instead of applying patterns** — re-inventing the RAG architecture, re-designing the agent loop, when the pattern captures the solution (the re-derivation the patterns prevent); apply the pattern (reuse the experience).
-2. **Applying only the solution, not the whole pattern** — taking the pattern's solution without its context, forces, and consequences (applying the pattern out of context, ignoring the forces); apply the whole pattern (the context, forces, consequences).
-3. **Assembling patterns without designing the combination** — combining patterns without balancing the forces (the un-designed combination — 1.4); the combination is a design (the forces balanced).
-4. **Ignoring the anti-patterns** — not learning the anti-patterns (7.10 — the mistakes to avoid); the anti-patterns are as valuable as the patterns (the mistakes named).
-5. **The static pattern catalog** — the catalog point-in-time, not maintained (6.2's living documentation); the pattern catalog evolves (living, contributed-to).
-6. **Communication without the shared vocabulary** — using pattern vocabulary with an audience that doesn't share it (the compression that doesn't compress); teach the patterns or explain from scratch.
-7. **Pattern rigidity** — applying a pattern rigidly where the context doesn't quite match (forcing the pattern); the pattern's context guides the application (apply where the context matches, adapt where it doesn't).
+1. **Pattern names used as review-ending arguments** — "we're using the agent pattern" answers nothing; ask which forces it balanced and whether they bite here.
+2. **Forces written as goals** — "accurate, fast, and cheap" is a wish list. An entry whose forces do not conflict is a technique wearing a pattern's clothes.
+3. **Consequences written as benefits** — a section with no cost in it was written before the pattern met production.
+4. **Products promoted to patterns** — the entry named after a vendor gets retired by a procurement decision, and takes the designs built on it along.
+5. **Composing without comparing forces** — Vantora's cache beside its freshness pipeline: individually correct, jointly $90k. Solutions compose silently; forces do not.
+6. **Transplanting a resolution across contexts where the trade reverses** — batch-lane economics from a system with slack, applied to one with an SLA. Copy the method, not the answer.
+7. **The immortal catalog** — nothing retired, so a new joiner cannot tell which half the organization still believes.
 
 ## Best Practices
 
-1. **Apply the whole pattern** — the context (when), the problem (what for), the forces (the trade-offs), the solution (what), the consequences (the outcomes), the related (the connections) — the whole pattern transfers the full experience.
-2. **Decompose systems into patterns** — read a system as a pattern combination (the named patterns), which compresses and communicates the architecture (the pattern vocabulary).
-3. **Combine patterns deliberately** — the combination is a design (1.4, the forces balanced), guided by the related-patterns links (the pattern language's connections).
-4. **Learn the anti-patterns** — the anti-patterns (7.10) are as valuable as the patterns (the mistakes named, to avoid).
-5. **Maintain the pattern catalog as a living artifact** — the catalog evolves (6.2's living documentation, contributed-to), the enterprise's architecture knowledge base.
-6. **Use pattern vocabulary for communication** — the architecture in pattern vocabulary (1.5's compression) where the audience shares the language.
-7. **Use the pattern catalog as the reference core** — the catalog cross-linked from the case studies (the reference core — the patterns the case studies apply), the compressed architecture reference.
+1. **State the failure before opening a family** — the inability to write that sentence is itself the finding.
+2. **Refuse entries without competing forces and a named non-monetary cost** — the two fields that make a pattern usable are the two most often skipped.
+3. **Keep a conflict register and grow it from incidents** — pair, axis, deciding question; most rows arrive the expensive way.
+4. **Record the business fact behind the dominant force** — it justifies the decision today and doubles as the flip condition for whoever revisits it.
+5. **Prefer partition and bounding over dropping** — both patterns usually survive on different slices, and dropping one loses capability the design will want back.
+6. **Feed known uses back after every project** — an entry gaining none in a year is a retirement candidate.
+7. **Give the catalog an owner with authority to delete** — pruning keeps a language current, and it is nobody's job by default.
 
 ## Architecture Checklist
 
 For using the pattern language:
 
-- [ ] Systems decomposed into named patterns from the catalog (7.2–7.9)
-- [ ] Patterns applied whole (context, forces, consequences), not just the solution
-- [ ] Pattern combinations designed deliberately (the forces balanced — 1.4), guided by the related-patterns links
-- [ ] The anti-patterns (7.10) learned and avoided
-- [ ] The pattern catalog maintained as a living artifact (6.2), the architecture knowledge base
-- [ ] Pattern vocabulary used for communication where the audience shares it (1.5)
-- [ ] The pattern catalog used as the reference core (cross-linked from the case studies)
+- [ ] Every pattern in this design was reached from a stated failure, not from familiarity
+- [ ] Each pattern's forces were checked against this context — the trade actually bites here
+- [ ] Each pattern's costs are stated in the design, not only its benefits
+- [ ] Pattern pairs were checked for shared concerns with opposite signs
+- [ ] Each conflict is resolved by a named dominant force, with the business fact behind it and the flip condition written down
+- [ ] The resolution move (partition / sequence / bound / drop) is recorded with the discarded alternatives — [6.3](../part-6-enterprise-architecture/chapter-03-adrs-decision-governance.md)
+- [ ] Nothing in the design is justified by a pattern name alone
+- [ ] Known uses fed back; entries with no live uses flagged for retirement review
 
 ## Interview Questions
 
-1. *"What is an architecture pattern, and why are patterns valuable?"* — Strong answers give the pattern-language form (a named, reusable solution to a recurring problem in a context, with its forces and consequences — Context→Problem→Forces→Solution→Structure→Consequences→Known uses→Related), and the value (the compression of experience into named, reusable, combinable, communicable form — the knowledge-scaling), stressing that the pattern transfers the whole solution (the context, forces, consequences).
-2. *"How do you use patterns to design a system architecture?"* — Strong answers give the pattern-combination discipline: the architecture as a combination of patterns (RAG + reranking + human-in-the-loop + caching — the named patterns), combined deliberately (the design — 1.4, the forces balanced), guided by the related-patterns links — the patterns as the building blocks of the architecture.
-3. *"How do you read a system as a pattern combination?"* — Strong answers decompose the system into named patterns (identify the patterns it combines from the catalog — 7.2–7.9), which compresses and communicates the architecture (the pattern vocabulary — 1.5), and use the pattern language to reason about and improve it (the related-patterns links — Bellhaven's intake as RAG + extraction + anti-corruption + human-in-the-loop + tiering + gateway + tenancy).
-4. *"Why are anti-patterns valuable?"* — Strong answers explain the anti-patterns (7.10) name the mistakes to avoid (the agent-for-everything, the eval-free shipping, the framework lock-in — the mistakes the curriculum warned against, named), which are as valuable as the patterns (the mistakes named, the risk-surfacing — 6.9), so the architect learns both the patterns to apply and the anti-patterns to avoid.
+1. *"How do you tell an architecture pattern from a technique?"* — Strong answers go to forces: a pattern names two concerns that cannot both be maximized and a context where the trade reverses; a technique has no dial. The four-question test earns senior marks, especially the point that products and fashions are the commonest catalog contaminants.
+2. *"Your design caches aggressively and also promises fresh answers. Reconcile them."* — Strong answers identify answer currency as the shared force with opposite signs and derive dominance from what a stale answer costs and who sees it, then give a move (partition by volatility class plus invalidation on publish) and the flip condition that would reopen it.
+3. *"A team says 'we're using the agentic pattern.' What do you ask next?"* — Strong answers treat the name as the start of the conversation: which forces, which consequences, how reversible the actions are, where the gate sits relative to the loop. The best name the governance hazard — a review accepting pattern names as evidence has stopped reviewing.
+4. *"When would you retire a pattern?"* — Strong answers give the three triggers, distinguish deprecation from deletion by whether live systems depend on it, and note that an unpruned catalog becomes a record of past beliefs.
 
 ## Further Reading
 
-- Christopher Alexander, *A Pattern Language* — the origin of the pattern-language concept; the form (context, problem, forces, solution) this catalog adapts.
-- Gamma, Helm, Johnson & Vlissides, *Design Patterns* (the Gang of Four) — the software-pattern form this chapter's catalog uses; the pattern-language discipline for software.
-- Gregor Hohpe & Bobby Woolf, *Enterprise Integration Patterns* (re-linked from 6.4) — the enterprise-pattern form and a model of a mature pattern catalog.
-- The [GSAC case studies](../../case-studies/README.md) — the pattern language's known uses; the 56 case studies as pattern combinations, cross-linked to the catalog (7.2–7.10).
+- Christopher Alexander, *A Pattern Language* — the origin of the form, and the source of the insight that forces, not solutions, are what a pattern captures.
+- Christopher Alexander, *The Timeless Way of Building* — the companion volume; the argument for why languages must be local and continually revised.
+- Gamma, Helm, Johnson & Vlissides, *Design Patterns* — the software adaptation of the form, and a demonstration of consequences sections written honestly.
+- Gregor Hohpe & Bobby Woolf, *Enterprise Integration Patterns* — the best-worked mature enterprise catalog, with related-patterns links doing real navigational work.
+- The [GSAC case studies](../../case-studies/README.md) — the known-uses corpus for 7.2–7.11; read one with the family index open.
 
 ## Summary
 
-- Part 7 is the **curriculum's reference core** — the pattern language that compresses the architecture of Parts 3–6 into named, reusable, combinable, communicable patterns, cross-linked from every case study.
-- A **pattern** captures the whole solution — Context (when), Problem (what for), Forces (the trade-offs — 1.4), Solution (what), Structure (the shape), Consequences (the outcomes), Known uses (the evidence), Related (the connections) — so it transfers the full experience, not just the solution.
-- The **catalog** (7.2–7.9) covers the architecture families (RAG, workflow, agentic, human-in-the-loop, safety, knowledge, cost/performance, platform), plus the **anti-patterns** (7.10, the mistakes named).
-- **Patterns combine into architectures** — a system architecture is a pattern combination, combined deliberately (the design — 1.4, the forces balanced), guided by the related-patterns links — the patterns as the building blocks, the pattern language as the vocabulary.
-- The pattern language is how **architecture knowledge scales** — the compression that transfers experience across architects, teams, and time (the reuse, the communication, the onboarding), the enterprise's architecture knowledge base. The first pattern family is next: **RAG patterns** (7.2).
+- Six of the eight pattern elements are description; **forces** and **consequences** carry the weight. Forces tell a reviewer when the pattern is wrong; consequences must state a cost in something other than money.
+- Four questions separate a pattern from an impostor: recurrence across unrelated systems, genuinely competing forces, substitutability of the products inside it, and a stated cost.
+- Patterns compose easily and **conflict silently**. Compare forces lists, find the shared concern with opposite signs, name the dominant force and the business fact behind it, then partition, sequence, bound, or drop.
+- That business fact is the flip condition: it is why the same pair resolves one way for a low-stakes FAQ and the other way for a quoted price.
+- Selection starts from a failure stated in one sentence; the family index turns that sentence into a chapter.
+- Pattern languages ossify. Retire on repriced forces, on absent new known uses, and on citation-without-forces — the last being cargo-culting, which looks like adoption right up until the incident.
 
 ---
 

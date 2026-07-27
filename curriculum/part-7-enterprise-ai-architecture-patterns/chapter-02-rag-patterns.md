@@ -5,195 +5,244 @@
 | **Part** | 7 — Enterprise AI Architecture Patterns |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 80 min) |
 | **Prerequisites** | [3.6 RAG Fundamentals](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md); [4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md); [4.2](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Apply the RAG pattern family in pattern-language form: basic RAG, hybrid retrieval, reranked RAG, agentic retrieval, GraphRAG, and citation-first.
-2. Select the RAG pattern matched to the retrieval problem, using each pattern's context, forces, and consequences.
-3. Combine RAG patterns into retrieval architectures, understanding how they layer.
-4. Recognize the RAG patterns in the case studies, the reference core's known uses.
+1. Apply the RAG pattern family in pattern-language form: Basic RAG, Hybrid Retrieval, Parent-Child Retrieval, Reranked RAG, Agentic Retrieval, GraphRAG, and Citation-First.
+2. Select a retrieval pattern from a *named failure class* rather than from technique fashion.
+3. Price each pattern honestly — its latency tail, its per-query or per-corpus cost, and the operational surface it adds.
+4. Compose the patterns into an architecture, and say for each when you would *not* use it.
 
 ## Introduction
 
-This chapter catalogs the RAG pattern family — the retrieval-augmented-generation patterns that Parts 3–4 built (3.5's retrieval, 3.6's RAG, 4.1's production RAG, 4.2's advanced retrieval), presented in pattern-language form (7.1). The patterns range from the basic (basic RAG — 3.6) to the advanced (agentic retrieval — 4.2, GraphRAG — 4.2), and this chapter is the reference for selecting and combining them.
+The RAG patterns are usually taught as a ladder: start basic, climb to advanced. That framing produces architectures that collect techniques. The useful framing is diagnostic — **each pattern answers one named retrieval failure, and installed against any other failure it buys cost without quality.** A cross-encoder cannot rescue a candidate set that never contained the answer; a graph cannot help a question that three lines of SQL over metadata already answer.
 
-The framing: **the RAG patterns are a layered family** — from basic RAG (the foundation — 3.6) through the enhancements (hybrid, reranked — 4.2) to the advanced patterns (agentic, GraphRAG — 4.2), layered by the retrieval problem's demands, and this chapter is the reference for matching the pattern to the problem.
+So this chapter is organized around failure classes first ([4.2](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md)'s miss taxonomy) and patterns second. Two sit outside that grid: Citation-First, a default on every enterprise RAG whatever the failure class, and Agentic Retrieval, which in 2026 practice is a routed escalation with a spending ceiling — not the architecture's backbone.
 
 ## Business Motivation
 
-The RAG patterns are the enterprise's knowledge-grounding toolkit — the patterns that make the enterprise's knowledge accessible via RAG (3.6's four business reasons: freshness, permissions, auditability, cost). Selecting the right RAG pattern matters: the basic RAG pattern (3.6) suffices for simple retrieval, but the advanced patterns (hybrid, reranked, agentic — 4.2) are needed for the harder retrieval problems (the identifier queries — hybrid, the precision — reranked, the multi-hop — agentic), and applying the wrong pattern (basic RAG where reranked was needed — the recall gap — 4.2) caps the retrieval quality (3.5's binding constraint). The business case is the retrieval-quality one: the right RAG pattern (matched to the problem) delivers the retrieval quality the RAG system depends on (3.5's binding constraint, 3.6's two-sided evaluation), and the RAG pattern family is the reference for selecting it — the toolkit that makes the enterprise's knowledge accessible at the quality the use case demands.
+Retrieval quality is the ceiling on everything downstream: no prompt, no model upgrade, and no evaluation harness recovers a passage that was never retrieved. Pattern selection is therefore a quality lever, and — because each pattern has a different *cost shape* — a money lever in both directions.
+
+Confusing the cost shapes is the expensive mistake. Basic RAG and Hybrid Retrieval cost at ingestion and storage: one index or two, re-embedded when the corpus or the embedding model changes. Reranked RAG costs per candidate scored, so depth is a recurring line item scaling with query volume. GraphRAG costs a model pass over *every document*, so its bill scales with corpus size and re-extraction cadence rather than usage — a capital-shaped commitment a pilot's traffic never reveals. Agentic Retrieval costs per hop, and a loop that chooses its own length has no natural ceiling.
+
+The counterpart to overspending is the silent quality gap: a corpus full of error codes served by semantic search alone returns plausible wrong chunks — a failure users report as "the assistant is vague" and dashboards report as nothing at all. The curriculum's own fictional Vantora Systems ([4.2](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md)) is the worked instance: recall on the identifier slice sat at 0.41 while the overall number looked survivable.
 
 ## Theory — The RAG Pattern Catalog
 
+Selection logic first. Run the golden set, read the misses, bucket them, then read down this table:
+
+| Named failure class | What it looks like in the miss set | Pattern |
+|---|---|---|
+| Exact identifiers missed | Error codes, SKUs, clause numbers, surnames return topically similar but wrong chunks | **Hybrid Retrieval** |
+| Right passage, wrong order | High recall@50, poor precision@5 — the answer is in the candidates, below the cut | **Reranked RAG** |
+| Fragmented context | The chunk is correct but unusable: an orphan clause, step 4 of 9, a row without its header | **Parent-Child Retrieval** |
+| Corpus-wide synthesis | "What themes recur across all X" — no single passage is the answer | **GraphRAG** |
+| Unknown evidence shape | The evidence chain isn't knowable until you start reading | **Agentic Retrieval** |
+| Correct but unverifiable | The answer is right and the reader has no cheap way to confirm it | **Citation-First** |
+| None of the above | Plain semantic questions answered by one or two passages | **Basic RAG** is enough |
+
 ### Pattern: Basic RAG
 
-- **Context** — a knowledge-grounding need where the corpus is retrievable by semantic similarity (3.6).
-- **Problem** — the model needs current, private, or authoritative knowledge it doesn't have (2.6's knowledge → RAG).
-- **Forces** — freshness vs. cost, retrieval quality vs. simplicity, grounding vs. the model's parametric knowledge (3.6).
-- **Solution** — retrieve relevant chunks by semantic similarity, assemble into context, generate grounded with citations (3.6's loop).
-- **Structure** — query → embed → retrieve top-k → assemble → generate → cite (3.6).
-- **Consequences** — fresh, citable, permissioned, cost-effective knowledge (3.6's four reasons); the retrieval quality caps the system (3.5).
-- **Known uses** — P05 (internal knowledge search), CS05 (hospital protocols), most enterprise knowledge assistants.
-- **Related** — Hybrid Retrieval (the enhancement), Citation-First (the grounding), the anti-corruption layer (6.4).
+- **Context** — a bounded corpus whose questions are answerable from one or two passages ([3.6](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md)).
+- **Problem** — the model needs current, private, or authoritative knowledge, and fine-tuning is the wrong instrument for facts that change faster than training cycles.
+- **Forces** — recall vs. context budget (large k dilutes attention and inflates tokens, small k drops answers); grounding vs. parametric fluency, since the model answers from memory unless told not to.
+- **Solution** — parse → chunk → embed → index with permission and version metadata; at query time filter by entitlement, retrieve top-k, generate under an explicit grounding instruction.
+- **Structure** — one schema shared by the ingestion path (chunk store, vector index, ACL metadata) and the query path, with retrieval and answer quality gated separately.
+- **Consequences** — the cheapest grounding available: one index, one generation call per answer, embedding cost paid per corpus change rather than per query. Its costs are structural, not per-request — recall@k caps the whole system, and an embedding-model swap re-embeds the entire corpus, which belongs in the budget before the model is chosen.
+- **When not to use** — identifier-heavy streams, corpus-wide synthesis, or permissions finer-grained than the chunk store can express.
+- **Known uses** — the retrieval-augmented generation formulation of Lewis et al. (2020); standard practice in enterprise document assistants and product-documentation Q&A. Curriculum instance (fictional): [CS05](../../case-studies/cs05-hospital-knowledge-hub.md).
+- **Related** — Citation-First (the layer above); every other pattern here amends this one.
 
 ### Pattern: Hybrid Retrieval
 
-- **Context** — a RAG system whose query stream includes both semantic and exact-match queries (4.2, 2.4).
-- **Problem** — semantic search misses the identifier/exact-match queries (the codes, names, jargon — 2.4/4.2).
-- **Forces** — semantic recall vs. exact-match recall, the incomparable scores (4.2's RRF).
-- **Solution** — run lexical (BM25) and semantic search, merge with reciprocal rank fusion (4.2).
-- **Structure** — query → lexical + semantic → RRF merge → top-k (4.2).
-- **Consequences** — better recall across query classes (the identifier class recovered — 4.2); the two indexes to maintain.
-- **Known uses** — CS39 (developer copilot — code identifiers), Vantora's support assistant (4.2's 0.41→0.93 identifier recall).
-- **Related** — Basic RAG (the foundation), Reranked RAG (the next layer).
+- **Context** — a query stream mixing paraphrased intent with exact strings: codes, part numbers, clause references, rare jargon, proper names.
+- **Problem** — dense embeddings have no useful neighborhood for a rare token, so an identifier query returns documents *about* the topic instead of the record. The failure is silent: top-k comes back full, fluent, and wrong.
+- **Forces** — lexical exact-match recall vs. semantic paraphrase recall, which no single index wins at once; BM25 scores and cosine similarities are incomparable, so score-level blending is fragile across corpora.
+- **Solution** — one chunk store, two index projections from the same pipeline; run both and merge by **rank** with reciprocal rank fusion, which needs no score calibration. Entitlement filters must apply identically on both paths — a filter on one path only is a permission leak wearing a retrieval bug's clothes.
+- **Structure** — query → {lexical, semantic} in parallel, both filtered → RRF merge → top-k, with per-class golden-set slices measuring each path.
+- **Consequences** — recovers the identifier class, usually the largest single miss bucket, at the lowest price in the catalog. It costs a second index to build, back up and keep in sync, per-language analyzers in multilingual corpora, a p99 set by the *slower* path, and one habit change: after rank fusion score thresholds are meaningless, so cutoffs are made by rank.
+- **When not to use** — when the taxonomy shows no exact-match class (measure it; assume it exists until proven otherwise), or when the corpus is small enough that top-k is most of it.
+- **Known uses** — BM25 is decades of information-retrieval literature; reciprocal rank fusion is Cormack, Clarke & Buettcher (SIGIR 2009); hybrid keyword-plus-vector retrieval with rank fusion ships as a documented built-in mode in mainstream search engines and vector databases. Curriculum instance (fictional): Vantora's identifier recall, 0.41 → 0.93.
+- **Related** — Basic RAG (the substrate); Reranked RAG (the next stage, over a better candidate set).
+
+### Pattern: Parent-Child Retrieval
+
+- **Context** — documents whose meaning spans more than one matching unit: numbered procedures, contracts whose definitions sit paragraphs above the operative clause, tables whose headers are far from their rows.
+- **Problem** — one chunk size is asked to do two incompatible jobs: small chunks match precisely and arrive without the context that makes them answerable, large chunks carry context and dilute the embedding until it matches nothing well.
+- **Forces** — matching precision vs. answer completeness; context budget and token cost, since parents are multiples of children and padding the window has its own attention cost ([2.5](../part-2-artificial-intelligence/chapter-05-transformer-architecture.md)).
+- **Solution** — decouple the matching unit from the context unit: index children for retrieval, then at assembly substitute the parent section, expand a sentence window, or prepend a generated context header. Deduplicate parents when several children hit the same one.
+- **Structure** — ingestion writes child → parent mappings beside each vector; the query path matches children, maps to parents, dedupes, truncates to budget by parent rank.
+- **Consequences** — fixes truncated-procedure and orphan-clause answers without touching the retriever or the model, which makes it high-leverage late in a build. It raises tokens per answer by construction, partly cancelling what a reranker saves, and without dedup one long parent crowds out every other source.
+- **When not to use** — corpora of short independent records (FAQ entries, resolved tickets) where the child already is the answer, and hard token or latency budgets.
+- **Known uses** — parent-document, auto-merging, and sentence-window retrievers ship as standard components in mainstream RAG frameworks; augmenting each chunk with document-level context at ingestion is a published, widely replicated technique. Curriculum instance (fictional): the numbered procedures of [CS15](../../case-studies/cs15-maintenance-manual-assistant.md).
+- **Related** — Basic RAG (whose chunk-size trade-off this dissolves rather than splits); Reranked RAG (rerank children, expand afterward).
 
 ### Pattern: Reranked RAG
 
-- **Context** — a RAG system needing higher precision than first-stage retrieval provides (4.2).
-- **Problem** — first-stage retrieval (bi-encoder) is blind to fine-grained query-document interaction (4.2).
-- **Forces** — precision vs. latency (the cross-encoder cost), the funnel shape (4.2).
-- **Solution** — retrieve generously (top 30–100), rerank with a cross-encoder, keep the top 3–8 (4.2's funnel).
-- **Structure** — first-stage retrieve → cross-encoder rerank → top-k to context (4.2).
-- **Consequences** — higher precision, fewer better chunks (focused attention — 2.5); the latency and the versioned reranker (4.2/3.10).
-- **Known uses** — CS23 (contract review — precision-critical), CS25 (legal research).
-- **Related** — Hybrid Retrieval (the first stage), Model Tiering (7.8, the reranker as a tier).
+- **Context** — a funnel whose golden set shows the answer arriving in the top 50 but not the top 5.
+- **Problem** — bi-encoders score query and document independently, so embedding proximity measures topicality, not whether this passage answers *this* question.
+- **Forces** — precision vs. latency and money, since a cross-encoder is one inference per candidate and cost rises linearly with depth; and one more versioned model in the stack, with its own bake-off, pinning, and migration duties.
+- **Solution** — retrieve generously (30–100 hybrid candidates), score pairs with a cross-encoder, keep the top 3–8. Gate on precision@k and MRR uplift over the *fused first stage* on your own golden set; make depth and enablement per-query-class policies, not one global setting.
+- **Structure** — hybrid first stage → cross-encoder over N candidates → top-k → optional parent expansion → context; stage metrics are recall@N before, precision@k after.
+- **Consequences** — fewer, better chunks, which often improves generation *and* cuts generation tokens, so it partly self-funds. It adds tens to a couple of hundred milliseconds at p95 depending on model and depth; hosted rerank endpoints bill per document scored, making candidate depth a budget decision rather than a tuning knob; and an unpinned reranker swap is the same silent-regression vector as an unpinned generation model.
+- **When not to use** — before hybrid, since reranking a poor candidate set only reorders wrong answers; when the measured post-hybrid gap is small; on typeahead paths that cannot absorb a second stage.
+- **Known uses** — cross-encoder reranking is a well-established IR technique, with the BERT passage re-ranking line (Nogueira & Cho, 2019) and the later MS MARCO ranking literature as its public record; commercial rerank endpoints expose it as a hosted service. Curriculum instance (fictional): [CS23](../../case-studies/cs23-contract-review-platform.md)'s precision-critical review.
+- **Related** — Hybrid Retrieval (the first stage it depends on); Two-Stage Retrieve-then-Rank ([7.11](chapter-11-predictive-scoring-patterns.md) — the same shape over catalogs).
 
 ### Pattern: Agentic Retrieval
 
-- **Context** — a retrieval problem where one round can't suffice (the answer requires following references — 4.2, 3.8).
-- **Problem** — the multi-hop question whose answer spans documents requiring iterative retrieval (4.2).
-- **Forces** — retrieval depth vs. cost/latency (the bounded loop — 3.8), the task-class escalation (4.2).
-- **Solution** — a bounded agent loop (3.8) that retrieves, reads, reformulates, retrieves again, within budgets (4.2/3.8's governors).
-- **Structure** — the bounded agent loop (3.8) with retrieval as the tool (4.2).
-- **Consequences** — multi-hop retrieval (the harder questions answered); the agent cost and complexity (3.8's governors — route the hard 5%).
-- **Known uses** — Halvard & Roth's due-diligence cross-reference investigation (3.8/4.5), CS40 (legacy code modernization).
-- **Related** — Bounded Agent Loop (7.4), the routing pattern (7.3 — route the hard queries).
+- **Context** — questions whose evidence chain is not knowable from the question: "does the indemnity cap in §7 survive the side letter?", or comparisons where one retrieved fact determines what to look for next.
+- **Problem** — one-shot retrieval assumes a query names its own evidence. Multi-hop questions violate that assumption, and no first-stage tuning repairs it.
+- **Forces** — depth vs. an unbounded cost and latency tail, because the loop decides its own length; quality vs. predictability, since the same question can cost several times more on a different day; and debuggability, because a failure is now a trajectory rather than a top-k list.
+- **Solution** — treat it as a **routed escalation with a ceiling, never a default path**. A router sends the named hard class into a bounded loop with maximum hops, tool calls, tokens, and wall-clock deadline; the loop retrieves, reads, reformulates, retrieves again. On budget exhaustion it returns the best grounded partial answer *and states what it could not resolve* — never a confident guess on the last hop.
+- **Structure** — query → router → {one-shot funnel for the majority | bounded loop for the escalated slice} → citation validation → answer, with per-route cost dashboards and trajectories logged for evaluation; the ceiling is a config value with a named owner.
+- **Consequences** — answers a class nothing else here answers, at a multiple of one-shot cost per query and a latency distribution measured in seconds, which is user-visible and needs a progress affordance. Total spend is route share × ceiling, so the router's precision is a *budget control* as much as a quality control — an over-triggering router is a cost incident, and an uncapped loop is an open invoice.
+- **When not to use** — as the default path; when the taxonomy shows no multi-hop class (don't build the loop speculatively); on interactive sub-second paths.
+- **Known uses** — interleaved retrieve-and-reason is published research (reasoning-and-acting tool loops, and self-reflective or interleaved retrieval methods such as Self-RAG and IRCoT); "deep research" modes in consumer assistants run multi-round retrieval behind an explicit longer-wait affordance — this pattern made visible to users. Curriculum instance (fictional): Halvard & Roth's cross-reference investigation ([3.8](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md)).
+- **Related** — the bounded agent loop and its governors ([7.4](chapter-04-agentic-patterns.md)); the routing patterns of [7.3](chapter-03-workflow-patterns.md).
 
 ### Pattern: GraphRAG (Knowledge-Structure Retrieval)
 
-- **Context** — corpus-wide synthesis questions similarity search can't answer (4.2 — "what themes recur across all X").
-- **Problem** — the aggregation/synthesis question that requires relationships, not similarity (4.2).
-- **Forces** — the synthesis capability vs. the heavy ingestion cost (the entity-relation extraction — 4.2).
-- **Solution** — extract entities and relations at ingestion, traverse the graph at query time (4.2).
-- **Structure** — ingestion: entity-relation extraction → knowledge graph; query: graph traversal + generation (4.2).
-- **Consequences** — corpus-wide synthesis (the questions similarity can't); the heavy ingestion cost (adopt against the named question class — 4.2).
-- **Known uses** — CS41 (incident postmortem synthesis), CS17 (quality incident root-cause across silos).
-- **Related** — Basic RAG (the similarity complement), the feedback-to-dataset pattern (7.7).
+- **Context** — questions about the corpus rather than in it: recurring themes across a quarter's complaints, entities appearing in incidents on two different lines, relationship chains across silos.
+- **Problem** — top-k similarity returns the k most similar passages, and a corpus-wide question has no single similar passage. This is a structural limit, not a tuning gap.
+- **Forces** — synthesis capability vs. a heavy ingestion pass repeated on every schema change; graph quality vs. extraction error, where a mis-linked entity yields a wrong answer carrying a confident provenance trail.
+- **Solution** — extract entities and relations at ingestion, build the graph, cluster it into communities and pre-summarize them; at query time select the relevant subgraph or summaries and generate over those. Keep similarity retrieval alongside — the graph answers a different question class, it does not replace the index.
+- **Structure** — ingestion: parse → entity/relation extraction → graph plus community summaries, each edge carrying its source reference; query: classify → traverse or select summaries → generate → cite back to sources.
+- **Consequences** — unlocks an otherwise unanswerable class. The dominant cost is the extraction pass, which scales with corpus size and re-extraction cadence rather than query volume, so a low-traffic pilot will not expose it; entity resolution ("Acme Ltd" vs. "ACME Limited") becomes a permanent data-quality workstream, and edge-to-source provenance must be maintained or the synthesis is uncitable.
+- **When not to use** — when no corpus-wide synthesis class exists; when corpus churn is high relative to extraction cost; and — the check most teams skip — when the aggregate is computable from structured metadata, which is orders of magnitude cheaper.
+- **Known uses** — Microsoft Research's GraphRAG, a published method with an open-source implementation, for query-focused summarization over a corpus; knowledge-graph-backed retrieval is long established in domains with curated ontologies such as biomedical literature and asset data. Curriculum instance (fictional): [CS41](../../case-studies/cs41-incident-postmortem-assistant.md)'s postmortem synthesis.
+- **Related** — Basic RAG (the similarity complement it runs beside); the knowledge and freshness patterns of [7.7](chapter-07-knowledge-data-patterns.md).
 
 ### Pattern: Citation-First
 
-- **Context** — a RAG system where the answer's trustworthiness depends on verifiable sources (3.6, 4.14).
-- **Problem** — the ungrounded or unverifiable answer that destroys trust (3.6's grounded-but-wrong, 3.1's hallucination).
-- **Forces** — the grounding vs. the model's fluency, the citation validity (3.6).
-- **Solution** — the epistemic contract (answer from context, cite the provenance), citation validation (3.6's citation-first, the programmatic check).
-- **Structure** — the grounded prompt + the citation validation (3.6's seam).
-- **Consequences** — verifiable, trustworthy answers (3.6's auditability — 4.14); the refusal-on-no-context (3.6's designed refusal).
-- **Known uses** — CS25 (legal research — citation integrity), CS02 (patient triage — safety-critical grounding), all regulated RAG.
-- **Related** — Basic RAG (the foundation), Human-in-the-Loop (7.5, the review of the cited answer).
+- **Context** — any answer a human will act on, escalate, or be audited for. In enterprise RAG that is all of them.
+- **Problem** — fluent ungrounded text is indistinguishable from grounded text at reading speed, which makes a fabricated or mismatched citation worse than none: it manufactures trust it has not earned.
+- **Forces** — grounding discipline vs. answer coverage, since a strict contract refuses more often; citation granularity vs. interface noise, where span-level citations are checkable and document-level ones are effectively unfalsifiable.
+- **Solution** — three parts, all required. An epistemic contract in the prompt (answer only from the provided context; if it doesn't answer, say so); structured output binding each claim to a chunk identifier; and a programmatic validator checking that the cited ids were actually retrieved, that the cited span supports the claim, and that the reader is entitled to the source. Validation failure downgrades to refusal or human review — never to dropping the citation and keeping the sentence.
+- **Structure** — retrieve → grounded prompt → structured answer plus ids → validator (exists ∧ entitled ∧ supports) → deep-linked spans → log answer, sources, and verdict for audit.
+- **Consequences** — makes answers auditable and gives reviewers a fast verification path, usually the largest human-cost saving in review-heavy workflows. It costs a verification pass per answer, a refusal rate the product owner must accept in writing, and more front-end and permissions work than teams expect — deep-linking into source spans across repositories is often larger than the retrieval work itself.
+- **When not to use** — there is no case for skipping it on enterprise knowledge; the only honest relaxation is coarser granularity on low-stakes internal search, recorded as a decision with its reason.
+- **Known uses** — inline, clickable source attribution is standard in consumer search assistants and enterprise document assistants; measuring whether generated statements are attributable to identified sources is an active published research area. Curriculum instance (fictional): [CS25](../../case-studies/cs25-legal-research-assistant.md)'s citation integrity.
+- **Related** — Human-in-the-Loop ([7.5](chapter-05-human-in-the-loop-patterns.md) — the reviewer whose job citations make cheap); every other pattern here, all of which it wraps.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    BASIC[Basic RAG — 3.6<br/>the foundation] --> HYBRID[Hybrid Retrieval<br/>+ lexical, RRF]
-    HYBRID --> RERANK[Reranked RAG<br/>+ cross-encoder funnel]
-    RERANK --> AGENTIC[Agentic Retrieval<br/>+ bounded loop, multi-hop]
-    BASIC -.corpus-wide synthesis.-> GRAPH[GraphRAG<br/>entity-relation graph]
-    BASIC & HYBRID & RERANK & AGENTIC & GRAPH -.all layer.-> CITATION[Citation-First<br/>the trust layer — 3.6]
-    CITATION -.combines with.-> HITL[Human-in-the-Loop — 7.5]
+flowchart LR
+    Q[Query] --> R{Router}
+    R -->|majority| H[Hybrid first stage<br/>lexical + semantic, RRF<br/>same filters both paths]
+    H -->|top 30-100| RK[Cross-encoder rerank<br/>per-class depth policy]
+    RK -->|top 3-8| PC[Parent expansion<br/>+ dedup]
+    R -->|named hard class<br/>capped share| AG[Agentic loop<br/>max hops · tokens · deadline]
+    R -->|corpus-wide synthesis| GR[Graph / community summaries]
+    PC --> CIT[Citation validator<br/>exists / entitled / supports]
+    AG --> CIT
+    GR --> CIT
+    CIT -->|pass| ANS[Answer with deep-linked sources]
+    CIT -->|fail| REF[Refuse or route to review — 7.5]
 ```
 
-Readings. **The RAG patterns layer from basic to advanced** — basic RAG (the foundation — 3.6) enhanced by hybrid (the query-class coverage — 4.2), reranked (the precision — 4.2), and agentic (the multi-hop — 4.2), with GraphRAG as the corpus-wide-synthesis alternative (4.2) — the patterns layered by the retrieval problem's demands, matched to the problem (the improvement loop — 4.2's taxonomy). **Citation-first is the trust layer across all** — the citation-first pattern (3.6) layers on any RAG pattern (the trust layer — the grounding and citation validation — 3.6), essential for the trustworthy RAG (4.14's auditability). **And the patterns combine** — a production RAG architecture combines the patterns (hybrid + reranked + citation-first + human-in-the-loop — the combination — 7.1), matched to the problem and the trust needs — the RAG pattern family as the layered toolkit for the retrieval architecture.
+Three readings. **The main line is a funnel and every stage owns a metric** — recall@N first stage, precision@k after rerank, context completeness after expansion; a stack without stage-level metrics can only be guessed at. **The escalations are branches with budgets, not stages**, each with a ceiling whose owner is named. **The validator is the only merge point**, which keeps the trust guarantee constant across routes that otherwise share nothing.
 
 ## Real-world Example
 
-**Halvard & Roth** (the recurring law firm — 3.5, 4.1, 4.2) built its contract-analysis RAG by combining the RAG patterns, and the combination is the pattern family applied. The base was basic RAG (3.6, the matter corpus), enhanced to hybrid retrieval (4.2, the legal identifiers — clause numbers, case citations — the identifier-query class — 4.2) and reranked RAG (4.2, the precision-critical legal retrieval — the cross-encoder funnel — 4.2), with citation-first (3.6, the citation integrity the legal use case demands — the verifiable sources — 4.14) layered as the trust layer, and agentic retrieval (4.2/3.8) for the multi-hop cross-reference investigations (the indemnity-cap-references-schedule-references-side-letter — 3.8's Halvard & Roth investigation). The pattern combination was the architecture: hybrid (the query-class coverage) + reranked (the precision) + citation-first (the trust) + agentic-retrieval-for-the-hard-5% (the multi-hop) + human-in-the-loop (7.5, the associate review) — the RAG architecture as a combination of the RAG patterns, each matched to the retrieval problem (the improvement loop — 4.2's taxonomy driving the pattern selection). Yusuf's RAG-patterns note: *"Our contract-analysis RAG is a pattern combination: basic RAG (the corpus), hybrid (the legal identifiers), reranked (the precision), citation-first (the legal citation integrity), agentic retrieval (the multi-hop cross-references), human-in-the-loop (the associate review). Each pattern matched to a retrieval problem (the taxonomy — 4.2), layered from basic to advanced. The RAG pattern family is the toolkit — I select and combine the patterns matched to the problem, and the architecture is the combination. That's the reference core: the patterns compress the retrieval architecture into named, reusable, combinable form."*
+**Halvard & Roth** (the curriculum's recurring fictional law firm — [4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md), [4.2](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md)) reached its contract-analysis architecture one failure class at a time, and the order is the instructive part.
+
+The first build was Basic RAG over the matter corpus. Its miss set had two dominant buckets: clause and case-citation lookups failed outright — the identifier class, which Hybrid Retrieval addressed — and retrieved clauses were often *correct and unusable*, an operative paragraph whose defined terms lived three paragraphs above it, so associates could not tell whether the answer applied. That second bucket is fragmented context, and Parent-Child Retrieval fixed it without touching the retriever.
+
+Only then did reranking earn its place, because only then was the residual gap an ordering problem rather than a candidate problem — and the firm accepted its latency on the research path while declining it in the in-editor suggestion path. Citation-First was never optional: an uncited assertion about an indemnity cap is unusable, and the validator's entitlement check doubles as matter-level confidentiality enforcement. Agentic Retrieval entered last and narrowest — reference-chain investigations, routed by an explicit classifier, with a hop ceiling and a per-matter budget, while everything outside that class still runs the one-shot funnel.
 
 ## Hands-on Exercise
 
-**Select and combine RAG patterns.** ~90 minutes. For a RAG system (real or a case study).
+**Diagnose, then select.** ~80 minutes. Use a RAG system you have built ([P05](../../projects/p05-internal-knowledge-search/README.md), [P06](../../projects/p06-production-rag-service/README.md)) or a RAG-heavy case study.
 
-1. **Pattern selection (30 min).** For a RAG system's retrieval problems (use 4.2's miss taxonomy — identifier, vocabulary, multi-hop, synthesis), select the matched RAG pattern per problem (hybrid for identifiers, reranked for precision, agentic for multi-hop, GraphRAG for synthesis). Justify each with the pattern's context and forces.
-2. **The pattern-language form (20 min).** For one selected pattern, write its full pattern-language form (Context, Problem, Forces, Solution, Structure, Consequences, Known uses, Related) for your specific system.
-3. **The combination (25 min).** Design the RAG architecture as a pattern combination (the selected patterns layered, plus citation-first and human-in-the-loop). Show how the patterns combine (the design — 1.4/7.1, the forces balanced).
-4. **The case-study mapping (15 min).** Map your pattern combination to a case study's RAG (identify the shared patterns), showing the pattern language's known-uses connection.
+1. **Taxonomize (25 min).** Take at least 25 golden-set misses and bucket each into exactly one class: identifier, ordering, fragmented context, corpus-wide synthesis, unknown evidence shape, verifiability. Quantify the buckets — empty ones matter as much as the largest.
+2. **Select and price (25 min).** For your top two classes, name the pattern and write its cost line: what it adds per query, per corpus change, and per release (a model to pin? a second index to back up? a per-document extraction pass?). One of the two must include an explicit "and here is what I would *not* install, because that class is under 5%."
+3. **Cap the escalation (15 min).** Assume you will eventually route a hard class to Agentic Retrieval. Write the ceiling as numbers — max hops, max tokens, deadline, maximum share of traffic — and name the owner paged when the route exceeds its budget.
+4. **Compose (15 min).** Diagram the target architecture with every stage, every branch, and the single citation-validation merge point; mark which stages exist today and which are proposals.
 
 **Acceptance criteria:**
-- [ ] RAG patterns selected matched to the retrieval problems (4.2's taxonomy), with context and forces
-- [ ] One pattern in the full pattern-language form for the specific system
-- [ ] The RAG architecture as a pattern combination (layered, designed — 7.1)
-- [ ] The pattern combination mapped to a case study's RAG
+- [ ] At least 25 misses bucketed into single classes, with percentages
+- [ ] Two patterns selected, each with a cost line naming per-query, per-corpus, and per-release costs
+- [ ] One pattern explicitly declined, with the measured class share that justifies declining it
+- [ ] Agentic ceiling written as numbers (hops, tokens, deadline, traffic share) with a named owner
+- [ ] Diagram shows stage metrics and one citation-validation merge point
 
 ## Enterprise Considerations
 
-The RAG patterns are the enterprise's knowledge-grounding reference. **They're the retrieval-architecture reference** (6.1/7.1): the RAG pattern family is the enterprise's reference for retrieval architecture (the patterns the retrieval systems combine — 4.1's shared retrieval service, 7.9's platform), maintained as part of the pattern catalog (7.1, the reference core). **The pattern selection connects to the evaluation** (4.2/4.7): the pattern selection is driven by the retrieval evaluation (the miss taxonomy — 4.2, the golden set — 3.5/4.7), so the RAG patterns connect to the evaluation (the pattern matched to the measured problem — 4.2's improvement loop). **The advanced patterns have cost implications** (4.11): the advanced RAG patterns (reranked, agentic, GraphRAG) have cost implications (the reranker cost, the agent cost, the graph ingestion — 4.2/4.11), so the pattern selection is a cost-quality trade (4.11, the pattern's forces), governed (6.9/6.10). **And the patterns combine into the shared retrieval service** (4.1/7.9): the RAG patterns combine into the enterprise's shared retrieval service (4.1, the platform — 7.9), so the pattern family is the reference for the platform's retrieval architecture (the patterns the shared service offers).
+Once retrieval is a shared service ([4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md), [7.9](chapter-09-platform-multitenancy-patterns.md)), pattern configuration becomes platform policy. **Filter parity is the security item**: with two index projections an entitlement filter has two places to be wrong, so it is applied once, before fusion, on both paths. **Rerank depth and agentic ceilings are governed values**, not tuning knobs — a depth change by one team lands on every consuming application's bill. **Multilingual funnels multiply the surface**: BM25 needs per-language analyzers, embedding and reranker quality vary by language, and per-language golden-set slices are the only honest gate. **Graph extraction needs a re-extraction plan before launch**, because a schema change means reprocessing the whole corpus. And **click-and-query feedback used to tune retrieval is personal-data processing** ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)): legal basis and retention come before the flywheel spins.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Retrieval enhancement | Hybrid + reranked | Basic RAG | The query stream has identifier/precision demands (4.2) | Simple semantic retrieval suffices (measured — 4.2) |
-| Multi-hop | Agentic retrieval | One-shot retrieval | The multi-hop/reference-following class exists (4.2) | The class doesn't exist (don't build the loop speculatively) |
-| Synthesis | GraphRAG | Basic RAG | Corpus-wide synthesis questions (the named class — 4.2) | Similarity retrieval suffices (the heavy graph ingestion not warranted) |
-| Trust | Citation-first (always for regulated) | Ungrounded | Trustworthiness matters (4.14, regulated) | Never ungrounded for enterprise knowledge — citation-first as the default |
+| First stage | Hybrid (RRF fusion) | Semantic only | Default — exact-match classes exist in almost every real stream | The taxonomy measurably shows no identifier class |
+| Context unit | Parent-child expansion | Flat chunks | Meaning spans the matching unit (procedures, contracts, tables) | Short independent records; tight token budgets |
+| Precision stage | Cross-encoder rerank | Fused first stage only | Measured ordering gap at your k, and latency absorbs it | Post-hybrid gap is small, or the path is latency-critical |
+| Hard questions | Routed agentic loop with a ceiling | One-shot funnel for all | A multi-hop class is named and sized, and a cost owner exists | The class is unnamed, or the loop would be uncapped |
+| Synthesis | GraphRAG | Aggregation over structured metadata | The relationships exist only in unstructured text | The aggregate is computable from fields you already have |
 
 ## Common Mistakes
 
-1. **Basic RAG where advanced was needed** — applying basic RAG to a problem needing hybrid/reranked/agentic (the recall/precision gap — 4.2); match the pattern to the problem (4.2's taxonomy).
-2. **The advanced pattern without the problem** — applying reranked/agentic/GraphRAG speculatively (the technique-collecting — 4.2); the pattern matched to the measured problem (4.2's improvement loop).
-3. **Skipping citation-first** — the RAG without the trust layer (the ungrounded/unverifiable answer — 3.6's grounded-but-wrong); citation-first as the default (the trust layer).
-4. **Comparing scores across patterns** — merging hybrid's incomparable scores wrongly (4.2's RRF); rank-based fusion (4.2).
-5. **The un-combined patterns** — applying the patterns without combining them into a coherent architecture (the un-designed combination — 7.1); the combination is a design (the forces balanced).
-6. **Ignoring the pattern's forces** — applying a pattern without its forces (the reranked without the latency cost — 4.2); the pattern's forces (the trade-offs — 1.4).
-7. **The pattern combination ignoring cost** — the advanced-pattern combination without the cost-quality trade (4.11); the pattern's cost implications (the forces).
+1. **Installing patterns without a taxonomy** — techniques adopted from conference talks rather than from the miss set. Only a named class justifies a pattern's cost.
+2. **Score thresholds after rank fusion** — RRF discards score magnitude by design, so a cutoff inherited from the semantic-only era silently drops good results. Cut by rank.
+3. **Filters on one hybrid path only** — the lexical path forgotten during an ACL change. That is not a quality bug, it is a disclosure incident.
+4. **Reranking a bad candidate set** — paying an inference per candidate to reorder documents that never contained the answer. Recall first, precision second.
+5. **An agentic loop with no ceiling and no owner** — a cost profile that surfaces in the monthly bill and a latency profile that surfaces to users.
+6. **GraphRAG for a question SQL answers** — a per-document extraction pass bought to compute an aggregate already sitting in structured metadata.
+7. **Citations rendered but never validated** — chunk ids echoed into the UI with no check that they were retrieved, support the claim, or may be seen by this reader.
 
 ## Best Practices
 
-1. **Match the RAG pattern to the retrieval problem** — the miss taxonomy (4.2) drives the pattern selection (hybrid for identifiers, reranked for precision, agentic for multi-hop, GraphRAG for synthesis).
-2. **Layer the patterns from basic to advanced** — basic RAG (the foundation) enhanced by the patterns matched to the demands (4.2's improvement loop).
-3. **Apply citation-first as the default trust layer** — the grounding and citation validation (3.6) for trustworthy RAG (4.14, regulated).
-4. **Combine the patterns deliberately** — the RAG architecture as a pattern combination (7.1, the forces balanced — 1.4).
-5. **Connect the pattern selection to the evaluation** — the pattern matched to the measured problem (4.2's taxonomy, 3.5/4.7's golden set).
-6. **Weigh the advanced patterns' cost** — the reranker, agent, graph-ingestion cost (4.11, the pattern's forces), governed (6.9/6.10).
-7. **Use the RAG patterns as the retrieval-architecture reference** — the pattern family as the enterprise's retrieval reference (7.1, the shared retrieval service — 4.1/7.9).
+1. **Diagnose before you install** — bucket the misses, size the buckets, then select; report the classes you found *and* the ones you didn't.
+2. **Hybrid is the default first stage** — the cheapest quality upgrade available, and the prerequisite that makes reranking worth buying.
+3. **Decouple the matching unit from the context unit** — index children, deliver parents, dedupe on assembly.
+4. **Make every escalation a capped route** — traffic share, ceiling, dashboard, named owner.
+5. **Validate citations programmatically** — existence, entitlement, support; failures become refusals or review items, never silent edits.
+6. **Instrument each stage separately** — recall@N, precision@k, context completeness, citation support; localization is what makes a funnel debuggable.
+7. **Record each pattern's cost shape** — per query, per corpus change, per release — in the decision record, because the shape is what surprises the budget later.
 
 ## Architecture Checklist
 
 For applying the RAG patterns:
 
-- [ ] The RAG pattern matched to the retrieval problem (4.2's miss taxonomy)
-- [ ] Basic RAG enhanced by the patterns matched to the demands (hybrid, reranked, agentic, GraphRAG)
-- [ ] Citation-first applied as the trust layer (3.6, for regulated/trustworthy RAG)
-- [ ] The RAG architecture designed as a pattern combination (7.1, the forces balanced)
-- [ ] The pattern selection connected to the evaluation (4.2/4.7)
-- [ ] The advanced patterns' cost weighed (4.11, the forces); governed (6.9/6.10)
-- [ ] The patterns combined into the shared retrieval service where applicable (4.1/7.9)
+- [ ] Miss taxonomy quantified before any pattern is selected
+- [ ] Each installed pattern traced to a named failure class and its measured share
+- [ ] Hybrid retrieval with rank-based fusion; entitlement filters proven on both paths
+- [ ] Context unit decided explicitly (flat vs. parent expansion), with dedup on assembly
+- [ ] Reranker pinned, bake-off'd, and gated on uplift over the fused first stage — not a leaderboard
+- [ ] Agentic retrieval routed, capped (hops, tokens, deadline, traffic share), and owned
+- [ ] GraphRAG justified against a named synthesis class, with a re-extraction plan and entity-resolution owner
+- [ ] Citation validation (exists ∧ entitled ∧ supports) on every route, with refusal behavior defined
+- [ ] Stage-level metrics in place; the design can say which stage a regression came from
 
 ## Interview Questions
 
-1. *"Walk me through the RAG patterns and when you'd use each."* — Strong answers give the pattern family (basic RAG — the foundation, hybrid — the identifiers, reranked — the precision, agentic — the multi-hop, GraphRAG — the synthesis, citation-first — the trust), each with its context and forces, and the matching to the retrieval problem (4.2's taxonomy).
-2. *"How do you combine RAG patterns into an architecture?"* — Strong answers give the layered combination (basic → hybrid → reranked → agentic, with citation-first and human-in-the-loop — 7.1's pattern combination), designed deliberately (the forces balanced — 1.4), matched to the retrieval problems (Halvard & Roth's contract-analysis combination).
-3. *"When would you use GraphRAG vs. basic RAG?"* — Strong answers give the context distinction (GraphRAG for corpus-wide synthesis questions that require relationships not similarity — the named class — 4.2, basic RAG for similarity retrieval), and the forces (the graph's synthesis capability vs. the heavy entity-relation ingestion cost — adopt against the named question class).
-4. *"How do you decide which RAG enhancement to add?"* — Strong answers give the improvement loop (4.2): the miss taxonomy (identifier, vocabulary, multi-hop, synthesis) drives the pattern selection (hybrid, reranked, agentic, GraphRAG matched to the class), measured (the golden set — 3.5/4.7), not technique-collecting (the pattern matched to the problem).
+1. *"A user says the assistant can't find error code E-4471, which is definitely in the docs. Diagnose it."* — Strong answers name the identifier class, explain why dense retrieval fails on rare tokens, propose hybrid with rank-based fusion, and insist the fix be measured on a query-class slice before it ships.
+2. *"When would you add a reranker, and when would you refuse to?"* — Strong answers separate recall problems from ordering problems (high recall@50 with poor precision@5 is the signal), price the cross-encoder per candidate, place it after hybrid, and refuse on latency-critical paths or a small measured gap.
+3. *"Your team wants agentic retrieval as the default. Argue the other side."* — Strong answers cover the unbounded cost and latency tail, unpredictability across identical queries, and trajectory-shaped debugging, then propose the routed alternative with concrete ceilings and a named cost owner.
+4. *"When is GraphRAG right, and what does it cost?"* — Strong answers identify corpus-wide synthesis as structurally unreachable by top-k, then price the per-document extraction pass, the re-extraction burden on schema change, and entity resolution as an ongoing workstream — after checking whether structured metadata already answers it.
 
 ## Further Reading
 
-- 3.6 RAG Fundamentals, 4.1 Production RAG, 4.2 Advanced Retrieval — the chapters this pattern family formalizes; the source of the patterns.
-- The RAG research literature (the RAG paper — Lewis et al., the GraphRAG and HyDE papers — re-linked from 4.2) — the patterns' research lineage.
-- The [RAG design checklist](../../checklists/rag-design-checklist.md) — the checklist the patterns implement.
-- The [case studies](../../case-studies/README.md) — the RAG patterns' known uses (the RAG-heavy case studies).
+- [3.6 RAG Fundamentals](../part-3-core-building-blocks-of-genai/chapter-06-rag-fundamentals.md), [4.1 Production RAG](../part-4-enterprise-genai-systems/chapter-01-production-rag.md), [4.2 Advanced Retrieval](../part-4-enterprise-genai-systems/chapter-02-advanced-retrieval.md) — the chapters this family formalizes.
+- Lewis et al. (2020), "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" — the formulation behind Basic RAG.
+- Cormack, Clarke & Buettcher (2009), "Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods" — the merge step in Hybrid Retrieval.
+- Nogueira & Cho (2019), "Passage Re-ranking with BERT" — the cross-encoder reranking line.
+- Edge et al. (2024), "From Local to Global: A Graph RAG Approach to Query-Focused Summarization" — Microsoft Research's GraphRAG and its open-source implementation.
+- The [RAG design checklist](../../checklists/rag-design-checklist.md) — the review form these patterns back; the [glossary](../../GLOSSARY.md) for chunking, RAG, and retrieval terms.
 
 ## Summary
 
-- The **RAG pattern family** is a layered toolkit — basic RAG (3.6, the foundation), hybrid retrieval (4.2, the query-class coverage), reranked RAG (4.2, the precision), agentic retrieval (4.2, the multi-hop), GraphRAG (4.2, the corpus-wide synthesis), and citation-first (3.6, the trust layer) — matched to the retrieval problem (4.2's taxonomy).
-- The patterns **layer from basic to advanced** — basic RAG enhanced by the patterns matched to the retrieval demands, with citation-first as the trust layer across all (essential for regulated/trustworthy RAG — 4.14).
-- The patterns **combine into the retrieval architecture** — a production RAG is a pattern combination (hybrid + reranked + citation-first + human-in-the-loop — 7.1), designed deliberately (the forces balanced — 1.4), matched to the problem (Halvard & Roth's contract-analysis combination).
-- The pattern selection is **driven by the evaluation** (4.2's improvement loop, 3.5/4.7's golden set) — the pattern matched to the measured problem, not technique-collecting.
-- The RAG patterns are the **enterprise's knowledge-grounding reference** (7.1, the shared retrieval service — 4.1/7.9). The fixed-control-flow patterns are next: **workflow patterns** (7.3).
+- The RAG patterns are **answers to named failure classes**, not rungs on a ladder: identifiers → Hybrid Retrieval, ordering → Reranked RAG, fragmented context → Parent-Child Retrieval, corpus-wide synthesis → GraphRAG, unknown evidence shape → Agentic Retrieval, verifiability → Citation-First, everything else → Basic RAG.
+- **Cost shapes differ by pattern** — per query (rerank), per hop (agentic), per corpus change (embedding, graph extraction) — and confusing them is how retrieval budgets get surprised.
+- **Agentic retrieval is a routed escalation with a ceiling**, sized by traffic share and owned by a named person; as a default path it is an open invoice.
+- **Citation-First is the one non-optional pattern**, and it is only real when a validator checks existence, entitlement, and support, with refusal as a designed output.
+- Composition happens in **diagnosis order**, one failure class at a time, with stage-level metrics that say where a regression came from. The fixed-control-flow patterns are next: **workflow patterns** (7.3).
 
 ---
 

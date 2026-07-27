@@ -5,186 +5,252 @@
 | **Part** | 7 — Enterprise AI Architecture Patterns |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 80 min) |
 | **Prerequisites** | [4.1 Production RAG](../part-4-enterprise-genai-systems/chapter-01-production-rag.md); [4.3](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md); [5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Apply the knowledge & data pattern family in pattern-language form: freshness pipeline, ACL-propagated index, tenant isolation, forgetting/deletion, and feedback-to-dataset.
-2. Select the data pattern matched to the data need, using each pattern's context, forces, and consequences.
-3. Compose data patterns into the knowledge and data architecture (4.1/4.3/5.5).
-4. Recognize the data patterns in the case studies, the patterns that make the knowledge estate trustworthy.
+1. Apply the knowledge & data pattern family in pattern-language form: Freshness Pipeline, ACL-Propagated Index, Tenant Isolation, Forgetting/Deletion, Embedding Version Migration, Corpus Versioning, and Feedback-to-Dataset.
+2. Set a freshness tier per corpus from decision impact rather than source volatility, and price incremental maintenance against full re-derivation.
+3. Design permission and deletion propagation with stated windows, named owners, and adversarial probes.
+4. Compose the family into a knowledge architecture whose answers remain reproducible months later.
 
 ## Introduction
 
-This chapter catalogs the knowledge & data pattern family — the data patterns that Parts 4–6 built (4.1's production RAG, 4.3's ingestion, 5.5's data architecture, 6.7's data governance), in pattern-language form (7.1). These patterns manage the knowledge and data the GenAI systems consume and produce — the freshness, the permissions, the tenancy, the deletion, the feedback — and this chapter is the reference for the data patterns that make the knowledge estate trustworthy (6.7).
+An index is not the knowledge. It is a *derived copy*, produced by an extraction, chunking, and embedding pipeline that ran at some point in the past. Every pattern here manages the gap between the copy and its source — which is why three concerns that usually live in three governance folders are one problem in three costumes. **Freshness** is a gap in content, **permissions** are a gap in who may see it, **deletion** is a gap in what should no longer exist anywhere. All three are specified identically — a propagation window, a monitor, an owner, a probe — and all three fail identically: the copy answers confidently on behalf of a source that has since changed, revoked, or erased.
 
-The framing: **knowledge & data patterns manage the knowledge and data lifecycle for trustworthiness** — the patterns (freshness pipeline, ACL-propagated index, tenant isolation, forgetting/deletion, feedback-to-dataset) that keep the knowledge fresh (4.1), permissioned (4.1), isolated (4.1), deletable (4.1/4.14), and compounding (1.2/5.5), and this chapter is the reference.
+Reading the index as a derived copy also produces the family's two less obvious members. The *deriving function* is part of the copy's state, so changing the chunker or the embedding model invalidates every vector at once — making Embedding Version Migration a budgeted event rather than an upgrade ticket. And if an answer is a function of a copy that moves weekly, reproducing it for an auditor six months later requires knowing *which* copy: Corpus Versioning.
 
 ## Business Motivation
 
-The knowledge & data patterns are what make the enterprise's knowledge estate trustworthy and compliant — the patterns that keep the RAG's knowledge fresh (4.1's grounded-but-wrong prevented), permissioned (4.1's confidentiality), deletable (4.14's right-to-be-forgotten), and compounding (1.2's flywheel). Without them: the knowledge is stale (the grounded-but-wrong — 4.1), leaked (the permission failure — 4.1), un-isolated (the cross-tenant leak — 4.1), un-deletable (the compliance failure — 4.14), and decaying (the no-flywheel — 1.2). With them: the knowledge is fresh, permissioned, isolated, deletable, and compounding — the trustworthy, compliant, improving knowledge estate. The business case is the trustworthiness-and-compliance one: the knowledge & data patterns make the knowledge estate trustworthy (fresh, permissioned — 4.1) and compliant (deletable, isolated — 4.14) and compounding (the flywheel — 1.2/5.5), and the data pattern family is the reference for the knowledge and data architecture — the patterns that make the enterprise's knowledge estate the trustworthy, compliant, improving asset it must be.
+**Permission gaps are breach events, not quality bugs.** Returning a document to someone whose access was revoked forty minutes ago is a disclosure, and remediation runs through legal and notification duties rather than a backlog ticket ([4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md)).
+
+**Deletion gaps come with statutory clocks.** GDPR Article 17 erasure must be answered without undue delay and within one month; CCPA/CPRA deletion runs on 45 days. Those clocks cover the whole derived estate — chunks, vectors, caches, traces, evaluation sets — and the propagation machinery cannot be built inside the response window, which makes this the one pattern here that is genuinely un-retrofittable at speed.
+
+**Re-derivation is a recurring bill with a wide dynamic range.** Embedding a large corpus costs real money once; embedding it repeatedly because nobody set a tier costs it monthly. The waste runs both ways — hourly pipelines over an archive nobody decides from, weekly crawls over the pricing corpus that changes a quoted number — and the tiering rule below turns that into a derived decision rather than a default.
+
+**And without a feedback loop, quality is fixed at launch and decays from there** ([1.2](../part-1-professional-foundation/chapter-02-systems-thinking-design-thinking.md)).
 
 ## Theory — The Knowledge & Data Pattern Catalog
 
 ### Pattern: Freshness Pipeline
 
-- **Context** — a knowledge base that changes and must stay current (4.1's freshness).
-- **Problem** — the stale knowledge that produces grounded-but-wrong answers (4.1).
-- **Forces** — the freshness (the currency) vs. the pipeline cost (4.1/4.3 — the re-indexing), the freshness SLA (4.1).
-- **Solution** — the change-detection-to-re-index pipeline (4.3's ingestion, 4.1's freshness SLA), event-driven or scheduled per source (4.1/4.3), with the freshness-lag monitoring (4.1).
-- **Structure** — source change → detect → re-chunk/re-embed → index (4.3), the freshness SLA (4.1).
-- **Consequences** — the current knowledge (the freshness); the pipeline cost and the staleness risk (the SLA and monitoring — 4.1).
-- **Known uses** — Meridian's protocol freshness (4.1 — the sedation-protocol incident), all changing-corpus RAG (4.1).
-- **Related** — the ingestion patterns (4.3), the RAG patterns (7.2), the freshness-in-citations (3.6).
+- **Context** — a corpus that changes after it is indexed: policies, prices, protocols, product data.
+- **Problem** — the index answers from the version it last saw. The failure is *grounded-but-wrong*: fluent, correctly cited, sourced from a superseded document — harder to catch than hallucination because it looks right all the way down.
+- **Forces** — pipeline cost and source load pull toward infrequent updates; decision impact pulls toward continuous ones; and a source that emits no change events cannot be polled into freshness it doesn't have.
+- **Solution** — detect change per source class (change feeds, list-and-diff polling, checksum crawls for the dark corpus), then re-extract, re-chunk, re-embed, and upsert only what changed ([4.3](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md)). Assign each corpus a **freshness tier from the impact of a stale answer**, not from how often the source changes, and state the resulting lag SLA per source — including the downgraded one for event-less sources.
+- **Structure** — change → detect → extract → [chunk](../../GLOSSARY.md) → embed → upsert; indexed-version lag alerted per source, no exceptions.
+- **Consequences** — incremental maintenance costs in proportion to change volume, which is why it beats rebuilding for content churn, but it accumulates tombstones and fragmentation, making compaction a standing operational job. Honest tiering produces *stated* inconsistency across corpora — a contract with users rather than a hidden defect. The worst failure is a silently dead connector, invisible from the answer side.
+- **Known uses** — change-data-capture feeds driving downstream index maintenance is ordinary data-engineering practice, and web-scale crawlers have scheduled recrawl frequency against observed change rate since the earliest crawl-scheduling work. Curriculum instance (fictional): Halvard & Roth's move to DMS change feeds, four event-less sources kept on scheduled crawls at an explicitly lower SLA ([4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md)).
+- **Related** — Embedding Version Migration (the full-rebuild sibling); Forgetting/Deletion (a delete is a change with legal teeth).
 
 ### Pattern: ACL-Propagated Index
 
-- **Context** — a knowledge base with document-level permissions (4.1's ACL-aware retrieval).
-- **Problem** — the permission failure that leaks knowledge across users (4.1's confidentiality).
-- **Forces** — the permission enforcement vs. the latency (4.1 — the filter-before-similarity, the staleness window).
-- **Solution** — the ACL labels in the index metadata, filtered before similarity, resolved from the systems of record (4.1's filter-before-similarity, the identity propagation — 6.6).
-- **Structure** — index with ACL metadata → filter-before-similarity (the user's permissions — 6.6) → retrieve (4.1).
-- **Consequences** — the permissioned retrieval (the user sees only what they may — 4.1); the staleness window (4.1's TTL/invalidation) and the systems-of-record integration (the long pole — 6.6).
-- **Known uses** — Halvard & Roth's matter walls (4.1/6.6), CS43 (HR policy — jurisdiction ACLs), all permissioned RAG.
-- **Related** — the identity propagation (6.6), Tenant Isolation (the multi-tenant version), the security architecture (6.5).
+- **Context** — a corpus whose documents carry per-document permissions from systems of record: DMS ACLs, directory groups, matter walls, jurisdiction scopes.
+- **Problem** — similarity search has no concept of authorization. Filtering after retrieval still leaks through result counts, snippets, and citation titles; not filtering is a disclosure.
+- **Forces** — correctness pulls toward checking the source of record on every query; latency and source load pull toward caching permissions in the index. Between them sits the **staleness window** — the interval in which a revoked user still retrieves — whose size is a risk decision, not an engineering default.
+- **Solution** — carry ACL labels as index metadata and **filter before similarity**, so the candidate set contains only documents the caller may see. Resolve effective access in one service ([6.6](../part-6-enterprise-architecture/chapter-06-iam-for-ai.md)), cache it with a TTL, and invalidate on the high-consequence revocation events the source already emits. Make "no access" indistinguishable from "no results", and extend that contract to counts, facets, and autocomplete.
+- **Structure** — identity → permission resolver (cache + event invalidation) → index query with ACL predicate → similarity over the permitted subset; adversarial probes on a schedule.
+- **Consequences** — the ACL set becomes a *second corpus* with its own ingestion, lag, and monitoring, so permission staleness joins freshness lag as an owned metric. Filtering before similarity narrows the candidate pool, so recall for restricted users degrades silently unless measured separately. And the pattern deliberately concentrates risk: one resolver bug is estate-wide, which is why enforcement belongs in one place rather than forty.
+- **Known uses** — enterprise search products have shipped document-level security trimming for two decades in two standard bindings: *early binding* (ACLs copied into the index at crawl time — fast, stale) and *late binding* (checked against the source at query time — correct, slow); connector frameworks require per-document ACLs for exactly this reason. Curriculum instance (fictional): Halvard & Roth's matter walls, where partner removal triggers immediate invalidation while routine group changes keep a longer TTL ([4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md)).
+- **Related** — Tenant Isolation (the same problem at customer granularity); Forgetting/Deletion (revocation and erasure share the propagation path).
 
 ### Pattern: Tenant Isolation
 
-- **Context** — a multi-tenant knowledge base (4.1's tenancy).
-- **Problem** — the cross-tenant leak (4.1 — one tenant seeing another's data).
-- **Forces** — the isolation strength vs. the cost (4.1's isolation ladder — namespaces vs. shared-with-filter).
-- **Solution** — the tenant isolation (4.1's ladder — per-tenant namespaces/indexes for the strong isolation, shared-with-filter with defense-in-depth for the internal — 4.1/5.6), matched to the consequence (4.1 — external tenants get namespaces).
-- **Structure** — per-tenant namespaces/indexes (5.6's tenancy primitives) or shared-with-filter (defense-in-depth — 4.1).
-- **Consequences** — the tenant isolation (no cross-tenant leak); the isolation cost (the namespaces) vs. the filter risk (the shared-with-filter — 4.1).
-- **Known uses** — Halvard & Roth's client-facing deal-room (4.1 — per-client namespaces), all multi-tenant GenAI (4.1/7.9).
-- **Related** — ACL-Propagated Index (the permission version), the platform patterns (7.9), the vector tenancy (5.6).
+- **Context** — one knowledge platform serving multiple customers, business units, or jurisdictions whose data must not mix.
+- **Problem** — a shared index puts cross-tenant disclosure one predicate away, and the blast radius of that predicate is every tenant at once.
+- **Forces** — cost and operability favor pooling (one index, one warm cache, one dashboard set); consequence and contract favor separation. Migration between rungs is a one-way door: moving an established platform up the ladder means re-ingesting and re-embedding everything.
+- **Solution** — choose a rung by the consequence of a leak, not the current tenant count: shared index with a tenant predicate for internal, uniform-sensitivity corpora, and only with the predicate enforced at the index API *and* validated post-retrieval; per-tenant namespaces as the default for external tenants; dedicated infrastructure and keys for regulated or sovereign customers ([5.11](../part-5-cloud-infrastructure-platform/chapter-11-multicloud-hybrid-sovereignty.md)). Two products on one platform may legitimately sit on different rungs.
+- **Structure** — tenant-scoped identity → routing to namespace/index → retrieval → per-tenant metering; isolation asserted by automated cross-tenant probes in CI, not by code review.
+- **Consequences** — separation contains blast radius and simplifies deletion and residency, at the price of per-namespace fixed cost, noisy-neighbor management, and a re-derivation bill that multiplies by tenant count on every embedding-model change. Pooling inverts each of those trades and concentrates the risk in a single predicate — survivable internally, rarely defensible in a customer contract.
+- **Known uses** — the silo/pool/bridge vocabulary of SaaS multi-tenancy names this ladder directly; [vector databases](../../GLOSSARY.md) expose the middle rung as namespaces, partitions, or per-tenant collections, and regulated customers routinely contract for the top rung with customer-managed keys. Curriculum instance (fictional): Halvard & Roth's client-facing deal rooms on per-client namespaces while the internal product stays pooled ([4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md)).
+- **Related** — ACL-Propagated Index (within-tenant permissions); vector tenancy primitives ([5.6](../part-5-cloud-infrastructure-platform/chapter-06-vector-search-infrastructure.md)).
 
 ### Pattern: Forgetting/Deletion
 
-- **Context** — a knowledge base with right-to-be-forgotten and retention obligations (4.14's deletion).
-- **Problem** — the un-deletable data (4.14 — the right-to-be-forgotten that doesn't reach the index, the retention violation).
-- **Forces** — the deletion completeness vs. the sprawl (4.14 — the data across the source, index, chunks, vectors, caches, traces).
-- **Solution** — the deletion-propagation pipeline (4.1/4.14 — the deletion flowing through the source, index, chunks, vectors, caches, traces), verified by probes (4.1's deletion probes).
-- **Structure** — deletion request → propagate (source → index → chunks → vectors → caches → traces) → verify (probes — 4.1).
-- **Consequences** — the compliant deletion (the right-to-be-forgotten met — 4.14); the sprawl (the deletion reaching everywhere — 4.14, the un-retrofittable).
-- **Known uses** — Meridian's PHI deletion (4.14), CS37 (public records redaction), all personal-data RAG (4.14).
-- **Related** — the compliance patterns (4.14), the freshness pipeline (the deletion as a change), the lineage (5.5).
+- **Context** — any corpus containing personal data, or any document estate with retention schedules and retirement.
+- **Problem** — deleting from the source leaves the derived copies answering, and the request arrives with a statutory clock. The sprawl is wider than teams track: chunks, [embeddings](../../GLOSSARY.md), lexical index, semantic and response caches, prompt/completion traces, evaluation and fine-tuning datasets, checkpointed workflow state, backups — plus derived artifacts such as summaries, themselves personal data about the same person.
+- **Forces** — completeness pulls toward reaching every copy; audit and evidentiary duties pull toward retaining some of them, and the two are reconciled per data class with legal rather than by engineering preference.
+- **Solution** — treat deletion as a first-class pipeline event flowing through the same stages as a create ([4.3](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md)), fanning out to a *registered* list of derived stores, each with an owner and a stated completion window. Verify with automated probes that query for the deleted content — caches included — and expect nothing. Require any new derived store to register before it may be written to.
+- **Structure** — request → identity resolution → fan-out (index, vectors, caches, traces, datasets, checkpoints) → per-store acknowledgement → probe → evidence record; backups covered by put-beyond-use plus erase-on-restore.
+- **Consequences** — compliant erasure with evidence, bought with permanent operational surface: every new store touching corpus content adds a fan-out target, and an unregistered one is a silent violation. Vector deletes are frequently *logical* — Lucene-family indexes tombstone and reclaim only at segment merge, and graph-based ANN structures likewise mark rather than remove — so the completion window must account for compaction and the probe must test reachability, not the delete call's return code.
+- **Known uses** — GDPR Article 17 and CCPA/CPRA deletion rights are what make this mandatory rather than tidy; supervisory guidance generally accepts backups being put beyond use and erased on the next restore cycle rather than surgically edited, and tombstone-plus-compaction semantics are documented behavior in mainstream search and vector indexes. Curriculum instance (fictional): Meridian's PHI erasure path with scheduled probes across index, cache, and trace store ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)).
+- **Related** — Corpus Versioning (the direct tension: snapshots must not preserve erased content); observability retention ([4.10](../part-4-enterprise-genai-systems/chapter-10-observability.md)).
+
+### Pattern: Embedding Version Migration
+
+- **Context** — an index whose vectors came from one embedding model, which will eventually be deprecated or superseded; likewise a chunking-strategy change.
+- **Problem** — vectors from two models occupy incomparable spaces, often with different dimensionality. There is no incremental path: you cannot migrate documents one at a time, because a mixed index returns nonsense similarity, and you cannot decline, because deprecation timelines expire.
+- **Forces** — quality gains and deprecation deadlines pull toward migrating; the cost of re-deriving the whole corpus, double storage during overlap, and regression risk pull toward waiting. Waiting is bounded by someone else's calendar, which makes this a scheduling problem, not a preference.
+- **Solution** — run it as a planned release: build a parallel index with the new model, compare both against the same golden sets and query log at the same operating point ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)), then publish by alias swap with the old index retained for rollback. Provision re-embedding capacity deliberately so the migration does not starve the freshness lane, and invalidate every artifact keyed to the old vector space — cached neighbors, semantic-cache entries, precomputed clusters — as part of the swap.
+- **Structure** — model selected → throttled parallel embed → dual index → golden-set comparison → alias swap → rollback window → dependent caches invalidated.
+- **Consequences** — a periodic capital-scale event: full corpus embedding cost, roughly double index storage during overlap, and a comparison that occasionally says *don't*. Multi-tenant estates multiply the bill by namespace count. The compensating gain is that the same machinery serves every re-derivation — chunking, extractor, metadata schema — so building it once converts a class of impossible changes into scheduled ones; estates that never build it freeze on a deprecated model instead.
+- **Known uses** — embedding providers version their models and retire older versions on published deprecation timelines, and cross-model vector incomparability is why re-embedding the entire corpus is the standard migration path; parallel build plus alias swap is the conventional way to publish a re-derived index atomically. Curriculum instance (fictional): the vector-store choice treated as a lock-in decision precisely because migration means re-embedding ([5.6](../part-5-cloud-infrastructure-platform/chapter-06-vector-search-infrastructure.md)).
+- **Related** — Freshness Pipeline (shares the ingestion stages); Corpus Versioning (each swap mints a version); drift-triggered retraining as the classical sibling (7.11).
+
+### Pattern: Corpus Versioning
+
+- **Context** — retrieval-grounded answers that will be questioned later: regulated advice, claims decisions, published guidance, anything under litigation hold.
+- **Problem** — "why did the system say that in March?" is unanswerable once the corpus, chunker, and embedding model have all moved. Re-running the query today gives a different answer and proves nothing.
+- **Forces** — reproducibility pulls toward retaining snapshots; erasure duties and storage cost pull against retaining anything, and the two collide head-on, because a snapshot preserving erased content is itself a violation.
+- **Solution** — stamp every response with the identifiers that determined it: corpus snapshot or index build ID, chunking configuration version, embedding model version, retrieved chunk IDs. Retain the *identifiers and content hashes* durably and the content only as long as policy permits, so an investigation can always reconstruct which chunks answered and can reconstruct their text where retention allows. Where content has been erased, the record resolves to a tombstone rather than a gap — a defensible answer.
+- **Structure** — index build → version ID → responses stamped (snapshot, chunk config, model, chunk IDs) → version register retained per policy → reconstruction tool resolving an answer to its inputs.
+- **Consequences** — answers become auditable and incidents diagnosable: months later you can still separate a stale-corpus failure from a bad-retrieval failure, two findings with different fixes. The costs are metadata volume on every response, a register someone maintains, and a real policy decision at the erasure boundary that legal signs. Retaining full snapshots per version is where this pattern turns both expensive and quietly non-compliant.
+- **Known uses** — snapshot-based table formats and dataset-versioning tools exist because derived outputs need to name the input they ran against; e-discovery and litigation-hold practice imposes the equivalent duty on document systems, and model documentation regimes ask the same of training data ([6.11](../part-6-enterprise-architecture/chapter-11-model-risk-management.md)). Curriculum instance (fictional): CS37's public-records processing, where the released version and its redactions must both be reconstructable ([CS37](../../case-studies/cs37-public-records-request-processing.md)).
+- **Related** — Forgetting/Deletion (the tension this pattern resolves); lineage in the data architecture ([5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md)).
 
 ### Pattern: Feedback-to-Dataset
 
-- **Context** — a system whose production feedback can improve it (1.2's flywheel, 4.7's supply chain).
-- **Problem** — the system that decays without the feedback loop (1.2's erosion, the no-flywheel).
-- **Forces** — the compounding (the flywheel) vs. the feedback-data governance (4.14 — the feedback as personal data).
-- **Solution** — the feedback-to-dataset pipeline (4.7's supply chain — the production feedback sampled, adjudicated, fed to the golden sets and training — 1.2's flywheel), with the privacy-by-design (4.14).
-- **Structure** — production feedback → sample → adjudicate → golden sets/training (4.7), the flywheel (1.2).
-- **Consequences** — the compounding system (the flywheel — 1.2); the feedback-data governance (the privacy — 4.14).
-- **Known uses** — Bellhaven's extraction feedback (5.5), the eval flywheel (4.7), all improving GenAI (1.2/5.5).
-- **Related** — the evaluation patterns (4.7), the data architecture (5.5), the data governance (6.7).
+- **Context** — a deployed system whose users see its outputs and can tell when they are wrong.
+- **Problem** — that signal evaporates. A thumbs-down carrying no retrieved context, no corpus version, and no adjudication is an unactionable mood, and the same failures recur because nothing converts them into tests or corpus fixes.
+- **Forces** — volume pulls toward capturing everything; diagnosis needs enough context per item to be actionable; privacy and lawful-basis constraints limit what may be retained or reused at all; and reviewer time is the true bottleneck, which means sampling beats collecting.
+- **Solution** — capture feedback joined to the trace: query, retrieved chunk IDs, corpus version, model version, response. Sample rather than adjudicate everything, oversampling segments that matter. Route each adjudicated failure to its true home — a corpus fix, a chunking fix, a golden-set case, or a prompt change — and treat the golden set's growth from real failures as the loop's output ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)). Govern reuse by privacy notice and retention policy from day one.
+- **Structure** — interaction → feedback capture (joined to trace + corpus version) → sampling → adjudication queue → routed fix → regression suite → redeploy.
+- **Consequences** — the estate compounds instead of decaying, and evaluation stops being a launch artifact. The costs are standing reviewer time, a labeling operation with its own quality problem, and a permanent governance obligation over feedback data. The subtlest cost is selection bias: volunteered feedback over-represents the annoyed and under-represents the silently misled, so a randomly sampled review slice belongs alongside it (7.11).
+- **Known uses** — response-level feedback capture is near-universal in production assistants, and adjudication-and-routing pipelines are standard practice in data-labeling operations; purpose limitation and lawful basis for reusing production interactions are ordinary privacy-review questions. Curriculum instance (fictional): Bellhaven's extraction feedback feeding golden sets and corpus curation ([5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md)).
+- **Related** — the evaluation patterns ([4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)); Corpus Versioning (makes feedback diagnosable); data governance ([6.7](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md)).
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart TD
-    SOURCE[(Source knowledge)] --> FRESH[Freshness Pipeline<br/>change → re-index — 4.1/4.3]
-    FRESH --> INDEX[(Index)]
-    INDEX --> ACL[ACL-Propagated Index<br/>filter-before-similarity — 4.1/6.6]
-    INDEX --> TENANT[Tenant Isolation<br/>namespaces / filter — 4.1/5.6]
-    DELETE[Deletion request] --> FORGET[Forgetting/Deletion<br/>propagate everywhere + verify — 4.1/4.14]
-    FORGET -.reaches.-> INDEX
-    PROD[Production] --> FEEDBACK[Feedback-to-Dataset<br/>sample → adjudicate → datasets — 4.7/1.2]
-    FEEDBACK -.improves.-> SOURCE
+    SRC[(Source of truth)] -->|derive| PIPE[Freshness Pipeline<br/>detect → extract → chunk → embed]
+    PIPE --> IDX[(Derived copy:<br/>index + vectors + caches)]
+    SRC -. "gap: content" .-> IDX
+    ACLSRC[(Permission systems of record)] --> ACLP[ACL-Propagated Index<br/>filter before similarity]
+    ACLSRC -. "gap: who may see" .-> ACLP
+    ACLP --> IDX
+    DEL[Erasure / retirement] --> FORGET[Forgetting/Deletion<br/>registered fan-out + probes]
+    FORGET -. "gap: what must not exist" .-> IDX
+    EMB[Embedding Version Migration<br/>parallel build → alias swap] --> IDX
+    IDX --> TEN[Tenant Isolation<br/>namespace / predicate]
+    IDX --> ANS[Answer stamped with corpus version]
+    ANS --> CV[Corpus Versioning<br/>reproduce the inputs]
+    ANS --> FB[Feedback-to-Dataset<br/>sample → adjudicate → route]
+    FB -. improves .-> SRC
 ```
 
-Readings. **The data patterns manage the knowledge lifecycle** — the freshness pipeline (the currency — 4.1), the ACL-propagated index (the permissions — 4.1/6.6), the tenant isolation (the tenancy — 4.1/5.6), the forgetting/deletion (the compliance — 4.14), the feedback-to-dataset (the compounding — 1.2) — managing the knowledge's currency, permissions, tenancy, deletion, and improvement (the full lifecycle — 4.1/4.3/5.5). **The patterns make the knowledge estate trustworthy and compliant** — the freshness (the grounded-but-wrong prevented — 4.1), the ACL and tenancy (the confidentiality — 4.1), the deletion (the right-to-be-forgotten — 4.14), the feedback (the compounding — 1.2) — the trustworthy (fresh, permissioned), compliant (deletable, isolated), improving (the flywheel) knowledge estate (6.7's trustworthiness). **And the patterns combine into the knowledge and data architecture** — the freshness + ACL + tenancy + deletion + feedback (the knowledge architecture — 4.1/4.3/5.5), the data patterns as the components of the knowledge and data architecture (7.1's combination), governed (6.7).
+**Every pattern is a gap manager**, and each is specified the same way — window, monitor, owner, probe. A design that states its freshness lag but not its permission-staleness window has specified one third of the same discipline.
+
+**Freshness tiers follow decision impact, not source churn:**
+
+| Tier | Target lag | Assign when | Typical mechanism |
+|---|---|---|---|
+| Critical | Minutes | A stale answer changes a priced, clinical, safety, or legally binding decision | Change feed, event-driven upsert, lag alerting |
+| Standard | Hours to a day | A stale answer misinforms but a human or downstream control catches it | Scheduled incremental, poll-and-diff |
+| Archival | Days to weeks | Staleness changes wording or context, not the decision | Batch crawl, checksum diff, stated low SLA |
+
+Volatility sets the *cost* of a tier; impact sets the *tier*. High-churn, low-impact corpora are the classic budget sink; low-churn, high-impact corpora are the classic incident.
+
+**Re-derivation is the family's hidden capital line.** Incremental maintenance scales with change; full re-derivation scales with the corpus and is triggered by changes to the deriving function — chunking, extraction, metadata schema, and above all the embedding model. Building the parallel-index-and-swap machinery once serves all of them.
 
 ## Real-world Example
 
-**Meridian Health Partners** (the recurring clinician assistant — 4.1, 4.14) and **Bellhaven Insurance** (the recurring data estate — 5.5) together illustrate the data pattern family. Meridian's clinical knowledge estate was a data-pattern composition: the freshness pipeline (4.1 — the protocol freshness, the sedation-protocol incident's fix — the change-detection-to-re-index with the freshness SLA and lag monitoring), the ACL-propagated index (4.1/6.6 — the PHI ACLs, the filter-before-similarity, the identity propagation), the forgetting/deletion (4.14 — the PHI right-to-be-forgotten, the deletion propagating through the source, index, chunks, vectors, caches, traces, verified by probes — 4.1). Bellhaven's data estate added the feedback-to-dataset (5.5/4.7 — the extraction feedback sampled, adjudicated, fed to the golden sets and training — the flywheel — 1.2) and the tenant isolation (4.1 — the multi-market isolation). The data-pattern compositions were the knowledge and data architectures: Meridian's freshness + ACL + deletion (the clinical knowledge architecture — 4.1/4.14), Bellhaven's freshness + ACL + tenancy + deletion + feedback (the data estate architecture — 5.5) — the data patterns as the components of the knowledge and data architectures (7.1's combination), governed (6.7). The data-patterns note (combining Meridian's 4.1/4.14 and Bellhaven's 5.5): *"The data patterns manage the knowledge lifecycle for trustworthiness. Meridian's clinical knowledge: freshness pipeline (the protocol currency — the sedation-protocol fix), ACL-propagated index (the PHI permissions), forgetting/deletion (the PHI right-to-be-forgotten — 4.14). Bellhaven's data estate: add tenant isolation (the multi-market) and feedback-to-dataset (the extraction flywheel — 1.2). The data patterns make the knowledge estate trustworthy (fresh, permissioned — 4.1), compliant (deletable, isolated — 4.14), and compounding (the flywheel — 1.2). They're the components of the knowledge and data architecture, governed (6.7) — the patterns that make the enterprise's knowledge the trustworthy, compliant, improving asset it must be."*
+**Meridian Health Partners** and **Bellhaven Insurance** — the curriculum's recurring fictional healthcare and insurance estates — compose the family differently because their gaps carry different consequences.
+
+Meridian tiers aggressively: sedation and dosing protocols sit critical, on change feeds with lag alerting, while training material and archived guidance sit archival at a stated multi-day SLA. Permissions are early-bound into the index with invalidation on role change, and the existence-leak contract is probed adversarially, because a clinician learning that a colleague's note *exists* is itself a disclosure. Erasure runs the registered fan-out across index, vectors, semantic cache, and trace store, with a completion window sized for compaction rather than for the delete call returning. Corpus versioning came last and is valued most: when a protocol answer is challenged, the stamped snapshot and chunk IDs separate "the corpus was stale" from "retrieval picked the wrong chunk".
+
+Bellhaven adds the two patterns Meridian does not need. Multi-market operation puts tenancy at per-market namespaces, so the first embedding-model deprecation arrived as a re-derivation bill multiplied by market count — planned across two quarters, throttled so the freshness lane kept its SLA, and gated on a golden-set comparison that nearly rejected the new model for one market's document mix. Its extraction feedback loop routes adjudicated failures to their true owner, where a surprising share turn out to be chunking defects no prompt change could have repaired.
 
 ## Hands-on Exercise
 
-**Compose knowledge & data patterns.** ~90 minutes. For a GenAI knowledge estate (real or a case study).
+**Compose knowledge & data patterns for a knowledge estate.** ~80 minutes. Use a case study you have not studied closely, or a real corpus you know.
 
-1. **Data-need analysis (25 min).** For a GenAI knowledge estate, analyze the data needs: the freshness (needs a freshness pipeline), the permissions (needs an ACL-propagated index), the tenancy (needs tenant isolation), the deletion (needs forgetting/deletion), the improvement (needs feedback-to-dataset). Map the needs to the patterns.
-2. **The pattern-language form (20 min).** For one selected pattern (e.g., forgetting/deletion), write its full pattern-language form.
-3. **The composition (30 min).** Compose the data patterns into the knowledge and data architecture (4.1/4.3/5.5). Show how the patterns manage the full knowledge lifecycle (freshness, permissions, tenancy, deletion, feedback).
-4. **The deletion design (15 min).** For a right-to-be-forgotten case, design the forgetting/deletion (4.14 — the propagation through the source, index, chunks, vectors, caches, traces, verified by probes — 4.1). Show the sprawl reached.
+1. **Tier the corpora (20 min).** List every corpus the system retrieves from and assign each a freshness tier using the impact rule, with a one-sentence justification naming the decision a stale answer would change. Flag any corpus whose current cadence disagrees with its tier — in either direction.
+2. **Specify the three windows (20 min).** Write the propagation window, monitor, owner, and probe for freshness lag, permission staleness, and deletion completion.
+3. **Price the re-derivation (20 min).** Estimate a full re-embed: corpus size, overlap storage, throttling plan, tenant multiplier. State the next trigger and the evidence that would gate the alias swap.
+4. **Resolve the versioning/erasure collision (20 min).** Design the corpus-version record so a six-month-old answer can be reconstructed while erased content stays erased.
 
 **Acceptance criteria:**
-- [ ] Data needs mapped to the data patterns (freshness, ACL, tenancy, deletion, feedback)
-- [ ] One pattern in the full pattern-language form
-- [ ] The data patterns composed into the knowledge and data architecture (the full lifecycle)
-- [ ] The forgetting/deletion designed for the right-to-be-forgotten case (the sprawl reached, verified — 4.1/4.14)
+- [ ] Every corpus has a freshness tier with an impact-based justification; cadence mismatches flagged
+- [ ] Three propagation windows stated, each with named monitor, owner, and probe
+- [ ] Full re-embed priced, with throttling plan and a stated gate for the alias swap
+- [ ] Deletion fan-out lists every derived store, caches and traces included, with completion windows
+- [ ] Corpus-version record specified field by field, with post-erasure behavior explicit
+- [ ] An adversarial permission probe written that distinguishes "no access" from "no results"
 
 ## Enterprise Considerations
 
-The knowledge & data patterns are the enterprise's knowledge-estate reference, connecting to the data governance and compliance. **They're the knowledge-estate reference** (4.1/5.5/6.7/7.1): the data pattern family is the enterprise's reference for the knowledge and data architecture (4.1's production RAG, 5.5's data architecture), the patterns that make the knowledge estate trustworthy (6.7). **They connect to the data governance** (6.7): the data patterns (the freshness — the corpus quality, the ACL — the permissions, the deletion — the compliance) are governed by the data governance function (6.7 — the ownership, the quality, the lineage), so the data patterns connect to the data governance (6.7). **They're compliance-relevant** (4.14): the data patterns (the deletion — the right-to-be-forgotten, the ACL/tenancy — the data protection — 4.14) are compliance controls (4.14 — the deletion, the permissions as compliance evidence), so the data patterns are compliance controls. **And the feedback-to-dataset is the flywheel** (1.2/5.5): the feedback-to-dataset pattern (the flywheel — 1.2, the compounding — 5.5) is the enterprise's system-improvement mechanism (the flywheel that makes the systems compound — 1.2/5.5), governed with privacy-by-design (4.14).
+**The derived-store register is the governance artifact this family needs.** Deletion, residency, and classification all fan out to the same list, and it is only trustworthy if adding a derived store *requires* registering it — a platform control, not a policy document ([6.7](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md)). Estates that skip it discover their fifth cache during an audit.
+
+**Permission resolution is an integration program, not a component.** Effective access is usually the intersection of directory groups, application ACLs, legal holds, and hand-maintained walls, each on a different clock and owned by a different team ([6.6](../part-6-enterprise-architecture/chapter-06-iam-for-ai.md)) — so it belongs at the front of the plan, where its calendar time is dominated by other teams' availability.
+
+**Re-derivation belongs in the platform budget as a line item**, because deprecations arrive on the provider's schedule; a platform without a funded re-derivation lane either freezes on a deprecated model or raids its freshness capacity to migrate.
+
+**And the ownership questions are what reviews should ask.** Who is paged when a source's lag breaches? Who signs the permission-staleness window? Who owns the deletion register? Who adjudicates feedback, and for how many hours a week?
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Freshness | Event-driven pipeline | Scheduled | Sources emit change events, tight SLA (4.1) | No change events — scheduled with the downgraded SLA (4.1) |
-| Tenancy | Per-tenant namespaces | Shared-with-filter | External tenants, strong isolation (4.1) | Internal, uniform sensitivity — with defense-in-depth (4.1) |
-| Deletion | Full propagation + probes | Source-only | Always for personal data — the right-to-be-forgotten (4.14) | Never source-only; the orphaned data is the compliance failure (4.14) |
-| Feedback | Feedback-to-dataset (flywheel) | No feedback loop | Always — the compounding (1.2), with privacy-by-design (4.14) | Never no-flywheel; the decaying system (1.2) |
+| Index maintenance | Incremental upsert | Full rebuild + alias swap | Content changed — cost scales with change volume | The deriving function changed (chunker, embedding model, schema) |
+| Freshness mechanism | Event-driven | Scheduled crawl | The source emits reliable change events and the tier is critical | No change feed — then state the downgraded SLA per source |
+| Permission binding | Early binding (ACLs in the index) | Late binding (checked at query time) | Latency matters and a bounded staleness window is acceptable | Revocation must be instant and the source can absorb per-query load |
+| Tenancy | Per-tenant namespaces | Shared index + predicate | External or regulated tenants; a leak fails the consequence test | Internal, uniform sensitivity — with defense-in-depth on the predicate |
+| Embedding migration | Migrate on deprecation notice | Migrate on measured quality gain | The clock is external and rollback capacity is limited | Golden-set evidence justifies the re-derivation bill |
+| Version retention | Identifiers + hashes | Full corpus snapshots | The default — reproducible and erasure-compatible | Only where a legal hold requires preserved content |
 
 ## Common Mistakes
 
-1. **No freshness pipeline** — the stale knowledge (4.1's grounded-but-wrong); the freshness pipeline (4.1/4.3, the SLA and monitoring).
-2. **Post-similarity ACL filtering** — the ACL filtered after similarity (4.1's leak); the filter-before-similarity (4.1).
-3. **Shared-with-filter for external tenants** — the weak isolation for external tenants (4.1's cross-tenant risk); the per-tenant namespaces (4.1).
-4. **Source-only deletion** — the deletion not propagating to the index/chunks/vectors/caches/traces (4.14's orphaned data); the full propagation with probes (4.1/4.14).
-5. **No feedback loop** — the system decaying without the flywheel (1.2); the feedback-to-dataset (4.7/1.2).
-6. **The feedback without privacy-by-design** — the feedback data (personal data) used without the privacy (4.14); the privacy-by-design (4.14).
-7. **The un-composed data patterns** — the data patterns applied without composing them into the knowledge architecture (4.1/5.5); the composition (the full lifecycle).
+1. **Tiering freshness by source churn** — hourly pipelines over an archive nobody decides from, weekly crawls over the pricing corpus. Impact sets the tier; volatility only sets its cost.
+2. **Post-similarity ACL filtering** — counts, facets, and citation titles leak what the bodies withheld.
+3. **A permission-staleness window nobody chose** — a TTL picked for latency becomes the firm's revocation policy by accident. Someone in security signs that number.
+4. **"Deleted from the source" as deletion** — orphaned chunks, vectors, and cached responses keep answering; the delete call's return code proves nothing against a tombstone-and-compact index.
+5. **Treating an embedding-model change as an upgrade** — it invalidates every vector, has no incremental path, and lands on the provider's clock.
+6. **Unversioned answers** — six months on, nobody can separate a stale corpus from a bad retrieval, so the review guesses and the fix lands in the wrong layer.
+7. **Full corpus snapshots for reproducibility** — expensive, and they re-create the data you were obliged to erase.
+8. **Feedback without context or sampling** — a thumbs-down with no chunk IDs or corpus version is unactionable, and adjudicating everything exhausts the reviewers the loop depends on.
 
 ## Best Practices
 
-1. **Build the freshness pipeline with an SLA** — the change-detection-to-re-index (4.3), the freshness SLA and lag monitoring (4.1), the grounded-but-wrong prevented.
-2. **Propagate ACLs to the index, filter before similarity** — the ACL metadata, the filter-before-similarity (4.1), the identity propagation (6.6).
-3. **Isolate tenants by the consequence** — the per-tenant namespaces for external tenants (4.1), the shared-with-filter with defense-in-depth for internal (4.1).
-4. **Propagate deletion everywhere, verified** — the deletion through the source/index/chunks/vectors/caches/traces (4.14), verified by probes (4.1).
-5. **Build the feedback-to-dataset flywheel** — the production feedback to the golden sets and training (4.7/1.2), with privacy-by-design (4.14).
-6. **Compose the data patterns into the knowledge architecture** — the freshness + ACL + tenancy + deletion + feedback (the full lifecycle — 4.1/5.5).
-7. **Govern the data patterns** — the data governance (6.7), the compliance (4.14).
+1. **State a window, monitor, owner, and probe for each of the three gaps** — freshness, permissions, deletion. Only the clock differs.
+2. **Alert on freshness lag for every source, no exceptions** — the "stable" source is the one that dies quietly.
+3. **Enforce permissions in one resolver, filter before similarity, probe adversarially** — counts and autocomplete included.
+4. **Register every derived store before it may be written to** — deletion fan-out, residency map, and classification inventory are all reads of that register.
+5. **Build parallel-index-and-alias-swap once** — it serves embedding migrations, chunking changes, and extractor upgrades alike.
+6. **Stamp every answer with corpus version, chunk config, model version, and chunk IDs** — cheap at write time, decisive at review time.
+7. **Choose the tenancy rung by consequence, knowing it is a one-way door.**
+8. **Sample feedback, adjudicate it, and route each failure to its true layer** — corpus, chunking, evaluation, or prompt.
 
 ## Architecture Checklist
 
 For applying the knowledge & data patterns:
 
-- [ ] The freshness pipeline with an SLA and lag monitoring (4.1/4.3)
-- [ ] The ACL-propagated index, filter-before-similarity, identity propagation (4.1/6.6)
-- [ ] The tenant isolation matched to the consequence (namespaces for external — 4.1)
-- [ ] The forgetting/deletion propagating everywhere, verified by probes (4.1/4.14)
-- [ ] The feedback-to-dataset flywheel with privacy-by-design (4.7/1.2/4.14)
-- [ ] The data patterns composed into the knowledge and data architecture (the full lifecycle — 4.1/5.5)
-- [ ] The data patterns governed (data governance — 6.7, compliance — 4.14)
+- [ ] Freshness tier per corpus justified by decision impact; lag SLA stated per source and alerted without exception
+- [ ] Incremental vs. full re-derivation policy written, with compaction scheduled for the incremental path
+- [ ] ACL labels in the index, filtered before similarity; resolution centralized; staleness window signed by security
+- [ ] Existence-leak contract tested adversarially across results, counts, facets, and autocomplete
+- [ ] Tenancy rung chosen by consequence test; cross-tenant isolation probed in CI
+- [ ] Deletion register lists every derived store — index, vectors, caches, traces, datasets, checkpoints, backups — each with owner, window, and probe
+- [ ] Embedding-migration plan exists: parallel build, golden-set gate, alias swap, rollback window, cache invalidation, funded capacity
+- [ ] Responses stamped with corpus snapshot, chunk config, model version, chunk IDs; reconstruction path tested
+- [ ] Feedback captured joined to trace and corpus version, sampled, adjudicated, routed; privacy basis documented
 
 ## Interview Questions
 
-1. *"Walk me through the knowledge and data patterns and when you'd use each."* — Strong answers give the family (freshness pipeline — the currency, ACL-propagated index — the permissions, tenant isolation — the tenancy, forgetting/deletion — the compliance, feedback-to-dataset — the compounding), each managing a part of the knowledge lifecycle (4.1/4.3/5.5).
-2. *"How do you implement right-to-be-forgotten in a RAG system?"* — Strong answers give the forgetting/deletion pattern (4.14 — the deletion propagating through the source, index, chunks, vectors, caches, traces, verified by probes — 4.1), recognizing the sprawl (the data spreads further than teams track — 4.14) and the un-retrofittable-ness (design the deletion in — 4.14).
-3. *"How do you keep a RAG system's knowledge fresh?"* — Strong answers give the freshness pipeline (4.1/4.3 — the change-detection-to-re-index, event-driven or scheduled per source, the freshness SLA and lag monitoring), the grounded-but-wrong prevention (Meridian's sedation-protocol fix — 4.1).
-4. *"What makes a GenAI system compound rather than decay?"* — Strong answers give the feedback-to-dataset pattern (the flywheel — 1.2, the production feedback sampled, adjudicated, fed to the golden sets and training — 4.7/5.5), the compounding loop (usage → feedback → better system → more usage — 1.2), with privacy-by-design (4.14).
+1. *"How do you decide how fresh a corpus needs to be?"* — Strong answers tier by decision impact rather than source volatility, state a lag SLA per source including honest downgrades where no change feed exists, and treat lag as an alerted metric rather than something users report.
+2. *"Implement right-to-be-forgotten in a RAG system."* — Strong answers name the full derived estate (chunks, vectors, lexical index, caches, traces, evaluation and fine-tuning sets, checkpoints, backups), insist on a registered fan-out with per-store owners and windows, verify by probe rather than return code, raise tombstone-and-compaction semantics, and give the backup policy as put-beyond-use plus erase-on-restore.
+3. *"Your embedding provider deprecates the model your index is built on. Walk me through the next ninety days."* — Strong answers recognize there is no incremental path, plan a throttled parallel build so freshness doesn't starve, gate the swap on golden-set and query-log comparison, keep the old index for rollback, invalidate dependent caches, and price the tenant multiplier.
+4. *"Six months later, a regulator asks why the assistant gave a particular answer."* — Strong answers require responses stamped with corpus snapshot, chunk configuration, embedding-model version, and retrieved chunk IDs, and resolve the erasure collision by retaining identifiers and hashes rather than content.
 
 ## Further Reading
 
-- 4.1 Production RAG (the freshness, ACL, tenancy, deletion), 4.3 Document Ingestion (the pipeline), 5.5 Data Architecture (the flywheel), 6.7 Data Governance (the governance) — the chapters this pattern family formalizes.
-- The [RAG design checklist](../../checklists/rag-design-checklist.md) — the checklist the data patterns implement.
-- 1.2 Systems Thinking (the flywheel) and 4.14 Privacy, Compliance & Governance (the deletion, the data protection) — the source of the compounding and compliance patterns.
-- The [case studies](../../case-studies/README.md) — the data patterns' known uses.
+- [4.1 Production RAG](../part-4-enterprise-genai-systems/chapter-01-production-rag.md) and [4.3 Document Ingestion](../part-4-enterprise-genai-systems/chapter-03-document-ingestion.md) — the index lifecycle, permission architecture, and pipeline machinery this family compresses.
+- [4.14 Privacy, Compliance & Governance](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md) and [6.7 Data Governance & Knowledge Management](../part-6-enterprise-architecture/chapter-07-data-governance-knowledge.md) — the obligations behind deletion, retention, and the derived-store register.
+- [5.6 Vector Search Infrastructure](../part-5-cloud-infrastructure-platform/chapter-06-vector-search-infrastructure.md) — index internals, deletion semantics, and why the store choice is a migration decision.
+- The [RAG design checklist](../../checklists/rag-design-checklist.md) — the review form these patterns back.
+- Your vector store's and embedding provider's own documentation on deletion semantics, compaction, and model deprecation timelines — the two facts most architecture reviews get wrong.
 
 ## Summary
 
-- The **knowledge & data pattern family** manages the knowledge lifecycle — freshness pipeline (the currency — 4.1), ACL-propagated index (the permissions — 4.1/6.6), tenant isolation (the tenancy — 4.1/5.6), forgetting/deletion (the compliance — 4.14), feedback-to-dataset (the compounding — 1.2) — for trustworthiness.
-- The patterns make the knowledge estate **trustworthy** (fresh, permissioned — 4.1), **compliant** (deletable, isolated — 4.14), and **compounding** (the flywheel — 1.2) — the trustworthy, compliant, improving knowledge estate (6.7).
-- **Forgetting/deletion propagates everywhere** (the source, index, chunks, vectors, caches, traces — 4.14), verified by probes (4.1) — the right-to-be-forgotten met, recognizing the sprawl (un-retrofittable — 4.14).
-- **Feedback-to-dataset is the flywheel** (1.2/5.5) — the production feedback to the golden sets and training, the compounding that makes systems improve rather than decay, with privacy-by-design (4.14).
-- The data patterns **compose into the knowledge and data architecture** (4.1/5.5), governed (data governance — 6.7, compliance — 4.14) — the enterprise's knowledge-estate reference. The cost & performance patterns are next: **cost & performance patterns** (7.8).
+- An index is a **derived copy** of the source, and this family manages the gap: freshness is the content gap, ACL propagation the permission gap, deletion the existence gap — three costumes, one specification (window, monitor, owner, probe).
+- **Freshness tiers follow decision impact**, not source churn; volatility only sets a tier's cost. Incremental maintenance is priced by change volume, full re-derivation by corpus size.
+- **Embedding Version Migration** is a budgeted event, not an upgrade: vectors across models are incomparable, there is no incremental path, and the deprecation clock sets the date.
+- **Forgetting/Deletion** fans out to a registered list of derived stores and is verified by probe, because vector deletes are often logical until compaction.
+- **Corpus Versioning** makes an answer reproducible by stamping snapshot, chunk config, model version, and chunk IDs — retaining identifiers rather than content, which keeps reproducibility compatible with erasure.
+- **Tenant Isolation** is chosen by consequence and is a one-way door; **Feedback-to-Dataset** is what makes the estate compound rather than freeze at launch quality.
 
 ---
 
