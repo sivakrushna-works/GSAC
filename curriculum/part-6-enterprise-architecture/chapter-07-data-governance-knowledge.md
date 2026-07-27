@@ -5,161 +5,242 @@
 | **Part** | 6 — Enterprise Architecture |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
-| **Prerequisites** | [2.2 ML Fundamentals](../part-2-artificial-intelligence/chapter-02-machine-learning-fundamentals.md); [5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 80 min) |
+| **Prerequisites** | [2.12 Data Engineering & Feature Platforms](../part-2-artificial-intelligence/chapter-12-data-engineering-feature-platforms.md); [5.5 Data Architecture](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md); [4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Establish the data governance GenAI depends on: ownership, quality, catalogs, and lineage for the data AI consumes and produces.
-2. Solve the ownership problem — the recurring gap where the teams that create data don't own the consequences of its quality for AI systems.
-3. Manage the enterprise knowledge that GenAI surfaces: the corpus governance, the knowledge quality, and the freshness that RAG depends on.
-4. Place data governance as the foundation of the GenAI estate's trustworthiness, connecting it to the data-as-moat and the quality-as-ceiling.
+1. Write a data contract that governs an AI-consumed dataset: change policy, freshness SLA, classification, permitted uses including [RAG](../../GLOSSARY.md) and training eligibility, quality gates, and named consumers.
+2. Place quality gates as code at the ingestion boundary — schema, distribution, and PII checks that quarantine and page — rather than in a review meeting.
+3. Design AI lineage in both directions: forward from source through transformation, corpus or training-set version, and index or model version to output attribution; backward from a source record to every artifact derived from it.
+4. Govern the knowledge half — canonical sources, corpus tiers with staleness SLAs, and the access model propagating ACLs and deletions into indexes and caches.
 
 ## Introduction
 
-This chapter is the governance foundation under 5.5's data architecture — the ownership, quality, catalogs, and lineage that make the data estate an asset rather than a liability, and that GenAI's trustworthiness depends on. 2.2 established the two truths this chapter operationalizes (data quality is the ceiling, data advantage is the moat), and 5.5 built the data architecture; this chapter builds the *governance* that keeps the data estate high-quality, owned, cataloged, and lineaged — the recurring foundation that Parts 4–5 kept invoking (4.3's source-quality, 5.5's lineage, 4.1's permission systems of record) and that determines whether the whole GenAI estate is trustworthy.
+Chapter [2.12](../part-2-artificial-intelligence/chapter-12-data-engineering-feature-platforms.md) contracted the feature estate; [5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md) laid out the data architecture GenAI runs on. This chapter is the governance layer that makes both enforceable, and its thesis is narrow enough to test: **governance is real only where it exists as an artifact that runs.** A contract a pipeline reads before it ingests. A gate that blocks a batch. A corpus tier that changes what retrieval will cite. Catalogs describe the estate; artifacts decide what happens to it.
 
-The framing: **data governance is the foundation of GenAI trustworthiness, and its core problem is ownership** — the recurring gap (2.2, 4.3, 5.5) where the teams that create the data don't own the consequences of its quality for the AI systems downstream, which is the governance problem GenAI surfaces (the SharePoint pathology — 4.3, the ungoverned corpus — 5.5) and which data governance (ownership, quality, catalogs, lineage) exists to close.
+The AI-specific pressure is that a GenAI estate turns governance gaps into things you cannot walk back: retrieval converts one stale document into thousands of confident, cited answers, and indexing converts one personal record into copies in seven stores you must enumerate on a regulator's clock.
 
 ## Business Motivation
 
-Data governance is what makes the data-as-moat real and the quality-as-ceiling manageable — the governance that determines whether the proprietary data estate (2.2's moat, 5.5's asset) is a high-quality asset or a confident amplifier of bad data (2.2's amplification). Without it: the data estate is ungoverned (no ownership, so the quality problems have no owner — the recurring gap; no catalogs, so the data isn't discoverable or understood; no lineage, so the trustworthiness has no foundation — 5.5's un-retrofittable lineage), and GenAI surfaces and amplifies every one of those problems (the SharePoint pathology — 4.3, the duplicate plague — 4.3, the stale corpus — 4.1). With it: the data estate is governed (ownership closing the quality gap, catalogs making the data discoverable and understood, lineage providing the trustworthiness foundation — 4.14's auditability), so GenAI builds on a high-quality, owned, lineaged data estate (the moat realized, the ceiling raised). The business case is the foundation one, sharpened by the GenAI-surfaces-the-problems reality: GenAI makes the enterprise's data-governance gaps *visible and consequential* (the ungoverned data that was tolerable in the old systems becomes the hallucination and the compliance finding in the GenAI system — 2.2's amplification), which makes the GenAI program both dependent on data governance and the business case *for* it (the GenAI program's data-quality findings become the business case for the data governance the enterprise needed anyway — 5.5) — the architect who establishes data governance raises the ceiling on the whole GenAI program and closes the gaps GenAI would otherwise amplify.
+Three costs justify the artifact work. The first is blast radius: an ungoverned table behind a monthly dashboard is a number one analyst squints at; behind an assistant it is an answer given to everyone who asks, in a uniformly confident register, with a citation that makes it look verified.
 
-## Theory
+The second is review latency. Every uncontracted source is one whose privacy, licensing, and permitted-use questions get re-litigated per use case by people who were not in the original room — weeks per assistant, and the dominant schedule risk on the second and third AI deliveries. The third is erasure liability: a deletion request the architecture cannot answer is a finding with a statutory clock attached ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)).
 
-### The pillars of data governance
+Against those, contracts, gates, and lineage are paid once per *source* while assistants are built per *use* — the framing the funding memo needs, because "data governance" funds badly and "the second assistant ships in six weeks" funds well.
 
-The governance the data estate needs (the classical data-governance pillars, GenAI-lens):
+## Theory — governance as artifacts that run
 
-- **Ownership** — every data asset (the source systems — 4.3, the corpus — 4.1, the golden sets — 4.7) has an owner accountable for its quality; the pillar that closes the recurring gap (the teams that create the data owning the consequences of its quality — the ownership loop). Ownership is the governance foundation (without an owner, the quality problems have no one to fix them — the ungoverned data).
-- **Quality** — the data's accuracy, completeness, consistency, and freshness (2.2's quality-as-ceiling, 4.3's corpus health), governed (the quality standards, the quality monitoring — 4.3/4.10, the quality remediation — root-caused at the source via the ownership); the pillar that raises the ceiling (2.2).
-- **Catalogs** — the data catalog (the inventory of the data assets, their descriptions, their owners, their quality, their lineage) that makes the data discoverable and understood (the analyst finds and understands the data via the catalog); the pillar that makes the data an accessible asset (the GenAI corpus discoverable and understood via the catalog).
-- **Lineage** (5.5) — the traceability of the data (source through transformations — 5.5's un-retrofittable lineage), the foundation of trustworthiness (auditability — 4.14, debugging — 4.10, quality root-causing); the pillar that provides the trust foundation.
+### The data contract, in full
 
-### The ownership problem
+The contract is the unit of governance: every field exists because a downstream decision needs a machine-readable answer, and a contract with blank fields is a catalog entry in costume.
 
-The core governance problem (the recurring gap):
+```yaml
+# contract: uw.guidelines.corpus — v3.1 (effective 2026-04-01)
+dataset:  uw.guidelines.corpus   # underwriting guidelines, endorsement rules, filings
+canonical_source: Rating & Guidelines Manual (Policy Admin System), space UW-MANUAL
+non_canonical:    Confluence space "UW Wiki" — excluded by pipeline rule
+owner:    Director, Underwriting Operations   # content correctness
+steward:  Data Platform team                  # pipeline, gates, lineage
+acl_system_of_record: directory groups + Policy Admin doc-level ACLs
 
-- **The problem** — the teams that *create* the data (the source-system teams) don't own the *consequences* of its quality for the AI systems downstream (the AI team consumes the data, suffers the quality problems, but can't fix them at the source — the ownership gap — 2.2, 4.3, 5.5); the recurring gap where the data-quality problems have no owner who both can fix them (the source team) and suffers them (the AI team).
-- **The ownership loop** — the governance that closes the gap: the source-system teams own the data quality (accountable for it), the AI team's quality findings feed back to the source owners (the loop — the AI system's data-quality problems become the source owner's quality issues to fix), so the quality is root-caused at the source (not just cleaned in the pipeline — 5.5's root-cause-at-the-source) by the owner who can fix it and now suffers the consequences (the feedback loop closing the gap).
-- **GenAI as the forcing function** — GenAI surfaces the data-quality problems (making them visible and consequential — 2.2's amplification), which is the forcing function for the ownership (the GenAI program's data-quality findings creating the pressure to establish the ownership the enterprise needed anyway — 5.5's business-case-for-governance).
+structure:
+  required_metadata: [doc_id, state, line_of_business, effective_date, supersedes,
+                      owner_upn, review_due]
+  change_policy:
+    additive:         announced in #data-contracts
+    breaking:         30 days notice; parallel publication of both versions;
+                      named-consumer sign-off before the old one retires
+    emergency_bypass: Director UW Ops approval, expires in 14 days
 
-### Knowledge management for GenAI
+freshness_sla:
+  publication_to_index: 4 h (p95); index lag > 8 h pages the steward
+  content_review_cycle: 180 days per document; overdue documents are demoted
 
-The enterprise knowledge GenAI surfaces (the corpus governance):
+classification:
+  sensitivity: Internal-Confidential
+  pii:         none-expected — scanner enforces (names, national IDs, broker emails);
+               any hit quarantines the batch
 
-- **The corpus as governed knowledge** (4.1, 4.3) — the RAG corpus is enterprise knowledge (the documents, the policies, the procedures), governed (the corpus ownership — who owns the knowledge, the corpus quality — 4.3's health, the corpus freshness — 4.1's SLA); the corpus governance that RAG's trustworthiness depends on (the RAG answer only as good as the governed corpus — 3.6/5.5).
-- **Knowledge quality and freshness** — the knowledge's accuracy and currency (the corpus's documents accurate and current — 4.1's freshness, 4.3's quality), governed by the knowledge owners (the document owners — 3.6's corpus-owner-in-citations, surfacing the ownership), so the RAG surfaces accurate, current knowledge (not the stale policy — 4.1's grounded-but-wrong).
-- **Knowledge management as an enterprise capability** — the enterprise's ability to manage its knowledge (the knowledge owned, quality-governed, current, discoverable — the catalog), which GenAI both depends on (the RAG corpus) and improves (the GenAI making the enterprise knowledge accessible — the knowledge-management value); the GenAI-and-knowledge-management symbiosis (GenAI depends on governed knowledge and makes knowledge accessible).
+permitted_uses:               # a use not listed here is not permitted
+  rag_retrieval:      yes — broker assistant, intake classifier
+  fine_tuning:        no  — bureau-licensed content in three states
+  eval_golden_sets:   yes — redacted excerpts only, retained 24 months
+  new_use:            contract amendment, not a ticket
+
+quality_gates:                # at ingestion; failure quarantines, never imputes
+  schema:        required_metadata present and typed; effective_date parseable
+  referential:   every `supersedes` id resolves to a document already indexed
+  distribution:  per-state document count within ±20% of trailing 30-day median
+  extraction:    text yield >= 85% of page area (scan-quality guard)
+  pii:           zero scanner hits
+  on_failure:    quarantine batch, page steward, index serves last good version
+
+consumers: [broker-assistant (prod), intake-classifier (prod), uw-analytics (aggregate)]
+           # unnamed consumers are refused at the retrieval service
+
+deletion_and_retention:
+  retention:     superseded versions kept 7 years (state filing requirement)
+  deletion_path: source -> chunk store -> vector index -> retrieval cache ->
+                 answer cache -> eval snapshots -> traces
+  deletion_sla:  24 h to index and caches; probe verifies after every rebuild
+```
+
+Two fields carry most of the value and are the two left blank. **Permitted uses** is a one-way door: a corpus ingested under a vague "internal use" and later consumed by a fine-tuning run raises its licensing question *after* the weights exist. **Named consumers** make impact analysis a table read and give the retrieval service a default answer — refuse.
+
+### Quality gates as code, at the ingestion boundary
+
+Gates belong where data enters the estate and immediately before a training snapshot is sealed — the two places where blocking is still cheap. Three classes do the work: **structural** (schema, required metadata, referential integrity), **distributional** (batch volume against a trailing median, category validity, extraction yield — these catch a silently changed upstream export), and **content** (PII scanners, classification labels, duplicate ratios).
+
+Failure semantics matter more than check coverage, and a gate that logs is not a gate: quarantine the failing batch, keep serving the last good index version, page the *steward named in the contract*. A weekly review meeting cannot substitute — it runs against an hourly pipeline and can stop nothing; its real agenda is which gates fire and which have been muted.
+
+Gates have a limit worth stating in the design document: **they check shape, not truth.** A superseded underwriting rule passes every check above.
+
+### Lineage for AI, in both directions
+
+Lineage tooling ships the forward direction well and the backward direction almost never. AI needs both.
+
+**Forward — the audit chain.** Five versioned links: *source record or document version* → *transformation* (ingestion run id, parser version, chunker configuration, redaction version, [embedding](../../GLOSSARY.md) model version) → *corpus snapshot or training-set version* → *index or model version* → *output attribution* (answer id → chunk ids → document versions). The design test: given an answer id from four months ago, can the system name the chunks retrieved, the document versions behind them, and the ACL snapshot that permitted them? Chapter [4.1](../part-4-enterprise-genai-systems/chapter-01-production-rag.md) owns the query-side half; unless the halves share identifiers, neither is reconstructable.
+
+**Backward — the erasure chain.** Given one source record id, enumerate every derived artifact: chunks, vectors, retrieval and answer caches, eval snapshots, traces, and any training set that included it. This inverse index is a design decision, not a query you write later — the ingestion job writes a membership record keyed by source id as it derives. And the part most designs skip: **deletion from a training set is not deletion from a model.** A defensible architecture answers specifically — "these records are in training sets D-14 and D-17, which produced model versions M3 and M4" — and attaches a retrain-exclusion policy with a residual-risk position agreed with counsel.
+
+### The access model for RAG corpora
+
+An index must never become an independent authority on who may read what. Three representations, mixed in real platforms: **principals copied into chunk metadata** (fastest filter; the index holds a snapshot of access that ages); **an ACL reference resolved at query time** (the chunk stores a group or matter identifier, which puts the identity service on the hot path — [6.6](chapter-06-iam-for-ai.md)); and **partition by security boundary** (indexes split per tenant, matter, or clearance — the only representation whose failure mode is "no results" rather than "wrong results").
+
+The **staleness window** is then a written number owned jointly with security, and two-tier: revocation events (leavers, matter walls, legal holds) invalidate immediately off the source system's event, while routine group changes ride the TTL. Probe it on a schedule — revoke a synthetic principal, query as that principal, assert empty — because propagation breaks silently whenever a connector is upgraded.
+
+Deletion propagation has one trap worth naming: **the rebuild that resurrects.** Sources soft-delete, connectors select every row, and a nightly full rebuild restores documents deleted on Monday. The fix is two-part — the connector's query filters deleted records, and the probe runs *after every rebuild* rather than on a drifting calendar.
+
+### Knowledge management: canonical sources and corpus tiers
+
+**Canonical source** is a per-topic decision, recorded in the contract, naming the one place a fact is true — and naming the near-duplicates that are *not*, so the pipeline excludes them. Enterprises rarely lack an authoritative source; they lack a decision about which candidate it is. **Corpus tiers** attach consequences:
+
+| Tier | Typical content | Staleness SLA | Review cadence | On lapsed review |
+|---|---|---|---|---|
+| **A — authoritative** | Rating manuals, policy wordings, filings | 4 h from publication | 180 days per document | Removed from retrieval |
+| **B — operational** | Procedures, runbooks, product FAQs | 24 h | 365 days | Demoted below Tier A; "last reviewed" shown in citation |
+| **C — informational** | Team wikis, meeting notes, project pages | Best effort | None | Never cited as authority; excluded from decision-support corpora |
+
+The last column is where corpus governance usually dies: flagging an overdue document changes nothing a retriever can see; removing or demoting it does.
+
+**The wiki-rot chain** runs in four steps. A Tier C page paraphrases a Tier A rule; the rule changes and the page does not. Both sit in one index, chunked identically. The page's plain prose is closer to how users phrase the question than the manual's filed language, so it retrieves higher. The answer then cites a real internal document — what a well-behaved grounded answer looks like — so nobody looks closer.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    subgraph GOV [Data governance pillars]
-        OWN[Ownership<br/>closes the recurring gap]
-        QUAL[Quality — 2.2's ceiling<br/>root-caused at the source]
-        CAT[Catalogs<br/>discoverable, understood]
-        LIN[Lineage — 5.5<br/>the trust foundation]
+flowchart LR
+    subgraph SRC [Sources under contract]
+        S1[(Policy admin<br/>canonical)]
+        S2[(Claims systems)]
+        S3[Wiki / collab<br/>Tier C]
     end
-    SOURCE[(Source systems<br/>owned, quality-governed)] --> CORPUS[(Corpus — 4.1/4.3<br/>governed knowledge)]
-    CORPUS --> GENAI[GenAI systems]
-    GENAI -.quality findings.-> LOOP[Ownership loop<br/>findings → source owners]
-    LOOP -.root-cause at source.-> SOURCE
-    GENAI -.surfaces & amplifies<br/>data problems — 2.2.-> FORCING[GenAI as the forcing function<br/>for the governance]
-    FORCING -.business case for.-> GOV
-    GOV -.foundation of.-> TRUST[GenAI trustworthiness<br/>moat 2.2 + ceiling raised]
+    CON[Data contracts<br/>uses · SLA · gates · consumers] -.read by pipeline.-> ING
+    S1 & S2 --> ING[Ingestion<br/>parse · chunk · redact · embed]
+    S3 -.blocked by rule.-> ING
+    ING --> GATE{Gates as code<br/>schema · distribution · PII}
+    GATE -->|fail| QUAR[(Quarantine<br/>page steward)]
+    GATE -->|pass| SNAP[(Corpus snapshot /<br/>training-set version)]
+    SNAP --> IDX[(Index / model version)]
+    IDX --> RET[Retrieval service 4.1<br/>ACL filter · tier ranking]
+    RET --> ANS[Answer + citations]
+    ACLSRC[(ACL system of record)] -.revoke on event<br/>routine on TTL.-> RET
+    ANS -.attribution.-> LIN[(Lineage store)]
+    DEL[Erasure request] --> LIN
+    LIN -.backward.-> SNAP & IDX & CACHE[(Caches · evals · traces)]
 ```
 
-Readings. **Ownership is the pillar that closes the recurring gap** — the teams that create the data owning the consequences of its quality (the ownership loop — the AI's quality findings feeding back to the source owners who root-cause at the source — 5.5) is the governance that fixes the recurring data-quality problem GenAI surfaces (the ungoverned data with no owner — 2.2/4.3/5.5), and it's the foundation (without ownership, the quality problems have no one to fix them). **GenAI is the forcing function for the governance** — GenAI surfaces and amplifies the data-quality problems (2.2's amplification, making them visible and consequential — the hallucination and compliance finding), which creates the business case for the data governance the enterprise needed anyway (the GenAI program's data-quality findings driving the governance — 5.5's business-case-for-governance) — the symbiosis where GenAI depends on the governance and forces its establishment. **And data governance is the foundation of GenAI trustworthiness** — the ownership (closing the quality gap), the quality (raising the ceiling — 2.2), the catalogs (making the data an accessible asset), and the lineage (the trust foundation — 5.5/4.14) are what make the GenAI estate trustworthy (the moat realized — 2.2, the ceiling raised), so the data governance is the foundation the whole GenAI program's trustworthiness rests on.
+Read it for what it forces. The contract sits *upstream of the pipeline*, so an uncontracted source has no path in; the gate sits between transformation and the sealed snapshot, so the worst outcome of a bad batch is a stale index rather than a poisoned one.
 
 ## Real-world Example
 
-**Bellhaven Insurance** (the recurring intake platform — 2.1, 3.4, 5.5) established data governance for its GenAI estate, and the governance is where 2.2's quality-as-ceiling and 5.5's data-as-moat became the operationalized ownership, quality, catalogs, and lineage. The ownership problem was the recurring gap made visible: the intake platform's extraction quality (2.1) depended on the source submission data quality, but the source-system teams (owning the submission systems) didn't own the consequences of the data quality for the AI (the AI team suffered the quality problems — the duplicate plague — 4.3, the inconsistent source data — but couldn't fix them at the source — the ownership gap — 2.2/4.3/5.5). The governance closed the gap with the ownership loop: the source-system teams were made accountable for the submission data quality (ownership), the AI team's quality findings fed back to the source owners (the loop — the duplicate plague became the source owners' quality issue), and the quality was root-caused at the source (5.5 — the source systems' duplicate-generation fixed, not just deduplicated in the pipeline — 4.3) by the owners who could fix it. GenAI was the forcing function (2.2's amplification, 5.5's business-case): the intake platform's data-quality findings (the duplicates, the inconsistencies, the gaps) made the source-data-quality problems visible and consequential (the extraction errors, the compliance questions), which created the business case for the data governance Bellhaven had needed anyway (the ownership, the catalogs, the lineage — established because the GenAI program forced the issue). The knowledge management was the corpus governance: the policy corpus (the RAG knowledge — 4.1) was governed (the corpus ownership — the policy owners, the corpus freshness — 4.1's SLA, the corpus quality — 4.3's health), with the document owners and review dates surfaced (3.6's corpus-owner-in-citations), so the RAG surfaced accurate, current policy (not the stale policy — 4.1's grounded-but-wrong). And the lineage (5.5) was the trust foundation: the data lineage (source through the extraction — 3.4's provenance — to the enterprise systems — 6.4) provided the auditability (4.14 — the regulator's "where did this come from" answered — 5.5). The data-governance lead's note: *"The intake platform surfaced our data-governance gaps — the ungoverned source data with no owner, the un-cataloged corpus, the un-lineaged flows. GenAI made the gaps visible and consequential (the extraction errors, the compliance questions were data-quality problems wearing AI jerseys — 4.3's lesson). So we established the governance: ownership (the source teams accountable, the quality findings looping back to root-cause at the source), catalogs (the data discoverable and understood), lineage (the trust foundation — 5.5). GenAI depended on the governance and forced its establishment — the business case for the data governance we'd needed all along. Data governance is the foundation of the GenAI estate's trustworthiness — the moat and the raised ceiling."*
+**Bellhaven Insurance** (the submission-intake platform of 2.1 and [5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md)) built data governance twice. The first build was conventional: a fortnightly stewardship council, a catalog crawling the estate, eleven named stewards. Within four months the catalog held roughly 9,000 assets whose ownership fields were mostly distribution-list addresses, and nothing in the ingestion path read any of it. The council reviewed dashboards and filed tickets while ingestion continued regardless, because no council decision could stop a pipeline.
+
+Two incidents ended it in one quarter. The broker assistant spent three weeks quoting a superseded endorsement rule that lived on a wiki page — the rating manual had been updated on schedule, the page had not, and its plain-English phrasing out-retrieved the filed language. Because every answer cited a genuine internal document, nobody escalated; the errors surfaced through a broker complaint, and unwinding them cost roughly $310K in reissued quotes and goodwill credits. Six weeks later an erasure request was certified complete against the claims system of record — until a routine retrieval test returned the claimant's narrative from the answer cache eleven days on.
+
+The decision that followed was expensive on purpose. Bellhaven made a signed contract the precondition for ingestion, and applied it to the existing estate rather than only to new sources. Five of eleven live corpora had no owner willing to sign and went dark — including the field-operations knowledge base a claims-adjuster assistant was scheduled to launch on, a slip of two quarters. Retrieval recall on the broker assistant fell about 9 points as long-tail informal documents left the corpus, a trade underwriting leadership accepted in writing. Two platform engineers moved off feature work for two quarters to build the gates, the lineage records, and the post-rebuild deletion probe.
 
 ## Hands-on Exercise
 
-**Establish data governance for a GenAI estate.** ~90 minutes. Analysis-primary, for a GenAI estate (real or a case study's).
+**Contract and govern one AI-consumed dataset.** ~80 minutes. Use a corpus from your work or a Part 4 case study.
 
-1. **The ownership gap (25 min).** For a GenAI system, identify the data-quality problems it suffers and the ownership gap (the teams that create the data not owning the consequences of its quality for the AI — 2.2/4.3/5.5). Design the ownership loop that closes it (the source owners accountable, the AI's quality findings looping back, root-caused at the source — 5.5).
-2. **The governance pillars (30 min).** For the estate's data (source systems, corpus, golden sets), establish the four pillars: ownership (who owns each), quality (the standards and monitoring — 4.3/4.10), catalogs (the data cataloged, discoverable), lineage (the traceability — 5.5). Describe how each pillar contributes to the GenAI trustworthiness.
-3. **Knowledge management (20 min).** For the RAG corpus, design the knowledge governance: the corpus ownership (the knowledge owners), the quality and freshness (4.1/4.3), the owner-and-review-date surfacing (3.6). Show how it makes the RAG trustworthy (accurate, current knowledge).
-4. **GenAI as the forcing function (15 min).** Describe how the GenAI program's data-quality findings become the business case for the data governance (2.2/5.5) — the forcing function that drives the governance the enterprise needed anyway.
+1. **Write the contract (30 min).** Produce a complete contract in this chapter's shape, with no field left blank.
+2. **Gate placement (15 min).** Draw the ingestion path; mark where each gate class runs, what happens on failure, and who is paged. Name one failure no gate can catch and the artifact that catches it.
+3. **The lineage walk (20 min).** Take one answer your system produced and list the five forward links back to the source record. Then invert: take one source record and enumerate every derived artifact, naming the one you would most likely miss.
+4. **Tiers and the ACL path (15 min).** Assign your corpora to tiers with staleness SLAs and a consequence for lapsed review. Then write the ACL propagation path: system of record, representation in the index, the two-tier staleness window, and how the probe runs.
 
 **Acceptance criteria:**
-- [ ] The ownership gap identified and the ownership loop designed (findings → source owners → root-cause at source)
-- [ ] The four governance pillars established for the estate's data, each contributing to trustworthiness
-- [ ] The knowledge governance makes the RAG corpus trustworthy (owned, quality, current)
-- [ ] GenAI as the forcing function for the governance articulated (the business case)
+- [ ] Permitted uses answer RAG and fine-tuning explicitly; the breaking-change clause names a notice period and a sign-off
+- [ ] Every gate has a failure action (quarantine, block, page) and a named steward — none is "log"
+- [ ] The forward walk names versions, not systems; the backward walk reaches at least one cache, one eval or trace store, and any training set
+- [ ] The staleness window is a number with an owner, and the deletion probe is tied to the rebuild
 
 ## Enterprise Considerations
 
-Data governance is a major enterprise capability that GenAI both depends on and drives. **It's an enterprise-wide function** (5.5's conform, 6.1): most enterprises have (or need) a data-governance function (the data-governance office, the data stewards, the catalog, the quality program), and the GenAI data governance is part of it (the GenAI corpus and data governed by the enterprise data-governance function — integrate-don't-parallel, data-governance edition) — the AI architect works with the data-governance function (bringing the GenAI-specific needs — the corpus governance, the lineage for auditability) not around it. **GenAI is often the forcing function and the business case** (2.2/5.5): the GenAI program surfaces the data-governance gaps (making them visible and consequential — the amplification), which is frequently the business case that finally drives the enterprise data-governance investment (the enterprise needed the governance anyway, and GenAI forced the issue) — the AI architect leverages this (the GenAI program's data-quality findings as the business case for the governance — 1.3's business case, data-governance edition). **The ownership is an organizational and political concern** (1.8, 6.4): the ownership loop crosses the source-system teams (who must accept the ownership — the accountability), the AI team, and the data-governance function (Conway's law — 6.4), so establishing the ownership is an organizational-and-political effort (the source teams accepting accountability — the influence — 1.8, the stakeholders — 1.6) — the ownership gap is organizational as much as technical. **And the governance serves compliance** (4.14): the lineage (the auditability — 4.14), the quality (the accuracy evidence — 4.14/4.7), and the ownership (the accountability) are compliance foundations, so the data governance serves the compliance function (the governed data estate is the compliance-ready data estate).
+Most enterprises already run a data-governance office, a catalog, and a steward network, and the winning move is not a parallel one for AI. The delta is small and negotiable: three fields on the existing catalog entry (permitted uses, corpus tier, deletion path) plus one behavioural change — the pipeline reads those fields and refuses on absence. A turf conflict becomes a schema change.
+
+Defend the ownership split explicitly. Content correctness belongs to the business function that authors the material; pipeline, gates, and lineage belong to the platform team. Collapsing both into one "data owner" produces a platform engineer accountable for whether an endorsement rule is current — a role nobody can perform. And adoption is political first, because a contract asks source teams to accept obligations they did not have ([6.4](chapter-04-enterprise-integration.md)): make the contract the price of being retrievable, and route gate failures to the platform steward at first.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Quality remediation | Root-cause at the source (ownership loop) | Clean in the pipeline | Always for durable quality — the source owner fixes it (5.5) | Pipeline cleaning as a stopgap while the source governance catches up |
-| Governance function | Integrate with the enterprise data governance | A parallel AI data governance | Always — integrate-don't-parallel (data-governance edition) | Never; the parallel governance fragments the data estate |
-| GenAI's role | Leverage GenAI as the forcing function for governance | Treat GenAI as separate from data governance | Always — GenAI surfaces the gaps and is the business case (2.2/5.5) | Never separate; GenAI depends on and drives the governance |
-| Ownership | The ownership loop (source owns, findings feed back) | No ownership (the recurring gap) | Always — closes the gap, root-causes quality | Never no-ownership; the ungoverned data is the amplified-problem source |
+| ACL representation | Principals copied into chunk metadata | ACL reference resolved per query | Latency-critical retrieval, slow-moving groups, a signed staleness window | High-sensitivity corpora with frequent revocation, and an identity service that can carry the load |
+| Corpus breadth | Curated Tier A/B only | Ingest broadly, rank by tier | A wrong cited answer is expensive — Bellhaven's choice, and it cost recall | Exploration by experts who verify; coverage beats authority |
+| Contract enforcement | Hard block: no contract, no ingestion | Advisory contracts with reporting | Blocked teams have a path forward | Early adoption, where blocking pushes teams into shadow ingestion |
+| Deletion mechanism | Event-driven propagation within SLA | Applied at the next full rebuild | Personal data and regulated erasure clocks | Non-personal corrections on a short rebuild cadence, with a probe |
 
 ## Common Mistakes
 
-1. **The ownership gap** — the teams that create the data not owning the consequences of its quality for the AI (2.2/4.3/5.5), so the quality problems have no owner who can fix them; the ownership loop closes the gap (the source owns, the findings feed back, root-caused at the source).
-2. **Pipeline cleaning instead of source root-causing** — cleaning the data-quality problems in the pipeline while the source problems persist and re-surface (4.3's amplification); root-cause at the source via the ownership (5.5).
-3. **No lineage** — the data without lineage, so the trustworthiness has no foundation (the auditability — 4.14, the debugging — 4.10 — impossible); lineage is the trust foundation, captured (5.5's un-retrofittable).
-4. **The un-cataloged data** — the data not cataloged, so it's not discoverable or understood (the corpus not understood, the analyst can't find the data); the catalog makes the data an accessible asset.
-5. **The ungoverned corpus** — the RAG corpus not governed (no ownership, no quality, no freshness — 4.1/4.3), so the RAG surfaces stale, inaccurate knowledge (the grounded-but-wrong — 4.1); govern the corpus (the knowledge management).
-6. **The parallel AI data governance** — an AI data governance disconnected from the enterprise data-governance function; integrate-don't-parallel (data-governance edition — 5.5/6.1).
-7. **Missing the forcing-function opportunity** — not leveraging the GenAI program's data-quality findings as the business case for the data governance (2.2/5.5); GenAI is the forcing function and the business case.
+1. **The catalog that describes but governs nothing.** Thousands of crawled assets, ownership fields full of distribution lists, and not one field any pipeline reads. Governance you cannot fail is documentation.
+2. **Deletion that stops at the vector index.** Chunk store, retrieval cache, answer cache, eval snapshots, and traces each hold a copy; the answer cache keeps serving deleted content verbatim after the certificate is signed.
+3. **The rebuild that resurrects.** The source soft-deletes, the connector selects every row, and the nightly rebuild restores what Monday's deletion removed — while the weekly probe passes.
+4. **Wiki alongside manual in one index.** Informal prose out-retrieves filed language because it matches how users ask, so the stalest text in the estate wins the ranking — with a real citation attached.
+5. **Permitted-use fields left blank.** A corpus ingested as "internal" is later consumed by a fine-tuning run, and the licensing question surfaces after the weights exist.
 
 ## Best Practices
 
-1. **Establish the four governance pillars** — ownership (closing the recurring gap), quality (raising the ceiling — 2.2), catalogs (making the data an accessible asset), lineage (the trust foundation — 5.5); the foundation of GenAI trustworthiness.
-2. **Close the ownership gap with the ownership loop** — the source owners accountable, the AI's quality findings feeding back, root-caused at the source (5.5); the governance that fixes the recurring data-quality problem.
-3. **Govern the corpus as knowledge** — the corpus ownership, quality, and freshness (4.1/4.3), the owner-and-review-date surfaced (3.6); the knowledge management that makes the RAG trustworthy.
-4. **Capture lineage as the trust foundation** — the data lineage (source through transformations — 5.5), the auditability (4.14) and debugging (4.10) foundation; un-retrofittable, so captured.
-5. **Leverage GenAI as the forcing function** — the GenAI program's data-quality findings as the business case for the data governance the enterprise needed anyway (2.2/5.5).
-6. **Integrate with the enterprise data-governance function** — the GenAI data governance part of the enterprise data governance (integrate-don't-parallel, data-governance edition — 5.5/6.1).
-7. **Navigate the ownership organization** — the source teams accepting accountability (the influence — 1.8, the stakeholders — 1.6, Conway's law — 6.4); the ownership is organizational as much as technical.
+1. **Make the signed contract the precondition for ingestion** — the only enforcement point that does not depend on diligence.
+2. **Designate the canonical source per topic and exclude near-duplicates by rule.**
+3. **Build lineage bidirectionally and record training-set membership at derivation time.** The inverse index cannot be reconstructed later.
+4. **Set the ACL staleness window as a two-tier number with an owner, and probe it on the rebuild's clock.**
+5. **Tier corpora and give every tier a consequence retrieval can observe.** Removal and demotion change answers; flags do not.
 
 ## Architecture Checklist
 
-For GenAI estate data governance:
+For an AI estate's data and knowledge:
 
-- [ ] The four pillars established: ownership, quality (2.2), catalogs, lineage (5.5) — the trustworthiness foundation
-- [ ] The ownership loop closes the recurring gap (source owners accountable, AI's quality findings feed back, root-caused at the source — 5.5)
-- [ ] The RAG corpus governed as knowledge (ownership, quality, freshness — 4.1/4.3, owner-and-review-date surfaced — 3.6)
-- [ ] Lineage captured as the trust foundation (5.5); serves auditability (4.14) and debugging (4.10)
-- [ ] The data cataloged (discoverable, understood)
-- [ ] GenAI leveraged as the forcing function and business case for the governance (2.2/5.5)
-- [ ] Integrates with the enterprise data-governance function (integrate-don't-parallel — 5.5/6.1); the ownership organization navigated (1.8/6.4)
+- [ ] Every ingested source has a signed contract; the pipeline reads it and refuses on absence
+- [ ] Owner (content correctness) and steward (pipeline, gates, lineage) are different named roles
+- [ ] Quality gates run at ingestion and before snapshot sealing; failure quarantines and pages
+- [ ] Forward lineage names versions at all five links; backward lineage resolves a source record to every derived artifact, caches and training sets included
+- [ ] ACL system of record is external to the index; the staleness window is signed, two-tiered, and probed
+- [ ] Deletion propagates within SLA; the probe runs after every rebuild
+- [ ] Canonical sources designated per topic; corpora tiered, with a retrieval-observable consequence for lapsed review
 
 ## Interview Questions
 
-1. *"What's the recurring data-quality problem GenAI surfaces, and how does governance fix it?"* — Strong answers give the ownership gap (the teams that create the data not owning the consequences of its quality for the AI — 2.2/4.3/5.5), and the ownership loop that closes it (the source owners accountable, the AI's quality findings feeding back, root-caused at the source — 5.5), with GenAI as the forcing function (surfacing the gaps, the business case — 2.2/5.5).
-2. *"Why is data governance the foundation of GenAI trustworthiness?"* — Strong answers give the four pillars (ownership closing the quality gap, quality raising the ceiling — 2.2, catalogs making the data an asset, lineage the trust foundation — 5.5/4.14) and connect to the data-as-moat (2.2) and the quality-as-ceiling (2.2) — the governance determines whether the estate is a high-quality asset or a confident amplifier of bad data.
-3. *"How do you govern the knowledge in a RAG corpus?"* — Strong answers give the corpus governance (the corpus ownership — the knowledge owners, the quality and freshness — 4.1/4.3, the owner-and-review-date surfaced — 3.6), which makes the RAG surface accurate, current knowledge (not the stale policy — 4.1's grounded-but-wrong), and note the GenAI-and-knowledge-management symbiosis (GenAI depends on and makes accessible the knowledge).
-4. *"How does GenAI relate to enterprise data governance?"* — Strong answers give the dependence-and-forcing-function: GenAI depends on the data governance (the quality-as-ceiling, the corpus governance) and is the forcing function for it (surfacing the gaps, the business case — 2.2/5.5), integrating with the enterprise data-governance function (integrate-don't-parallel), and note the ownership as an organizational effort (1.8/6.4).
+1. *"Show me a data contract for a corpus your assistant retrieves from."* — Strong answers produce fields rather than concepts, and volunteer the ones usually blank: permitted uses with training eligibility, the breaking-change process, the deletion path.
+2. *"An erasure request arrives for a customer whose records fed a RAG index and a fine-tuning set."* — Strong answers invert the lineage (chunks, vectors, caches, eval snapshots, traces, training-set membership) and are honest that removal from a training set is not removal from a model.
+3. *"Your assistant gave a confidently wrong answer with a valid citation. Diagnose it."* — Strong answers reach for the wiki-rot chain: a non-canonical page paraphrasing an authoritative rule, retrieving better because it matches user phrasing. The fix is canonical designation and tiering, not a reranker.
+4. *"How do ACLs get from the source system into a vector index, and what breaks?"* — Strong answers pick a representation and own its cost, name the staleness window as a signed number, and note that connector upgrades break propagation silently.
 
 ## Further Reading
 
-- The data-governance literature (DAMA-DMBOK, the data-management body of knowledge) — the classical data-governance pillars (ownership, quality, catalogs, lineage) this chapter applies to GenAI.
-- 2.2 ML Fundamentals (the quality-as-ceiling, the data-as-moat) and 5.5 Data Architecture (the data estate, the lineage) — the chapters this governance operationalizes.
-- 4.1 Production RAG (the corpus, the permission systems of record) and 4.3 Document Ingestion (the corpus quality, the source-quality) — the corpus-governance context.
-- Your enterprise data-governance documentation (internal, and the data-governance function) — the governance the GenAI data governance integrates with.
+- DAMA-DMBOK (Data Management Body of Knowledge, second edition) — the reference vocabulary for stewardship, quality, metadata, and lineage; the frame this chapter narrows to AI artifacts.
+- *Data Mesh* (Zhamak Dehghani, O'Reilly) — the data-as-a-product and contract framing that makes source-team ownership an architectural position rather than a plea.
+- The OpenLineage specification (openlineage.io) — an open model for lineage events emitted by jobs; read it to see what a machine-written lineage record contains.
+- The [data quality & labeling checklist](../../checklists/data-quality-labeling-checklist.md) and [4.1 Production RAG](../part-4-enterprise-genai-systems/chapter-01-production-rag.md) — gate mechanics, and the query-side half of the audit record.
 
 ## Summary
 
-- Data governance is **the foundation of GenAI trustworthiness**, and its core problem is **ownership** — the recurring gap (2.2/4.3/5.5) where the teams that create the data don't own the consequences of its quality for the AI, closed by the **ownership loop** (source owners accountable, the AI's quality findings feeding back, root-caused at the source).
-- The **four pillars** — ownership (closing the gap), quality (raising the ceiling — 2.2), catalogs (making the data an asset), lineage (the trust foundation — 5.5/4.14) — are what make the GenAI estate trustworthy (the moat realized, the ceiling raised — 2.2).
-- **GenAI is the forcing function** for the data governance — it surfaces and amplifies the data-quality problems (2.2's amplification, making them visible and consequential), which is the business case for the governance the enterprise needed anyway (5.5).
-- **Knowledge management** governs the RAG corpus (ownership, quality, freshness — 4.1/4.3, owner-and-review-date surfaced — 3.6) — the corpus governance RAG's trustworthiness depends on, in a symbiosis where GenAI depends on and makes accessible the knowledge.
-- Data governance **integrates with the enterprise data-governance function** (integrate-don't-parallel), and the ownership is an **organizational effort** (1.8/6.4) — the source teams accepting accountability. The adoption strategy that sequences all this into the legacy estate is next: **legacy modernization & AI adoption strategy** (6.8).
+- Governance counts only as artifacts that run — and the **data contract** is the unit: change policy, freshness SLA, classification, permitted uses, quality gates, named consumers, deletion path. Making it the precondition for ingestion is the enforcement that works.
+- **Quality gates run at ingestion**, quarantine rather than impute, and page a named steward; they check shape, not truth, which is why canonical-source designation exists.
+- **AI lineage is bidirectional**: forward through source → transformation → snapshot → index/model → attribution for audit; backward from a source record to every derived artifact for erasure.
+- **RAG corpora need a propagation contract**, not a filter: an ACL system of record outside the index, a two-tier staleness window, and deletion that survives the rebuild.
+- **Knowledge management becomes concrete** through canonical sources and corpus tiers with consequences retrieval can observe — the structure that stops a stale page becoming thousands of correctly-cited wrong answers. Sequencing this into an estate that already exists is next: **legacy modernization & AI adoption strategy** ([6.8](chapter-08-legacy-modernization-ai-adoption.md)).
 
 ---
 

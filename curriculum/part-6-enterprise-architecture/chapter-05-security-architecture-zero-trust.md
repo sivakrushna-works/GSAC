@@ -5,160 +5,215 @@
 | **Part** | 6 — Enterprise Architecture |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 80 min) |
 | **Prerequisites** | [4.9 GenAI Security & Threat Modeling](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md); [6.4](chapter-04-enterprise-integration.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Place GenAI systems inside the enterprise security architecture: identity, network segmentation, data perimeters, and the zero-trust model.
-2. Extend 4.9's system-level GenAI security into the enterprise security architecture: how the blast-radius and least-privilege principles map to the enterprise security controls.
-3. Design the data perimeters and segmentation that contain GenAI's specific risks at the enterprise scale.
-4. Integrate GenAI security into the enterprise security function, its zero-trust architecture, and its existing controls.
+1. Decompose zero trust per NIST SP 800-207: the policy decision point / policy enforcement point split, policy-as-code, and the signals continuous verification consumes.
+2. Microsegment a GenAI platform: model endpoints, vector stores, agent runtimes, credential vaults, and egress paths as separately policed, default-deny segments.
+3. Replace network-reachability access (the VPN) with per-application ZTNA for operators and CI pipelines.
+4. Apply the AI-specific extensions — the agent as an untrusted-by-default principal, egress as the exfiltration backstop, per-tenant isolation — and locate [4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md)'s blast-radius doctrine inside the enterprise zero-trust model.
 
 ## Introduction
 
-4.9 built GenAI security at the system level (the threat modeling, the blast-radius architecture, the defense hierarchy); this chapter places that security inside the *enterprise* security architecture — the identity, segmentation, data perimeters, and zero-trust model that the enterprise security function operates, and how GenAI systems fit within them. The through-line from 4.9: the blast-radius-over-detection philosophy and the least-privilege principle (4.9) map directly onto the enterprise security architecture's zero-trust model (never trust, always verify, least privilege everywhere) — GenAI security is not separate from enterprise security, it's a specialization within it, and this chapter is the placement.
-
-The framing: **GenAI security is a specialization within the enterprise's zero-trust architecture** — the zero-trust principles (verify explicitly, least privilege, assume breach) are exactly the principles 4.9's blast-radius architecture applied at the system level, so GenAI fits naturally within the enterprise zero-trust model, with the GenAI-specific additions (the untrusted-content-is-data problem — 4.9, the data perimeters around the corpus and the model transfers) placed within the enterprise security controls.
+Chapter [4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md) secured the GenAI system from the inside: threat models, privilege architecture, the defense hierarchy. This chapter secures it from the outside — the enterprise architecture that decides which workload may connect to which, and what a compromised laptop on the corporate network can actually reach. That architecture has a reference model: **zero trust**, specified in NIST SP 800-207 not as a philosophy but as components with jobs. This chapter does the engineering — where the decision and enforcement points sit in a GenAI platform, how the platform is cut into segments, and which controls are load-bearing when something inside the perimeter is compromised.
 
 ## Business Motivation
 
-Enterprise security architecture is what makes GenAI deployable in a security-conscious enterprise — the placement within the enterprise's security controls that lets the security function approve GenAI systems (4.9's fast-review-when-designed-in, at the enterprise-architecture scale). Without the enterprise-security placement: GenAI systems are security islands (their own ad-hoc security, disconnected from the enterprise's identity, segmentation, and controls — the parallel-security anti-pattern), which the security function can't govern coherently and which create the gaps (the GenAI system outside the zero-trust perimeter, the identity not integrated — the blast-radius uncontained at the enterprise scale). With it: GenAI systems fit the enterprise zero-trust architecture (the identity integrated — 6.6, the segmentation and data perimeters containing the GenAI risks — 4.9's blast-radius at enterprise scale), so the security function governs them coherently and the GenAI-specific risks (the injection — 4.9, the data exposure — 4.14) are contained by the enterprise security controls. The business case is the deployability-and-coherence one: the GenAI security placed within the enterprise security architecture is deployable (the security function approves it — it fits the controls) and coherent (governed as part of the enterprise security, not a security island) — and the enterprise-security integration is what lets GenAI operate in the security-conscious enterprise at scale, versus the security islands that don't get approved or that create the uncontained-blast-radius gaps.
+The economic argument for zero trust in the AI estate is concentration. A GenAI platform gathers, in one place, the enterprise's most attractive east-west targets: a [vector database](../../GLOSSARY.md) holding embeddings of documents from every connected repository, a credential vault holding the tool keys agents use to act on line-of-business systems, and model endpoints whose logs contain whatever users pasted into them. On the still-common flat corporate network — authenticate once at the VPN, enjoy broad reachability inside — every one of those is one lateral hop from any compromised laptop. Part 4's application-layer controls do not help, because a flat network lets an attacker skip the application: the vector store's API and the model registry's admin port answer network calls directly. Segmentation puts an enforcement point demanding a verified identity in front of every asset, wherever the caller stands. And a schedule argument compounds across the portfolio: each new workload on a segmented platform inherits the segment model, so its security review starts from a known posture instead of re-litigating the network.
 
-## Theory
+## Theory — zero trust as components, not slogan
 
-### Zero trust and GenAI
+### The PDP/PEP split and policy-as-code
 
-The zero-trust model and how GenAI fits:
+SP 800-207's core move is to make access a **per-request decision** produced by one component and enforced by another. The **policy decision point (PDP)** — the policy engine plus the administrator configuring the data path — evaluates each request against policy and signals. The **policy enforcement point (PEP)** sits in the traffic path and does only what the PDP decided; it holds no policy of its own. The split makes the architecture governable: policy lives in one reviewable place, enforcement is distributed wherever traffic flows — a gateway, a sidecar proxy, a vault front end, an egress proxy. "Never trust, always verify" decomposes into exactly this machinery: *no network location confers access* (the PEP challenges every caller), *every request carries an identity* ([6.6](chapter-06-iam-for-ai.md)'s subject), and *the decision is continuous* — re-evaluated per request, not granted at session start.
 
-- **Zero-trust principles** — verify explicitly (authenticate and authorize every access — never trust based on network location), least privilege (grant the minimum access needed — 4.9's least-privilege, at the enterprise scale), assume breach (design as if the perimeter is compromised — the blast-radius containment — 4.9); the enterprise security model GenAI operates within.
-- **The natural fit** — 4.9's blast-radius architecture *is* zero trust at the GenAI system level (the least-privilege bounding the injection blast-radius, the assume-the-model-can-be-instructed as assume-breach — 4.9); so GenAI fits the enterprise zero-trust model naturally (the same principles), and the placement is extending the system-level 4.9 to the enterprise zero-trust controls.
-- **The GenAI-specific zero-trust additions** — the untrusted-content-is-data problem (4.9 — the content the model processes is untrusted, verified/fenced, never trusted), the model as an actor whose access is verified and least-privileged (the model's tool access — 3.7, scoped and verified — the zero-trust applied to the model's actions), and the assume-breach for the model (the model can be instructed — 4.9, so its access is bounded assuming it's compromised).
+**Policy-as-code** keeps the PDP honest: policies live in version control, change through review, run through tests, deploy through a pipeline — and exceptions get expiry dates by construction, because the emergency allow rule that outlives its emergency is the classic segmentation rot.
 
-### Identity, segmentation, and data perimeters
+### The signals continuous verification consumes
 
-The enterprise security controls GenAI is placed within:
+A PDP's decision is only as good as its inputs; four signal classes matter for an AI estate:
 
-- **Identity** (6.6's subject) — the enterprise identity that everything authenticates through (the users, the applications, the models, the tools — 3.7/6.6), the substrate for the zero-trust verify-explicitly and the least-privilege; GenAI's identity integration (6.6) is the placement.
-- **Network segmentation** — the enterprise network divided into segments with controlled boundaries (the GenAI systems in their segments, the egress controlled — 4.4's egress allowlists, 4.9's exfiltration containment, at the enterprise segmentation scale), so the GenAI's network access is segmented and controlled (the zero-trust network, the blast-radius contained by segmentation).
-- **Data perimeters** — the boundaries around the sensitive data (the corpus — 4.1, the training data — 2.6, the traces — 4.10), controlling where the data can go (the data-perimeter preventing the sensitive data from leaving the perimeter — 4.14's residency and the exfiltration containment — 4.9, at the enterprise data-perimeter scale); the GenAI-specific data perimeters (around the corpus, the model transfers — 4.14) placed within the enterprise data-perimeter architecture.
-- **The GenAI security controls** (4.9, 4.8) — the guardrails (4.8), the threat models (4.9), the blast-radius architecture (4.9) placed within the enterprise controls (the enterprise's SIEM, its security monitoring, its incident response — the GenAI security integrated with the enterprise security operations).
+- **Identity** — who or what is asking: human user, CI pipeline, agent runtime, each a first-class principal (credential mechanics in [6.6](chapter-06-iam-for-ai.md)).
+- **Device and workload posture** — is the operator's laptop managed and patched; is the calling workload the attested container image the platform deployed, or something else wearing its IP address?
+- **Behavior** — telemetry-derived confidence: an operator pulling ten thousand embeddings at 3 a.m., an agent whose tool-call sequence deviates from every recorded trajectory ([4.10](../part-4-enterprise-genai-systems/chapter-10-observability.md)'s data as a security signal).
+- **Resource sensitivity** — the target's classification raises the bar: the public-docs index and the M&A index should not cost the same signal strength.
 
-### Integration with the enterprise security function
+Degraded signal produces *step-up or deny*, never silent allow — a valid token presented from an unmanaged device is exactly the case session-time authentication passes and continuous verification catches.
 
-The placement within the security function:
+### Microsegmenting the AI platform
 
-- **GenAI security as a specialization** (4.9's fit-the-existing-machinery, at the architecture scale) — the enterprise security function (its architecture, its controls, its operations) governs GenAI security as a specialization within it, not a parallel security org; the integrate-don't-parallel (2.8/4.14/5.10), security-architecture edition.
-- **The security architecture's GenAI additions** — the enterprise security architecture adds the GenAI-specific elements (the data perimeters around the corpus, the model-actor identity and least-privilege, the injection-aware controls — 4.9), so the security architecture evolves to include GenAI (the AI architect contributing to the security architecture — 6.1's shape-the-EA, security edition).
-- **The security operations integration** — the GenAI security monitoring (4.9's adversarial testing, the guardrail telemetry — 4.8, the trajectory forensics — 4.4) integrated with the enterprise security operations (the SIEM, the incident response — 4.9's AI-incident runbooks in the enterprise IR), so the GenAI security is operated as part of the enterprise security.
+Microsegmentation shrinks SP 800-207's "implicit trust zones" until each contains one class of asset, with **default-deny east-west traffic** between them — a connection exists only if a policy names it. The GenAI platform's segments, and why each boundary earns its keep:
+
+- **Model gateway** ([5.4](../part-5-cloud-infrastructure-platform/chapter-04-api-integration-layer.md)) — the sanctioned front door; the only segment user-facing applications may call.
+- **Model serving** — the endpoints and their logs; reachable from the gateway alone, so a compromised internal app cannot prompt the model directly.
+- **Retrieval / vector store** — reachable only from the retrieval service; nothing else, the agent runtime included, gets a direct connection to the index or its admin API.
+- **Agent runtime** — sandboxed executors for [agent](../../GLOSSARY.md) workloads; may call named tool endpoints and nothing else, because everything the runtime processes is potentially attacker-authored.
+- **Tool credential vault** — reachable only through a broker that mints 6.6's short-lived, task-scoped credentials; no workload holds a standing path to raw secrets.
+- **Egress** — a single proxied exit with a domain allowlist; the model vendor's API is a named, contracted destination, and everything unlisted is unreachable.
+
+One implementation decision dominates: **segment on workload identity, not IP address**. AI platforms autoscale — sandboxes and replicas appear and vanish, addresses churn — so IP-based rules either break the platform or get quietly widened until they police nothing. Identity-based enforcement (mesh mTLS with attested workload identities, or the cloud provider's tag equivalents) moves with the workload, which is why it survives production.
+
+### ZTNA versus the VPN for operators and CI
+
+The VPN's grant is **network reachability**: authenticate once, then stand on the internal network with everything that implies on a flat topology. **Zero trust network access (ZTNA)** inverts the grant: a broker — a PEP for human and pipeline access — connects an authenticated, posture-checked identity to *one named application*, and the network stays dark. Concretely: the platform engineer reaches the vector-store admin console through the broker, session recorded, and nothing else by default; CI pipelines authenticate as workload identities scoped to their deploy targets, so a leaked CI token can push to one endpoint, not explore the estate. The honest cost: ZTNA requires enumerating applications and their authorized identities — that enumeration *is* the security work, and why the migration is a project, not a purchase.
+
+### The AI-specific extensions
+
+Three places where an AI estate needs more than the standard playbook:
+
+- **The agent is an untrusted-by-default principal.** An agent runtime processes attacker-influenceable content and can be steered by it (4.9's founding fact), so its segment is designed like a workload you expect to be compromised: default-deny everything, allow named tool endpoints, broker-mediated credentials, no direct egress. The identity mechanics are [6.6](chapter-06-iam-for-ai.md)'s; the network posture around them is this chapter's.
+- **Egress control is the exfiltration backstop.** When [prompt injection](../../GLOSSARY.md) succeeds despite everything upstream, the stolen data still has to leave. A default-deny egress allowlist works *after* the model is fooled — which, per 4.9's hierarchy, is what makes it load-bearing. Police the quiet channels too: DNS lookups are egress.
+- **Per-tenant isolation is segmentation, not filtering.** On a multi-tenant platform ([7.9](../part-7-enterprise-ai-architecture-patterns/chapter-09-platform-multitenancy-patterns.md)), a shared index with a `tenant_id` metadata filter is an application-layer promise — one retrieval bug from being a breach. Zero-trust tenancy puts structure under the promise: per-tenant indexes, per-tenant keys, and PEP-enforced policy so tenant A's workloads cannot *reach* tenant B's partition even when the application code is wrong.
+
+### The bridge from 4.9
+
+4.9's blast-radius doctrine and zero trust are the same three commitments at two scales: least privilege is least privilege; *assume the model can be instructed* is assume-breach applied to a component; *fence untrusted content* is verify-explicitly applied to data. That mapping is why a system built to 4.9's standard drops into a zero-trust enterprise without redesign, and why AI security runs as a specialization within the enterprise security function rather than beside it. What the enterprise layer adds is everything above: the PDP/PEP machinery, the segment map, and the access architecture for humans and pipelines.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    subgraph ZT [Enterprise zero-trust architecture]
-        IDENT[Identity — 6.6<br/>verify explicitly, least privilege]
-        SEG[Network segmentation<br/>controlled boundaries, egress — 4.9]
-        PERIM[Data perimeters<br/>around corpus, transfers — 4.14/4.9]
+flowchart TB
+    subgraph CTRL [Control plane]
+        SIG[Signals: identity 6.6 · device posture<br/>behavior 4.10 · resource sensitivity] --> PDP[PDP — policy engine<br/>policy-as-code repo, versioned]
     end
-    GENAI[GenAI systems] -.placed within.-> ZT
-    GENAI --> BLAST[4.9 blast-radius architecture<br/>= zero trust at the system level]
-    BLAST -.maps onto.-> ZT
-    SECFUNC[Enterprise security function<br/>architecture, controls, operations] -.governs as a specialization.-> GENAI
-    GENAI -.adds.-> ADDITIONS[GenAI-specific:<br/>untrusted-content-is-data 4.9,<br/>model-as-actor identity,<br/>corpus data perimeters]
-    ADDITIONS -.evolve.-> SECFUNC
-    SECOPS[Security operations<br/>SIEM, IR — 4.9's AI runbooks] -.operates.-> GENAI
+    subgraph ACCESS [Operator & CI access]
+        OPS[Operators / CI] --> ZT[PEP-0: ZTNA broker<br/>per-app, posture-checked]
+    end
+    APPS[User-facing apps] --> P1[PEP-1: API gateway]
+    subgraph SEG1 [Segment: model gateway]
+        P1 --> GW[Model gateway 5.4]
+    end
+    subgraph SEG2 [Segment: model serving]
+        P2[PEP-2: mesh sidecar] --> LLM[Model endpoints + logs]
+    end
+    subgraph SEG3 [Segment: retrieval]
+        P3[PEP-3: mesh sidecar] --> RET[Retrieval service] --> VS[(Vector store<br/>per-tenant indexes + keys)]
+    end
+    subgraph SEG4 [Segment: agent runtime]
+        P4[PEP-4: sandbox boundary] --> AG[Agent sandboxes 4.4]
+    end
+    subgraph SEG5 [Segment: credential vault]
+        P5[PEP-5: vault broker] --> VAULT[(Tool credential vault)]
+    end
+    subgraph SEG6 [Segment: egress]
+        P6[PEP-6: egress proxy<br/>domain allowlist] --> EXT[Model vendor APIs ·<br/>allowlisted tool endpoints]
+    end
+    GW --> P2 & P3 & P4
+    AG --> P5
+    AG & LLM --> P6
+    ZT -.named apps only.-> GW & VS & VAULT
+    PDP -.decisions.-> ZT & P1 & P2 & P3 & P4 & P5 & P6
 ```
 
-Readings. **4.9's blast-radius architecture is zero trust at the system level** — the least-privilege (bounding the injection blast-radius), the assume-the-model-can-be-instructed (assume-breach), the verify/fence-the-untrusted-content (verify explicitly) are exactly the zero-trust principles, so GenAI fits the enterprise zero-trust model naturally, and the placement is extending 4.9's system-level security to the enterprise zero-trust controls (identity — 6.6, segmentation, data perimeters). **GenAI adds specific elements to the enterprise security architecture** — the untrusted-content-is-data problem (4.9), the model-as-actor whose access is verified and least-privileged (the model's tool access — 3.7, zero-trust-applied), and the data perimeters around the corpus and model transfers (4.14/4.9) — which evolve the enterprise security architecture to include GenAI (the AI architect shaping the security architecture — 6.1's shape-the-EA). **And GenAI security is a specialization within the security function, not a parallel org** — the integrate-don't-parallel (2.8/4.14/5.10, security edition): the enterprise security function governs GenAI security (its architecture, controls, operations — the SIEM, the IR with 4.9's AI runbooks), so the GenAI security is coherent (part of the enterprise security) and deployable (the security function approves what fits its controls — 4.9's fast-review-when-designed-in).
+The placement table is the artifact a security review signs — per segment: enforcement technology, decision inputs, and the posture when the PDP is unreachable (owned *before* the outage):
+
+| Segment | PEP placement | Decision inputs weighed | On PDP outage |
+|---|---|---|---|
+| Model gateway | API gateway (PEP-1) | User identity, app identity, rate/budget | Fail closed for new sessions |
+| Model serving | Mesh sidecar (PEP-2) | Workload identity (gateway only), attestation | Cached allow, short TTL |
+| Retrieval / vector store | Mesh sidecar (PEP-3) | Workload identity, tenant partition, sensitivity | Fail closed |
+| Agent runtime | Sandbox boundary (PEP-4) | Task identity, named tool endpoints, behavior | Fail closed |
+| Credential vault | Vault broker (PEP-5) | Delegation chain (6.6), task scope, expiry | Fail closed, always |
+| Egress | Egress proxy (PEP-6) | Destination allowlist, workload identity, data class | Fail closed |
+| Operator/CI access | ZTNA broker (PEP-0) | Human/pipeline identity, device posture, target app | Break-glass path, logged |
+
+Read the table's grain: every "fail closed" is an availability cost accepted so a control-plane outage never becomes an open door; the serving path's cached-allow is the one deliberate exception, because inference is the availability-critical path with the most tightly attested callers.
 
 ## Real-world Example
 
-**Meridian Health Partners** (the recurring clinician-assistant — 1.5, 4.9, 4.14) placed its GenAI systems within the enterprise zero-trust security architecture, and the placement is where 4.9's system-level security became enterprise security architecture. The zero-trust fit was natural (4.9's blast-radius = zero trust): the clinician assistant's least-privilege (the model's access scoped to the clinician's permissions — 4.9/6.6, bounding the injection blast-radius), the assume-breach (the assume-the-model-can-be-instructed — 4.9, so the model's access bounded assuming compromise), and the verify-explicitly (the untrusted content — the patient documents, the retrieved protocols — fenced and verified, never trusted — 4.9) mapped directly onto Meridian's enterprise zero-trust model, so the assistant fit the enterprise security architecture rather than being a security island. The GenAI-specific additions were placed within the enterprise controls: the data perimeter around the PHI corpus (4.1/4.14 — the boundary preventing the PHI from leaving the perimeter, integrated with Meridian's HIPAA data-perimeter architecture), the model-as-actor identity (the model's tool access verified and least-privileged through Meridian's enterprise identity — 6.6), and the network segmentation (the assistant in its segment, egress controlled — 4.9's exfiltration containment, at Meridian's segmentation scale). The security-function integration was the deployability key (4.9's fast-review, at the architecture scale): the assistant's security was governed by Meridian's security function as a specialization (not a parallel AI-security org — integrate-don't-parallel), its monitoring integrated with Meridian's SIEM and security operations (the guardrail telemetry — 4.8, the trajectory forensics — 4.4, the AI-incident runbooks — 4.9 in Meridian's IR), so the security function approved and governed it coherently. And the AI architect shaped the security architecture (6.1's shape-the-EA, security edition): Meridian's enterprise security architecture evolved to include the GenAI-specific elements (the corpus data perimeters, the model-actor identity, the injection-aware controls — 4.9), contributed by the AI architect. The security architect's note: *"The clinician assistant's security wasn't separate from our zero-trust architecture — it *was* zero trust, applied to a GenAI system. Least privilege bounding the injection blast-radius, assume-breach for the model, verify-and-fence the untrusted content — the same principles. We placed it within the enterprise controls (the PHI data perimeter, the enterprise identity, the segmentation), governed it through the security function as a specialization, and evolved the security architecture to include the GenAI-specific elements. GenAI security is enterprise security, specialized — not a security island."*
+**Vantora Systems** (the 2,000-person software company whose helpdesk agent caught a live social-engineering attempt in [3.7](../part-3-core-building-blocks-of-genai/chapter-07-function-calling-tool-use.md)) built its internal AI platform — support agents, a RAG assistant over engineering and HR documents — inside a corporate network that was flat behind the VPN. Their first segmentation attempt used what the network team's change process supported: IP-based firewall rules between the platform's subnets. It failed slowly. Sandboxes and serving replicas autoscaled, addresses churned, and the rules lagged — twice during peak weeks, stale rules blocked legitimate retrieval traffic. After the second outage an engineer widened the rules to subnet-wide allows "until the automation catches up." It never caught up, and nobody re-narrowed the rules.
+
+Five months later Vantora's red team ran an assumed-breach exercise from a simulated compromised contractor laptop on the VPN. They reached the vector store's admin API directly — no application in the path — dumped the HR assistant's embedding index, then showed they could have swapped an artifact in the model registry. Nothing in the application layer had failed; the network had never asked who was calling.
+
+The platform lead took a decision that cost real money: halt the planned onboarding of two more business units for a quarter — deferring roughly $1.8M of budgeted internal chargeback and the flagship product-analytics feature tied to it — and rebuild the boundary on workload identity instead of addresses: mesh mTLS with attested identities as the east-west PEPs, a brokered vault path replacing standing secrets, a default-deny egress proxy, and ZTNA replacing VPN reachability for operators. The rebuild triggered a bruising ownership negotiation — settled by giving the platform team the mesh PEPs, and the network team the ZTNA broker and egress proxy — and cost a measured 7 ms of added p50 latency. The retest stopped where it should: the laptop reached the ZTNA broker and nothing else; a compromised retrieval pod reached its own segment's named flows and no admin plane. The lead's post-mortem line became the design rule: "The firewall rules didn't fail because they were wrong. They failed because they were static in an estate where every address changes twice a day."
 
 ## Hands-on Exercise
 
-**Place GenAI in the enterprise security architecture.** ~90 minutes. For a GenAI system in an enterprise (real or a case study's).
+**Design the zero-trust architecture for a GenAI platform.** ~80 minutes. Use your own platform or any Part 4/7 case-study system with RAG, agents, and tools.
 
-1. **Zero-trust mapping (30 min).** For a GenAI system, map 4.9's blast-radius architecture onto the zero-trust principles: how does the least-privilege (4.9) implement least-privilege (zero-trust), the assume-the-model-can-be-instructed (4.9) implement assume-breach, the verify-and-fence-untrusted-content (4.9) implement verify-explicitly? Show the natural fit.
-2. **The enterprise controls (25 min).** Place the GenAI system within the enterprise security controls: the identity (6.6 — the model-as-actor, the user propagation), the network segmentation (the segment, the egress control — 4.9), the data perimeters (around the corpus, the model transfers — 4.14/4.9). Describe how each contains a GenAI-specific risk at the enterprise scale.
-3. **The GenAI-specific additions (20 min).** Identify the GenAI-specific elements the enterprise security architecture must add (the untrusted-content-is-data problem — 4.9, the model-actor identity, the corpus data perimeters), and how they evolve the security architecture (6.1's shape-the-EA).
-4. **The security-function integration (15 min).** Describe how the GenAI security integrates with the enterprise security function (governed as a specialization, monitored via the SIEM, the AI-incident runbooks in the IR — integrate-don't-parallel), not as a security island.
+1. **Segment map (25 min).** Draw the platform as segments (gateway, serving, retrieval, agent runtime, vault, egress — adapt to your system). For each, list the *named allowed flows* in and out; everything unlisted is default-deny. Mark flows carrying attacker-influenceable content.
+2. **PDP/PEP placement table (20 min).** Reproduce this chapter's table shape: PEP technology per segment, the decision inputs weighed there, the on-PDP-outage posture — defending each fail-open in one sentence.
+3. **Policy-as-code samples (20 min).** Write two policies in pseudo-code: (a) agent-runtime may call the vault broker for task-scoped credentials, nothing calls the vault directly; (b) only the retrieval service reaches the vector store, tenant partition enforced. Add one *expiring* exception with an owner and a date.
+4. **Access matrix (15 min).** For operators, CI, and break-glass: which identity reaches which application through the ZTNA broker, with what posture requirement. No row may grant network-level reachability.
 
 **Acceptance criteria:**
-- [ ] 4.9's blast-radius architecture mapped onto the zero-trust principles (the natural fit shown)
-- [ ] The GenAI system placed within the enterprise controls (identity, segmentation, data perimeters) with the risk-containment per control
-- [ ] The GenAI-specific additions to the security architecture identified
-- [ ] The security-function integration is integrate-don't-parallel (specialization, not island)
+- [ ] Every segment boundary lists named flows; no implicit any-any on the map
+- [ ] The placement table covers every segment; every fail-open has a written defense
+- [ ] Both policies are identity-based, not IP-based; the exception rule has an owner and expiry
+- [ ] The access matrix is per-application; admin planes are reachable only through the broker
+- [ ] The egress allowlist names the model vendor and each external tool endpoint explicitly
 
 ## Enterprise Considerations
 
-Enterprise GenAI security architecture is deeply integrated with the enterprise security function and its zero-trust journey. **It conforms to and extends the enterprise zero-trust architecture** (5.1/6.1's conform): most security-conscious enterprises have (or are building) a zero-trust architecture, and GenAI fits within it (the natural fit — 4.9 = zero trust) with the GenAI-specific additions (the AI architect extending the security architecture — 6.1's shape) — the integrate-don't-parallel (security-architecture edition). **The security function governs it as a specialization** (4.9): the enterprise security function (its architecture reviews — 6.9, its controls, its operations) governs GenAI security as a specialization within it (the GenAI-specific threat models — 4.9 in the enterprise threat-modeling, the guardrails — 4.8 in the enterprise controls, the AI-incident runbooks — 4.9 in the enterprise IR), and the AI architect works with the security function (1.8's influence, bringing the GenAI security expertise) not around it (the shadow-AI-security islands). **The data perimeters are a compliance control** (4.14): the data perimeters around the corpus and the model transfers (4.14's residency, the exfiltration containment — 4.9) are compliance controls (the PHI/PII perimeter — 4.14), so the security architecture serves the compliance function (the data perimeter as both a security and compliance control). **And the zero-trust journey is enterprise-wide** (6.10): the enterprise's zero-trust architecture is a major, ongoing enterprise-security investment, and GenAI is one workload within it — the AI architect ensures GenAI fits and contributes, part of the broader enterprise-security strategy (6.10's strategic context).
+In a real enterprise you join a zero-trust journey already in motion — CISA's Zero Trust Maturity Model is the vocabulary security functions use for where they are — and the first placement question is whether the AI platform consumes the enterprise's shared PDP or runs a platform-local engine federated with it: shared is the default, platform-local reserved for decisions the central engine cannot evaluate fast enough. Ownership follows Conway's law ([6.4](chapter-04-enterprise-integration.md)): mesh PEPs usually land with the platform team while the ZTNA broker and egress proxy land with network security, and leaving that split un-negotiated is how enforcement gaps open. The egress allowlist doubles as vendor governance — every external model API is a named destination with a contract behind it, so shadow AI surfaces as blocked egress rather than an audit surprise. And the segment map plus policy history serve as compliance evidence: the data-residency and access-control claims 4.14's regime must prove are readable off the policy repo instead of reconstructed by interview.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| GenAI security placement | Within the enterprise zero-trust architecture | A GenAI security island | Always — the natural fit (4.9 = zero trust), coherent and deployable | Never; the security island is un-governable and uncontained |
-| Security governance | The security function as a specialization | A parallel AI-security org | Always — integrate-don't-parallel (security edition) | Never; the parallel org fragments the security |
-| Data perimeter | Around the sensitive data (corpus, transfers) | No perimeter (trust the network) | Always — zero-trust assume-breach, the exfiltration containment (4.9/4.14) | Never; no-perimeter is the pre-zero-trust trust-the-network model |
-| Model access | Verified, least-privileged (model-as-actor) | Broad (the god-credential — 3.7/4.9) | Always — zero-trust least-privilege bounds the blast-radius | Never; the broad model access is the uncontained-injection risk |
+| Segmentation granularity | Coarse zones (3–5 segments) | Per-workload microsegments | Small platform, limited ops capacity — maintained boundaries beat fine ones that rot | Multi-tenant or agent-heavy estates needing per-workload blast radius |
+| East-west PEP technology | Service-mesh sidecars (identity-based) | SDN / cloud firewall rules | Kubernetes-style churn; you need mTLS and attestation anyway | Static VM estates; no mesh skills — a firewall enforced beats a mesh half-deployed |
+| PDP outage posture | Fail closed | Fail open, cached decisions | Vault, admin planes, egress — anywhere an open door outlasts the outage | The availability-critical inference path, with short-TTL caches |
+| Operator access | ZTNA per-application | Keep the VPN | Applications are enumerable and the migration is funded | Transitional only — paired with segment PEPs so reachability stops meaning access |
 
 ## Common Mistakes
 
-1. **The GenAI security island** — the GenAI system with its own ad-hoc security, disconnected from the enterprise zero-trust architecture and security function (the parallel-security anti-pattern); GenAI security is a specialization within the enterprise security (integrate-don't-parallel).
-2. **Missing the natural zero-trust fit** — not recognizing that 4.9's blast-radius architecture *is* zero trust, so re-inventing GenAI security instead of placing it within the enterprise zero-trust model; the fit is natural, the placement is the work.
-3. **No data perimeters** — the sensitive data (corpus, transfers) without perimeters, trusting the network (the pre-zero-trust model); the data perimeters contain the exfiltration and residency risks (4.9/4.14).
-4. **Broad model access** — the model-as-actor with broad access (the god-credential — 3.7/4.9), violating zero-trust least-privilege and leaving the injection blast-radius uncontained; verify and least-privilege the model's access (6.6).
-5. **Security not integrated with operations** — the GenAI security monitoring disconnected from the enterprise SIEM and IR (the AI-incident runbooks not in the enterprise IR — 4.9); integrate the GenAI security operations with the enterprise security operations.
-6. **Not shaping the security architecture** — the AI architect conforming to the enterprise security without adding the GenAI-specific elements (the untrusted-content-is-data, the model-actor identity, the corpus perimeters); shape the security architecture (6.1's shape-the-EA).
-7. **Ignoring the compliance role of the perimeters** — the data perimeters as security-only, missing their compliance role (the PHI/PII perimeter — 4.14); the perimeters are both security and compliance controls.
+1. **IP-based rules in an autoscaling estate.** Addresses churn, rules lag, on-call pain drives quiet widening, and eighteen months later the "segmented" network is flat with extra steps — Vantora's first attempt.
+2. **Segmenting the inference path and forgetting the management plane.** User-facing traffic gets PEPs while the vector-store admin API, model registry, and eval dashboards stay on the flat network; red teams go straight for the admin plane.
+3. **Calling the VPN zero trust.** "We authenticate everyone at the door" is perimeter security with a newer logo; the grant is still network reachability.
+4. **Continuous verification that only checks identity.** A stolen valid token from an unmanaged device passes every identity check; posture and behavior signals exist for exactly this case.
+5. **Tenant isolation by metadata filter alone.** The shared index with a `tenant_id` clause is one query-construction bug from a cross-tenant breach; without partition-level enforcement at a PEP, the tenancy promise is application code.
+6. **An egress allowlist with side doors.** The proxy polices HTTPS while DNS resolves freely, or the "temporary" wildcard for a vendor's CDN never narrows. Egress earns its backstop status only if genuinely default-deny.
 
 ## Best Practices
 
-1. **Place GenAI within the enterprise zero-trust architecture** — recognize the natural fit (4.9's blast-radius = zero trust), extend 4.9's system-level security to the enterprise controls (identity — 6.6, segmentation, data perimeters).
-2. **Verify and least-privilege the model as an actor** — the model's access (tools — 3.7, data) verified and least-privileged through the enterprise identity (6.6), bounding the injection blast-radius (zero-trust, 4.9).
-3. **Build data perimeters around the sensitive data** — the corpus, the training data, the model transfers (4.14/4.9), containing the exfiltration and residency risks (both security and compliance controls).
-4. **Govern GenAI security as a specialization within the security function** — integrate-don't-parallel (security edition), the enterprise security function governing the GenAI-specific threat models (4.9), guardrails (4.8), and controls.
-5. **Integrate the GenAI security operations with the enterprise operations** — the guardrail telemetry (4.8), the trajectory forensics (4.4), the AI-incident runbooks (4.9) in the enterprise SIEM and IR.
-6. **Shape the security architecture with the GenAI-specific elements** — the untrusted-content-is-data (4.9), the model-actor identity, the corpus data perimeters — evolving the enterprise security architecture (6.1's shape-the-EA).
-7. **Serve compliance with the security controls** — the data perimeters as compliance controls (4.14), the security architecture serving the compliance function.
+1. **Name the PDP and every PEP in the design document.** If you cannot point at what decides and what enforces, you have principles, not architecture.
+2. **Segment on workload identity.** Attested identities move with autoscaled workloads; addresses do not.
+3. **Default-deny east-west, with flows as policy-as-code.** Every allowed connection is a reviewed, versioned statement with an owner; exceptions expire by construction.
+4. **Treat the agent runtime as already compromised.** Named tool endpoints, brokered credentials, no direct egress — the posture that makes 4.9's assumption survivable.
+5. **Make egress the backstop it claims to be.** One proxied exit, explicit destinations including the model vendor, DNS policed, wildcards refused.
+6. **Decide outage postures in advance.** Fail-closed by default; fail-open only where the availability case is argued and the compensations are named.
 
 ## Architecture Checklist
 
-For placing GenAI in the enterprise security architecture:
+For an AI platform's zero-trust architecture:
 
-- [ ] GenAI placed within the enterprise zero-trust architecture (4.9's blast-radius mapped onto zero-trust principles — the natural fit)
-- [ ] The model verified and least-privileged as an actor (tool/data access through the enterprise identity — 6.6), bounding the injection blast-radius
-- [ ] Data perimeters around the sensitive data (corpus, training, transfers — 4.14/4.9); both security and compliance controls
-- [ ] Network segmentation with controlled egress (4.9's exfiltration containment)
-- [ ] GenAI security governed as a specialization within the security function (integrate-don't-parallel, security edition)
-- [ ] GenAI security operations integrated with the enterprise SIEM and IR (guardrail telemetry, forensics, AI-incident runbooks — 4.8/4.4/4.9)
-- [ ] The security architecture evolved with the GenAI-specific elements (6.1's shape-the-EA)
+- [ ] PDP identified (shared enterprise engine, platform-local, or federated); policy in version control
+- [ ] Every segment boundary has a named PEP; the placement table exists and is review-signed
+- [ ] East-west traffic is default-deny; all allowed flows are named, identity-based policies
+- [ ] Management planes (vector-store admin, model registry, eval tooling) sit inside segments, not on the flat network
+- [ ] PDP signals include attestation and device posture, not identity alone; degraded signal steps up or denies
+- [ ] Agent runtime segment: named tool endpoints only, brokered credentials, no direct egress
+- [ ] Egress is a single default-deny proxy with explicit destinations; DNS is policed
+- [ ] Tenant isolation is enforced at PEPs (partitions, keys), not only in application filters
+- [ ] Operator and CI access runs through ZTNA per-application; break-glass exists and is logged
+- [ ] Every PEP has a written on-PDP-outage posture; policy exceptions carry owners and expiry dates
 
 ## Interview Questions
 
-1. *"How does GenAI security fit into an enterprise zero-trust architecture?"* — Strong answers show the natural fit (4.9's blast-radius architecture *is* zero trust — the least-privilege bounding the injection blast-radius, the assume-the-model-can-be-instructed as assume-breach, the verify-and-fence-untrusted-content as verify-explicitly), and the placement (extending 4.9's system-level security to the enterprise controls — identity 6.6, segmentation, data perimeters), with the GenAI-specific additions.
-2. *"What data perimeters do GenAI systems need at the enterprise scale?"* — Strong answers give the perimeters around the sensitive data (the corpus — 4.1, the training data — 2.6, the model transfers — 4.14), containing the exfiltration (4.9) and residency (4.14) risks, as both security and compliance controls, placed within the enterprise data-perimeter architecture.
-3. *"How should GenAI security relate to the enterprise security function?"* — Strong answers give the integrate-don't-parallel (security edition — 4.9's fit-the-machinery): GenAI security as a specialization within the security function (governed by its architecture reviews — 6.9, controls, operations — the SIEM, the IR with AI runbooks), the AI architect working with the security function (1.8) and shaping the security architecture (6.1) — not a security island.
-4. *"What does zero-trust least-privilege mean for the model itself?"* — Strong answers give the model-as-actor: the model's access (its tools — 3.7, its data) verified and least-privileged through the enterprise identity (6.6), assuming the model can be compromised (4.9's assume-the-model-can-be-instructed = assume-breach), which bounds the injection blast-radius (4.9) — the god-credential (3.7/4.9) being the zero-trust violation.
+1. *"Walk me through what happens when an agent requests a document from the vector store in a zero-trust AI platform."* — Strong answers trace the machinery: the sandbox-boundary PEP intercepts; the PDP weighs task identity, attestation, behavior, and index sensitivity; the flow exists only because a named policy allows agent-runtime → retrieval service → tenant partition. Weak answers say "it's authenticated."
+2. *"Design the segmentation for a multi-tenant RAG platform."* — Strong answers produce the segment map, name the PEP per boundary, insist on identity-based enforcement over IP, and put tenancy below the application layer: partitions and keys at the PEP, not a metadata filter.
+3. *"Why replace the VPN with ZTNA for the AI estate, and what does it cost?"* — Strong answers contrast the grants (network reachability versus per-application access) and volunteer the cost: enumerating applications and authorized identities is real work — which is also the security work.
+4. *"An injection got past the guardrails and the model is exfiltrating. What limits the damage?"* — Strong answers reach for the controls that work after the model is fooled: the agent segment's default-deny, the brokered vault (no standing credential to steal), and the egress allowlist as backstop — 4.9's hierarchy on this chapter's network.
 
 ## Further Reading
 
-- NIST Zero Trust Architecture (SP 800-207, nist.gov) — the zero-trust model this chapter places GenAI within; the principles (verify explicitly, least privilege, assume breach) that 4.9's blast-radius architecture embodies.
-- 4.9 GenAI Security & Threat Modeling (re-read) — the system-level GenAI security this chapter places in the enterprise architecture; the blast-radius-over-detection and least-privilege that map onto zero trust.
-- Your enterprise's zero-trust and security-architecture documentation (internal, and the security function's) — the architecture GenAI conforms to and extends.
-- 6.6 Identity & Access Management for AI Systems (the identity substrate) — the next chapter, the identity that the zero-trust verify-and-least-privilege depends on.
+- NIST SP 800-207, *Zero Trust Architecture* (nist.gov) — the reference model behind this chapter; short, and the PDP/PEP vocabulary comes straight from it.
+- Google's BeyondCorp papers (research.google) — the original operators-without-a-VPN architecture; the practical ancestor of ZTNA.
+- CISA Zero Trust Maturity Model (cisa.gov) — the staging vocabulary enterprise security functions use for the journey you join mid-flight.
+- The [security checklist](../../checklists/security-checklist.md) and [4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md) (re-read after this chapter) — the system-level doctrine this network architecture enforces at enterprise scale.
 
 ## Summary
 
-- GenAI security is **a specialization within the enterprise zero-trust architecture** — 4.9's blast-radius architecture *is* zero trust at the system level (least-privilege bounding the injection blast-radius, assume-the-model-can-be-instructed as assume-breach, verify-and-fence-untrusted-content as verify-explicitly), so GenAI fits naturally, and the placement extends 4.9 to the enterprise controls.
-- GenAI is placed within the **enterprise security controls**: identity (6.6 — the model verified and least-privileged as an actor), network segmentation (egress-controlled — 4.9), and data perimeters (around the corpus and transfers — 4.14/4.9, both security and compliance controls).
-- GenAI **adds specific elements to the security architecture** — the untrusted-content-is-data problem (4.9), the model-as-actor identity, the corpus data perimeters — which the AI architect contributes (6.1's shape-the-EA, security edition).
-- GenAI security is governed as a **specialization within the security function** (integrate-don't-parallel, security edition — 4.9's fit-the-machinery), its operations integrated with the enterprise SIEM and IR (the AI-incident runbooks — 4.9), not a security island.
-- The placement makes GenAI **deployable and coherent** in the security-conscious enterprise (the security function approves what fits its controls, governs it as part of the enterprise security). The identity substrate the zero-trust model depends on is next: **identity & access management for AI systems** (6.6).
+- Zero trust is machinery, not a motto: a **policy decision point** evaluating per-request signals — identity, posture, behavior, resource sensitivity — and **policy enforcement points** in every traffic path, governed as policy-as-code.
+- The AI platform is cut into **default-deny segments** — gateway, serving, retrieval/vector store, agent runtime, vault, egress — enforced on **workload identity rather than IP**, because autoscaling estates rot address-based rules into flat networks.
+- Operators and CI reach the estate through **ZTNA**: per-application access for verified, posture-checked identities instead of the VPN's network reachability.
+- The AI-specific extensions: the **agent runtime is architected as already compromised**, **egress is the exfiltration backstop** that works after injection succeeds, and **tenant isolation is PEP-enforced structure**, not an application-layer filter.
+- 4.9's blast-radius doctrine and zero trust are the same commitments at two scales — well-architected AI systems drop into the enterprise model without redesign. The identity substrate every PDP decision starts from is next: **identity & access management for AI systems** ([6.6](chapter-06-iam-for-ai.md)).
 
 ---
 

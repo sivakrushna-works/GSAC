@@ -5,167 +5,194 @@
 | **Part** | 6 — Enterprise Architecture |
 | **Maturity level** | 3 — Engineer |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 h 10 min (reading 40 min, exercise 90 min) |
 | **Prerequisites** | [1.4 Trade-off Analysis](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md); [6.2](chapter-02-architecture-views-documentation.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Run architecture decision-making that scales: ADR practice, RFC processes, and the decision-rights clarity that keeps decisions moving.
-2. Establish the decision-governance that a large GenAI portfolio needs: what decisions need what process, who decides, and how disagreements resolve.
-3. Extend 1.4's trade-off analysis into the enterprise decision-governance: the ADRs as the record, the processes as the flow, the rights as the clarity.
-4. Avoid the decision pathologies at scale: the decisions that don't get made, get re-made, or get made by the wrong people.
+1. Decide which decisions earn an [ADR](../../GLOSSARY.md) — the significance test plus the AI decision classes that always qualify — and write one a stranger can act on two years later.
+2. Place any decision on the scope ladder (team-local, portfolio-visible, board-gated), name who signs each rung, and run the RFC and escalation machinery that closes contested decisions with dissent recorded.
+3. Operate the status lifecycle: supersession with a consumer migration path, deprecation, and the immutability rule that keeps the log trustworthy.
+4. Detect the four ADR anti-patterns — post-hoc justification, decision laundering, minutes-as-ADRs, orphaned records — and measure a log's health with three concrete metrics.
 
 ## Introduction
 
-This chapter scales 1.4's trade-off analysis and decision-making from the individual decision to the enterprise decision-governance — the practice, processes, and rights that keep architecture decisions in a large GenAI portfolio getting made well, recorded, and not re-litigated. 1.4 built the individual decision (the trade-off analysis, the ADR, the reversibility triage); this chapter builds the *governance* around decisions at scale, where the questions are which decisions need which process, who has the rights to decide, and how the organization avoids the decision pathologies (paralysis, churn, wrong-decider) at portfolio scale.
-
-The framing: **decision governance is the enterprise's decision-making at scale** — the ADR practice (the record — 1.4), the RFC processes (the flow), and the decision rights (the clarity) that turn individual good decisions (1.4) into an organization that decides well consistently, versus the organization where decisions stall, churn, or get made by whoever shouts loudest.
+Chapter [1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md) taught you to make one architecture decision well; this chapter builds the organizational machinery around many of them. An Architecture Decision Record — a practice tracing to Michael Nygard's 2011 blog post — is a short, numbered, versioned document capturing one architecturally significant decision; a *decision log* is the accumulated set. *Decision governance* is everything that keeps the log honest: who may make which class of decision, when the record must exist relative to the commitment it describes, and what happens when reality invalidates a recorded choice. The distinction matters because the format is trivial to adopt and the governance is not — most failed ADR programs produced plenty of documents and no working memory. This chapter covers the working version: what earns a record, who signs at which scope, how decisions die, and how to tell whether your log is alive.
 
 ## Business Motivation
 
-Decision governance is what keeps a large GenAI portfolio's architecture decisions moving and coherent — the difference between an organization that decides well at scale and one that drowns in decision dysfunction. Without it: decisions stall (nobody knows who decides — 1.4's paralysis, at scale), get re-litigated (no ADR record, so every decision is re-fought when a new stakeholder arrives — 1.4's churn, at scale), or get made by the wrong people (no decision rights, so the loudest or most senior decides regardless of the right owner — 1.4's HiPPO, institutionalized). The cost is velocity and coherence: the organization with poor decision governance decides slowly (the stall), inconsistently (the churn), and badly (the wrong-decider), which at GenAI's pace (models change quarterly — 3.10, the technology moves fast) is a serious drag on the whole portfolio. The business case is the enterprise-scale version of 1.4's: good decision governance (ADRs recording the decisions and their rationale, processes flowing the decisions, rights clarifying the deciders) makes the organization decide fast (clear rights, no stall), coherently (recorded, no churn), and well (the right decider, the trade-off analysis) at portfolio scale — the decision infrastructure that lets the AI program move at the technology's pace without the decision dysfunction that scale otherwise brings.
+Unrecorded decisions bill the organization three ways. First, re-litigation: every senior-stakeholder change reopens settled questions, and the people re-arguing them are the most expensive people you employ. AI portfolios pay this tax at a premium because the technology turns over fast — every notable model release invites "should we switch providers?", and without a recorded decision carrying a [revisit trigger](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md), that question is a standing argument rather than a monitored condition. Second, blind commitments: when the record is written after the contract, the trade-off analysis that would have caught the bad exit clause never ran — Vantora Systems paid roughly $140k to learn this (below). Third, evidence debt: regulators and enterprise customers increasingly ask *why* a system is built the way it is, and a maintained log answers in an afternoon what an archaeology project answers in a quarter — [6.11](chapter-11-model-risk-management.md)'s evidence-as-output economics, applied to decisions. Against all three, the practice is nearly free: one to two pages, written once, at the moment the thinking is already done.
 
 ## Theory
 
-### The ADR practice at scale
+### What earns an ADR — significance, plus the AI mandatory classes
 
-1.4's ADR, as an enterprise practice:
+The general test is 1.4's: a decision earns a record when it is expensive to reverse, wide in blast radius, or genuinely contested — not merely because a meeting happened. Recording everything is how logs die; the trivial drowns the significant and readers stop reading.
 
-- **ADRs as the decision record** (1.4) — the architecturally-significant decisions recorded (context, options, decision, consequences, revisit triggers — 1.4's format), so the *why* is durable (against 1.4's re-litigation) and auditable (4.14's decision-records evidence); the practice this curriculum has used throughout (the [ADR log](../../adr/) and template).
-- **The ADR log as institutional memory** — the accumulated ADRs as the portfolio's decision history (why the architecture is the way it is), which is the successor's map (1.4), the auditor's evidence (4.14), and the churn-prevention (the decision was made, here's why, revisit only on the trigger — 1.4).
-- **Which decisions get ADRs** — the architecturally-significant ones (1.4's consequential, one-way-door, wide-blast-radius decisions), not every decision (the ADR practice scales by recording the significant, not drowning in the trivial); the judgment of significance is part of the practice.
+For an AI portfolio, four decision classes clear the bar so reliably they should be mandatory — a design review that finds any of them undocumented should stop:
 
-### The decision processes
+1. **Approach choice** — rules, classical ML, or GenAI. The [2.11](../part-2-artificial-intelligence/chapter-11-choosing-the-right-ai-approach.md) triage memo is this ADR's context section, already written; it doubles as the conceptual-soundness evidence a validator will later ask for.
+2. **Model and provider selection** — which provider, API versus self-hosted, hosting geography. The shortest-half-life decisions in the portfolio, which makes the revisit trigger the most load-bearing line in the document.
+3. **Data-use decisions** — what data may appear in prompts, be retained, be used for fine-tuning, or be shared under a vendor's terms. One-way doors with legal blast radius; they belong on the top rung of the ladder below.
+4. **Autonomy level** — [workflow](../../GLOSSARY.md) versus [agent](../../GLOSSARY.md), and where human review sits. Raising autonomy later is a governed change, and the ADR is where the raise gets argued.
 
-The processes that flow decisions at scale:
+### A worked exhibit
 
-- **RFC (Request for Comments) processes** — for the decisions that need broad input (the cross-team, portfolio-affecting decisions): a proposal circulated for comment, the input gathered, the decision made and recorded (the ADR); the process that scales the 1.4 trade-off analysis's stakeholder input (the pre-socialization — 1.8) to the organization.
-- **Lightweight vs. heavyweight** — the process matched to the decision (1.4's effort-to-reversibility): the reversible team-level decisions decided lightly (the team decides, records if significant), the one-way-door portfolio decisions decided heavily (the RFC, the review board — 6.9, the formal ADR); the process-matching that avoids both the everything-is-heavyweight ceremony and the everything-is-lightweight chaos.
-- **The review board interaction** (6.9) — the significant decisions that go to the architecture review board (6.9): the board reviews the decision (the trade-off analysis, the ADR), and the process is how the decision flows to and from the board (6.9's governance).
+The fastest way to internalize the form is to read a filled one. This is Vantora's, lightly condensed:
 
-### Decision rights
+> **ADR-0017: Route all LLM provider access through the platform gateway**
+>
+> **Status:** Accepted · **Date:** 2025-11-04 · **Deciders:** Adaeze N. (platform lead, accountable); app-team leads (consulted); CISO, finance (informed)
+>
+> **Context.** Six product teams call three LLM providers through per-team SDK integrations. Provider keys live in six secret stores; spend is invisible until the invoice; March's model deprecation required six uncoordinated migrations; security cannot produce one egress audit trail.
+>
+> **Options.** (1) *Status quo, direct SDKs* — lowest latency, no platform dependency; no shared quota, cost, or audit view. (2) *Gateway-mediated access* — one egress point with auth, logging, quotas, and model-version pinning; adds a hop and makes the gateway Tier-1 infrastructure. (3) *Shared client library* — consistency without a runtime chokepoint; unenforceable, since teams can fork or bypass it.
+>
+> **Decision.** Option 2. All provider calls route through the platform gateway; direct SDK use leaves the golden path now and is blocked at network egress by end of Q2.
+>
+> **Consequences.** *Positive:* one audit log; per-team cost attribution; a provider swap becomes a gateway config change. *Negative, accepted:* ~30 ms added p50 latency; an on-call rota for the gateway; teams lose day-one access to new provider features until the gateway proxies them. *Revisit when:* gateway p99 overhead exceeds 80 ms for two consecutive weeks, or a product needs a provider capability the gateway cannot proxy within a sprint.
 
-The clarity of who decides (1.4's named decider, at scale):
+Notice what makes it durable. The context describes forces, not personalities, so it still reads in two years. The losing options have real pros — the analysis was live, not staged. The negative consequences are specific enough to check ("~30 ms", "on-call rota"), and the revisit trigger is measurable, so the next "should we reconsider?" is a metrics lookup rather than an opinion fight.
 
-- **Decision rights defined** — who has the authority to decide what (the team decides X, the platform team decides Y, the review board decides Z, the escalation goes to whom) — the clarity that prevents the stall (nobody knows who decides) and the wrong-decider (the loudest decides); the enterprise-scale version of 1.4's named-decider.
-- **The RACI-style clarity** — who's Responsible, Accountable, Consulted, Informed for the decision types (a lightweight model, not the heavyweight RACI ceremony): the clarity of roles that keeps decisions moving (the accountable decider knows they decide, the consulted know they're consulted not deciding — resolving 1.4's consensus-scales-terribly).
-- **Escalation paths** — where decisions go when they can't be resolved at their level (the disagreement that needs a higher decider, the cross-team conflict that needs the EA function or the review board — 6.9); the path that prevents the stall (the unresolvable decision has somewhere to go) and the 1.8 disagree-and-commit (the escalation resolves, and the parties commit).
+### The decision-scope ladder
 
-### The decision pathologies at scale
+One process weight for all decisions fails in both directions, so scope is triaged onto three rungs, each with a different signer and ceremony:
 
-1.4's pathologies, institutionalized and their governance-level fixes:
+| Rung | What lives here | Who signs | Process |
+|---|---|---|---|
+| **Team-local** | Reversible within a sprint, blast radius one system: [chunking](../../GLOSSARY.md) strategy, [reranking](../../GLOSSARY.md) choice, eval harness internals | The team's tech lead | ADR merged in the team repo; the shared index picks it up; no wider review |
+| **Portfolio-visible** | Crosses team boundaries or constrains future teams: gateway design, prompt-registry conventions, shared eval standards | A named accountable owner, after comments | RFC — the draft ADR circulated to affected teams with a timeboxed comment window (five working days is typical); silence is consent |
+| **Board-gated** | One-way doors with legal or financial blast radius: provider contracts, data-use and residency, customer-facing autonomy | The review board ([6.9](chapter-09-architecture-governance.md)) plus an executive sponsor | Full trade-off analysis presented; ADR merged **before** the contract is signed or the capability ships |
 
-- **Paralysis at scale** — decisions that stall because no rights are clear; fixed by the decision rights (who decides) and the escalation paths (where the stuck decision goes).
-- **Churn at scale** — decisions re-litigated because no ADR record; fixed by the ADR practice (the decision recorded with its rationale and revisit trigger, re-opened only on the trigger — 1.4).
-- **Wrong-decider at scale** — decisions made by the loudest or most senior regardless of the right owner (1.4's HiPPO, institutionalized); fixed by the decision rights (the accountable decider defined) and the process (the RFC/trade-off analysis that makes the decision evidence-based, not authority-based — 1.4).
-- **Process pathology** — the governance itself becoming the dysfunction (everything heavyweight, the decision drowning in process — the ceremony of 6.1); fixed by the process-matching (lightweight for reversible, heavyweight for one-way-door — 1.4's effort-to-reversibility).
+Two governance rules make the ladder work. **Disagreement protocol:** the RFC window ends with a decision by the named owner, not with consensus; unresolved objections escalate once, to the review board, and the ADR records the dissent and the disagree-and-commit ([1.8](../part-1-professional-foundation/chapter-08-leadership-influence.md)) by name — which later lets the dissenter say "reopen per my recorded objection" instead of "I told you so." **Contract effect:** from the portfolio rung up, an accepted ADR is an inter-team contract — other teams build against it, so changing it requires supersession with a migration path, never a quiet edit.
+
+### The status lifecycle and supersession
+
+An ADR moves through a small state machine: **Proposed → Accepted → (Superseded by ADR-NNNN | Deprecated)**. Only Proposed drafts may be edited freely; once accepted, the document is immutable *except its status field* — a log whose past entries can be rewritten proves nothing to anyone.
+
+Supersession is how decisions die well. When a revisit trigger fires (or reality invalidates the decision another way), you write a *new* ADR whose context section opens with what changed; the old ADR's status becomes "Superseded by ADR-NNNN," a forward pointer redirecting any reader who lands on it. Because portfolio-rung decisions have consumers, the superseding ADR's consequences must name them and state the migration window — teams that had built on ADR-0009's per-team SDK pattern did not discover ADR-0017 by surprise; the document told them what changes and by when. Deprecation, the rarer exit, marks a decision whose subject was retired outright — no successor.
+
+This repository's own log is a live exhibit: [ADR-0004](../../adr/ADR-0004-reposition-to-ai-solution-architect.md) repositioned the whole curriculum's scope, explicitly resolves a question ADR-0002 had left open, and carries a two-branch revisit trigger naming both its success condition (parity targets → rebrand) and its fallback if progress stalls. A decision that plans its own supersession is the mature form.
+
+### Metrics of a healthy log
+
+You cannot inspect ADR quality at scale, but you can measure the log:
+
+1. **Contested-decision coverage.** Sample last quarter's arguments that outlived one meeting; what fraction ended in a merged ADR? The failure signature is a load-bearing architecture fact that exists only as folklore.
+2. **Findability.** The stranger test: someone outside the deciding team, starting from the index, finds the ADR answering "why do we do X?" in under five minutes. Track median time-to-find; an unfindable record loses to institutional memory, and re-litigation returns.
+3. **Supersession hygiene.** Zero accepted ADRs contradicting current reality; every superseded record carries its forward pointer; every fired revisit trigger re-scored or explicitly reaffirmed within a quarter. A laundering check belongs here too: merge dates should precede the contract and implementation dates they authorize.
 
 ## Architecture Perspective
 
 ```mermaid
-flowchart TD
-    DECISION[An architecture decision] --> SIG{Significant?<br/>1.4's consequential/one-way-door}
-    SIG -->|no| TEAM[Team decides lightly<br/>record if significant]
-    SIG -->|yes| RIGHTS{Decision rights<br/>who decides?}
-    RIGHTS --> PROCESS[Process matched — 1.4<br/>RFC / review board — 6.9]
-    PROCESS --> TRADEOFF[Trade-off analysis — 1.4]
-    TRADEOFF --> ADR[(ADR: decision + rationale<br/>+ revisit trigger — 1.4)]
-    ADR --> LOG[(ADR log<br/>institutional memory)]
-    LOG -.prevents churn.-> DECISION
-    ESCALATE[Escalation paths] -.unresolvable → higher decider.-> RIGHTS
-    LOG -.evidence.-> AUDIT[Compliance — 4.14]
-    LOG -.the why.-> SUCCESSORS[Successors, governance — 6.9]
+flowchart LR
+    D[Significant or contested<br/>decision] --> P[Draft ADR — Proposed]
+    P --> R{Scope rung}
+    R -->|team-local| TL[Tech lead signs<br/>merged in team repo]
+    R -->|portfolio-visible| RFC[RFC comment window<br/>timeboxed, then owner signs]
+    R -->|board-gated| BG[Review board + sponsor<br/>ADR before signature]
+    TL --> A[Accepted — numbered,<br/>immutable except status]
+    RFC --> A
+    BG --> A
+    A --> LOG[(Decision log<br/>generated index,<br/>linked from code and PRs)]
+    LOG -->|revisit trigger fires| S[Superseding ADR<br/>+ consumer migration]
+    S -->|old status → Superseded by NNNN| LOG
+    LOG -->|subject retired| DEP[Deprecated]
+    RFC -.unresolved objection,<br/>one escalation.-> BG
 ```
 
-Readings. **The ADR log is the institutional memory that prevents churn** — the accumulated decisions with their rationale and revisit triggers (1.4) are what let the organization *not* re-litigate (the decision was made, here's why, revisit only on the trigger), which at scale (many stakeholders, personnel changes) is the churn-prevention that keeps the portfolio's decisions stable — and it's the auditor's evidence (4.14) and the successor's map (1.4). **Decision rights are the stall-and-wrong-decider prevention** — the clarity of who decides what (the enterprise-scale named-decider — 1.4) prevents both the paralysis (nobody knows who decides) and the wrong-decider (the loudest decides), and the escalation paths give the unresolvable decision somewhere to go (the 1.8 disagree-and-commit after the escalation resolves). **And the process-matching prevents the process pathology** — matching the process to the decision (lightweight for reversible, heavyweight for one-way-door — 1.4's effort-to-reversibility) is what keeps the governance from becoming the dysfunction (the everything-heavyweight ceremony that drowns decisions — 6.1's ceremony), so the decision governance accelerates decisions rather than obstructing them.
+Physical layout matters as much as the flow. ADRs live in version control next to what they govern, because version control gives authorship, dates, and review for free — exactly the fields laundering detection needs. A generated index spans the repos so the stranger test has one starting point; numbers are sequential and never reused, so "per 0017" stays a stable citation in code comments and runbooks. The reverse links are the underused half: an implementation PR that cites its ADR gives the future maintainer a one-hop path from *what* to *why*.
 
 ## Real-world Example
 
-**Vantora Systems** (the platform arc) built decision governance for its GenAI platform and portfolio, and the governance is where 1.4's individual decisions became the organization's decision infrastructure. The pre-governance state was the decision dysfunction at scale (1.8's fragmented era, decision edition): decisions stalled (the model-choice decisions nobody owned — 3.10's pre-portfolio chaos, a decision-rights failure), churned (the same infrastructure decisions re-fought as teams and stakeholders changed — no ADR record), and got made by the wrong people (the conference-demo model choices — 1.8, a wrong-decider pathology). The decision governance fixed each: the ADR practice recorded the significant decisions (the platform decisions, the model-portfolio decisions — 3.10, the tenancy decisions — 4.1, each with the trade-off analysis, decision, and revisit trigger — 1.4), building the ADR log as the platform's institutional memory (the why, durable and auditable — 4.14); the decision rights were defined (the platform team decides the platform architecture, the application teams decide their systems within the platform's guardrails — 5.10, the review board — 6.9 — decides the portfolio-significant, with clear escalation paths); and the processes were matched (the reversible team decisions decided lightly, the one-way-door platform decisions via RFC and the review board — 6.9, the effort-to-reversibility of 1.4). The churn-prevention proved its worth: when a new VP arrived advocating a different model provider (the classic re-litigation trigger — 3.10's Vantora, 1.4's Corvid), the ADR log had the model-portfolio decision recorded with its rationale and revisit trigger — the re-litigation took one meeting (review the ADR, check whether the revisit trigger was met — it partly was, so re-score those criteria — 1.4's Corvid pattern), not the months the un-recorded decision would have churned. Adaeze's decision-governance note: *"At scale, the individual good decision (1.4) isn't enough — you need the governance: ADRs so decisions don't churn, rights so they don't stall or get made by the wrong people, processes matched so the governance accelerates rather than obstructs. The ADR log is the platform's memory — it's why the new VP's model challenge was a one-meeting re-score, not a three-month re-fight. Decide well individually, govern well at scale."*
+**Vantora Systems** (the platform arc) built its decision log twice. The first attempt was a mandate: a wiki space named "Architecture Decisions," template attached, every team instructed to record decisions there. Two quarters later it held 143 pages — retitled sync notes and, buried among them, three genuinely significant decisions with no numbering and no status fields. The test that exposed it was small: a new team lead asked why inference ran only in a US region when her customers were mostly European. The answer existed — as a paragraph inside "Platform Sync 2024-08-19" — and nobody could find it; the decision got re-argued for three weeks and re-decided the same way.
+
+The expensive failure was quieter. A product team evaluated a transcription vendor, signed a one-year contract, and wrote the "decision record" three weeks afterward, listing two alternatives no one had seriously assessed. The review board approved a decision that was already irreversible — decision laundering, working as designed. When the vendor deprecated the underlying model mid-contract, the exit clause nobody had scrutinized left Vantora paying roughly $140k for capacity it no longer used; the analysis that catches bad exit terms was never run, because the record came after the signature.
+
+The rebuild took the shape this chapter describes: ADRs in repos with a generated index, the three-rung ladder, and one enforcement rule with teeth — procurement would not countersign a vendor contract without a merged board-gated ADR number. That rule had a price, and Adaeze paid it knowingly: a launch slipped two weeks waiting on a provider-selection ADR, the team lead escalated, and she held the gate. For the decision class that had already burned them, the velocity cost was the accepted consequence — and she wrote *that* down too.
 
 ## Hands-on Exercise
 
-**Design the decision governance.** ~90 minutes. For a GenAI portfolio (real or a case study's).
+~90 minutes, using your own portfolio or a case study's.
 
-1. **Decision-type taxonomy (25 min).** List the architecture decision types in a GenAI portfolio (model selection, tenancy, platform architecture, a system's design, a prompt-registry standard). For each, classify significance (1.4 — reversible/one-way-door) and thus the process (lightweight team vs. heavyweight RFC/board).
-2. **Decision rights (25 min).** Define the decision rights for each type: who's accountable (decides), who's consulted, who's informed (the lightweight RACI-style clarity), and the escalation path for the unresolvable. Show how this prevents the stall and the wrong-decider (1.4).
-3. **The ADR practice (25 min).** For one significant decision, write the ADR (1.4's format: context, options, decision, consequences, revisit trigger). Describe how the ADR log prevents churn (the re-litigation-becomes-a-re-score, Vantora's shape).
-4. **The re-litigation drill (15 min).** Simulate a new stakeholder challenging a recorded decision: walk through how the ADR log handles it (review the ADR, check the revisit trigger, re-score if met — one meeting, not a re-fight — 1.4's Corvid).
+1. **Ladder triage (15 min).** List ten decisions from an AI initiative (mix approach choice, provider, data-use, chunking, eval conventions, autonomy). Place each on a rung and name the signer role. At least one should be "no ADR — below significance," with reasoning.
+2. **Write the ADR (30 min).** Pick one portfolio-visible decision and write the full record against the [template](../../templates/adr-template.md): context a stranger can follow, at least two losing options with genuine pros, checkable negative consequences, a measurable revisit trigger.
+3. **Supersession drill (25 min).** Eighteen months pass and your trigger fires. Write the superseding ADR's context section (what changed), the exact status-line edit to the old record, and a one-paragraph consumer note naming who must migrate and by when.
+4. **Log audit (20 min).** Audit this repository's [adr/ directory](../../adr/) against the three health metrics. Score each and write one concrete finding — for example, which ADR's revisit trigger is closest to firing, and what checking it would involve.
 
 **Acceptance criteria:**
-- [ ] Decision types classified by significance (1.4) and matched to process (lightweight/heavyweight)
-- [ ] Decision rights defined (accountable/consulted/informed, escalation) preventing stall and wrong-decider
-- [ ] ADR written in 1.4's format; the churn-prevention role described
-- [ ] The re-litigation drill shows the ADR log turning a re-fight into a re-score
+- [ ] Ten decisions placed on rungs with named signer roles, including one justified non-ADR
+- [ ] ADR contains ≥2 losing options with real pros, checkable negative consequences, and a measurable revisit trigger
+- [ ] Supersession drill includes the forward-pointer status edit and a consumer migration note
+- [ ] Log audit scores all three metrics and states one specific finding
 
 ## Enterprise Considerations
 
-Decision governance is part of the enterprise's overall governance and integrates with the EA and review-board machinery. **It integrates with the EA function and review boards** (6.1, 6.9): the decision governance (the ADR practice, the processes, the rights) is part of the EA function's governance and flows through the review boards (6.9) for the significant decisions — the AI decision governance conforms to and extends the enterprise's decision-governance practice (integrate-don't-parallel, decision edition). **The ADR log is compliance and audit evidence** (4.14): the decision records are the auditable *why* behind the architecture (4.14's decision-records evidence, 6.2's documentation-as-evidence), so the ADR practice serves the compliance function (the regulator's "why is it built this way?" answered by the ADR log). **Decision rights reflect the org structure** (Conway's law — 6.4): the decision rights (who decides what) reflect and shape the organizational structure (the platform team's rights, the application teams' rights — 5.10's platform/product split), so the decision governance is partly an org-design concern (8.7). **And the decision-governance maturity is an organizational capability** (8.8): an organization that decides well at scale (fast, coherent, right-decider) has a genuine capability that the poor-decision-governance organization lacks — the decision infrastructure is part of what makes an enterprise able to move at GenAI's pace, and building it is a principal-level contribution (8.8).
+At enterprise scale the governance questions are placement and enforcement. Placement: the decision log conforms to the EA function's documentation standards ([6.2](chapter-02-architecture-views-documentation.md)) rather than running as a parallel AI-only archive, and the board rung is the existing architecture review board ([6.9](chapter-09-architecture-governance.md)) with the AI decision classes added to its docket — a second board for AI decisions fragments precisely the memory the log exists to hold. Enforcement lives at commitment points, not in policy documents: procurement holds vendor signatures for a board-gated ADR number, and the platform's golden-path review asks for the ADR link in the design PR. Compliance is a beneficiary rather than a driver: the log is the documented "why" that privacy audits ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)) and model-risk validation (6.11) otherwise reconstruct at consulting rates. And the practice scales down honestly — a twenty-person company collapses the ladder to two rungs (team-local, founder-gated) and keeps the rest: numbering, immutability, triggers, the stranger test.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Process weight | Matched to significance (1.4) | Uniform (all heavy or all light) | Always — lightweight reversible, heavyweight one-way-door | Never uniform; all-heavy is ceremony, all-light is chaos |
-| ADR scope | Significant decisions (1.4's consequential) | Every decision | Always — record the significant, not the trivial | Never every decision (drowns) nor no decisions (churn) |
-| Decision rights | Defined (accountable decider, escalation) | Undefined (whoever decides) | Always — prevents stall and wrong-decider (1.4) | Never undefined; the stall and HiPPO pathologies follow |
-| Governance integration | Integrate with EA/review boards (6.1/6.9) | Parallel AI decision process | Always — integrate-don't-parallel (decision edition) | Never; the parallel process fragments the governance |
+| Log placement | In-repo per team + generated index | Single central store | Teams own repos and decisions ship with code — authorship and dates come free | Small org, or decision-makers who will never open a repo; accept weaker laundering detection |
+| Sign-off model | One named accountable signer per rung | Committee consensus | Default — speed and accountability; consulted parties comment, one person signs | True one-way doors with legal/financial blast radius; that is what the board rung is for |
+| RFC window | Timeboxed, silence is consent | Open until consensus | Default — decisions close on a date | First-of-class decisions where the affected-team list itself is unknown; extend once, not indefinitely |
+| Changing an accepted ADR | Supersede with a new numbered record | Edit in place | Always for Accepted status — the history is the audit asset | Only while status is Proposed; drafts are meant to be edited |
 
 ## Common Mistakes
 
-1. **No ADR record** — decisions made but not recorded, so they churn (re-litigated on every stakeholder change — 1.4's churn, at scale — Vantora's pre-governance re-fights); the ADR log is the churn-prevention.
-2. **Undefined decision rights** — nobody knows who decides, so decisions stall (paralysis) or the loudest decides (wrong-decider — 1.4's HiPPO, institutionalized); define the rights and escalation.
-3. **Uniform process** — everything heavyweight (the ceremony that drowns decisions — 6.1) or everything lightweight (the chaos of no process for the one-way-door decisions); match the process to the significance (1.4).
-4. **Recording every decision** — the ADR practice drowning in trivial decisions; record the architecturally-significant (1.4), not everything.
-5. **The parallel AI decision process** — decision governance disconnected from the EA function and review boards (6.1/6.9); integrate-don't-parallel (decision edition).
-6. **Ignoring the revisit trigger** — ADRs without revisit triggers, so decisions either ossify (never revisited past validity) or churn (re-litigated without a trigger — 1.4); the revisit trigger is the re-litigation control.
-7. **Decision rights ignoring the org structure** — decision rights that don't reflect who actually owns what (Conway's law — 6.4); the rights reflect and shape the org structure (the platform/product split — 5.10).
+1. **Post-hoc justification.** The system is built, works, and then the ADR is written — options reverse-engineered so the winner wins. Detectable because the losing options have hollow pros and the negatives are vague. The fix is timing, not exhortation: the ADR merges before the implementation PR opens.
+2. **Decision laundering.** The vendor edition of the same disease: contract signed, then the record written for the board to bless. Vantora's $140k exit clause is the canonical outcome — the analysis ran after it could matter. Only enforcement at the signature point (procurement requires the ADR number) survives deadline pressure.
+3. **ADR-as-meeting-minutes.** The log fills with retitled sync notes; Vantora's first attempt buried three real decisions in 143 pages. One decision per record, minutes elsewhere — a log's value is inversely related to its noise floor.
+4. **Orphaned ADRs.** Written, correct, and unfindable — a wiki silo, no numbering, no links from code. An unfindable record loses every argument with institutional memory, so re-litigation returns while the paperwork burden stays.
+5. **The frozen status field.** Reality moved and the statuses did not; two Accepted ADRs now contradict each other and readers can no longer tell which records are load-bearing. Trust in a log is binary, and it does not return by memo.
+6. **Template maximalism.** A mandatory three-page form with risk matrices and sign-off grids; teams comply for a month, then stop writing records at all. The two-page ceiling is a survival constraint, not a style preference.
 
 ## Best Practices
 
-1. **Record the significant decisions as ADRs** — 1.4's format (context, options, decision, consequences, revisit trigger), building the ADR log as institutional memory (the churn-prevention, the audit evidence — 4.14, the successor's map).
-2. **Define decision rights and escalation** — the accountable decider per decision type, the consulted/informed, the escalation path (the enterprise-scale named-decider — 1.4); prevents stall and wrong-decider.
-3. **Match the process to the significance** — lightweight for reversible, heavyweight (RFC, review board — 6.9) for one-way-door (1.4's effort-to-reversibility); the governance accelerates, not obstructs.
-4. **Use the ADR log to prevent churn** — the recorded decision with its rationale and revisit trigger turns re-litigation into a re-score (check the trigger, re-score if met — 1.4's Corvid, Vantora's one-meeting VP challenge).
-5. **Integrate with the EA function and review boards** — the AI decision governance in the enterprise's governance (6.1/6.9), integrate-don't-parallel (decision edition).
-6. **Serve compliance with the ADR log** — the decision records as the auditable *why* (4.14's decision-records evidence).
-7. **Reflect the org structure in the rights** — the decision rights matching who owns what (Conway's law — 6.4, the platform/product split — 5.10).
+1. **One decision per ADR; sequential numbers, never reused** — "per 0017" must stay a stable citation for years.
+2. **Merge before commitment** — before the implementation PR, before the vendor signature; the record's date is your laundering defense.
+3. **Immutable once Accepted, except the status line** — corrections and reversals are new numbered records, not edits.
+4. **Write context for the stranger two years out** — forces and constraints, not meeting attendance; the exhibit above is the register to imitate.
+5. **Record dissent and the disagree-and-commit by name** — it closes the argument now and licenses a clean reopen when the trigger fires.
+6. **Link both ways** — design PRs cite their ADR; the generated index gives the stranger test its starting point.
+7. **Walk revisit triggers quarterly** — each fired trigger re-scored or explicitly reaffirmed; a trigger nobody checks is a comment, not a control.
 
 ## Architecture Checklist
 
-For GenAI portfolio decision governance:
+For an AI portfolio's decision governance:
 
-- [ ] Architecturally-significant decisions recorded as ADRs (1.4's format with revisit triggers); the ADR log maintained as institutional memory
-- [ ] Decision rights defined (accountable decider, consulted/informed, escalation paths) per decision type; prevents stall and wrong-decider
-- [ ] Process matched to significance (lightweight reversible, heavyweight one-way-door via RFC/review board — 6.9)
-- [ ] The ADR log prevents churn (re-litigation → re-score against the revisit trigger)
-- [ ] Decision governance integrates with the EA function and review boards (6.1/6.9); no parallel process
-- [ ] The ADR log serves as compliance/audit evidence (4.14) and the successor's map
-- [ ] Decision rights reflect the org structure (Conway's law — 6.4, the platform/product split — 5.10)
+- [ ] The four mandatory AI decision classes (approach, model/provider, data-use, autonomy) each have a merged ADR per system
+- [ ] Every recorded decision sits on a ladder rung with a named signer; board-gated classes are enumerated in writing
+- [ ] ADR merge dates precede the implementation PRs and vendor signatures they authorize
+- [ ] No Accepted ADR contradicts current reality; superseded records carry forward pointers; consumers of superseded decisions have migration notes
+- [ ] Revisit triggers are measurable and walked on a stated cadence
+- [ ] The log passes the stranger test — five minutes from index to answer, for someone outside the deciding team
+- [ ] Dissent and escalation outcomes appear in the records, not only in memories
 
 ## Interview Questions
 
-1. *"How do you keep architecture decisions from being re-litigated in a large organization?"* — Strong answers give the ADR practice: the decision recorded with its rationale and revisit trigger (1.4), so re-litigation becomes a re-score (check the trigger, re-score if met — Vantora's one-meeting VP challenge), and the ADR log as institutional memory (the churn-prevention at scale where stakeholders and personnel change).
-2. *"How do you decide who gets to make an architecture decision?"* — Strong answers give the decision rights (the accountable decider per decision type, consulted/informed, escalation — the enterprise-scale named-decider — 1.4), matched to the org structure (Conway's law — the platform team's rights, the application teams' — 5.10), preventing the stall (nobody decides) and the wrong-decider (the loudest — 1.4's HiPPO).
-3. *"When does a decision need a heavyweight process vs. a quick call?"* — Strong answers give the process-matching (1.4's effort-to-reversibility): lightweight for the reversible team decisions, heavyweight (RFC, review board — 6.9) for the one-way-door portfolio decisions — the matching that keeps the governance accelerating decisions, not the everything-heavyweight ceremony (6.1) or the everything-light chaos.
-4. *"What decision pathologies do you see at scale, and how does governance fix them?"* — Strong answers give 1.4's pathologies institutionalized (paralysis → decision rights and escalation; churn → the ADR log; wrong-decider → the rights and the evidence-based process; process pathology → the process-matching), the governance-level fixes for the scale versions of the individual pathologies.
+1. *"We have 400 ADRs and nobody reads them. Diagnose."* — Strong answers reach for the health metrics rather than more process: check the noise floor (minutes-as-ADRs), run the stranger test, audit status hygiene. The prescription is usually deletion and re-indexing before any new writing.
+2. *"When would you refuse to write an ADR?"* — Strong answers show the significance test cutting both ways: reversible, team-local, uncontested choices are recorded in code review if at all, because a log that records everything protects nothing — with the counter-edge that the four AI mandatory classes never get this exemption.
+3. *"A new VP wants to reverse your provider decision. Walk me through it."* — Strong answers pull the ADR, check whether its revisit trigger has fired, and either re-score with the changed inputs or reaffirm — one meeting against a recorded baseline, not a from-scratch re-fight. Bonus signal: if the VP's argument is good and the trigger never anticipated it, the outcome is a superseding ADR, not an edit.
+4. *"How do you stop ADRs becoming paperwork written after the fact?"* — Strong answers put enforcement at commitment points (procurement requires the ADR number; design-PR review requires the link) and name the post-hoc signature: hollow losing options, merge dates trailing signatures.
 
 ## Further Reading
 
-- Michael Nygard, *Documenting Architecture Decisions* (re-linked from 1.4) — the ADR practice this chapter scales to enterprise decision governance; the format and discipline.
-- RFC process references (the IETF RFC model, and engineering-org RFC practices like those documented publicly by various companies) — the decision-flow process for broad-input decisions.
-- Jeff Bezos's one-way/two-way door framing (re-linked from 1.4) — the reversibility triage that drives the process-matching, at the decision-governance level.
-- 1.4 Trade-off Analysis (the individual decision) and 6.9 Architecture Governance (the review boards) — the chapters this decision governance connects; 6.9 is the governance-body detail.
+- Michael Nygard, "Documenting Architecture Decisions" (2011) — the original blog post; still the best five-minute statement of why context and consequences are the load-bearing sections.
+- [adr.github.io](https://adr.github.io) — the ADR community's collected templates, examples, and tooling for maintaining logs in version control.
+- This repository's [adr/ directory](../../adr/) — four real records governing the curriculum itself, including ADR-0004's self-superseding trigger design; the object of this chapter's audit exercise.
+- [1.4 Trade-off Analysis](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md) and [6.9 Architecture Governance](chapter-09-architecture-governance.md) — the analysis inside a single record, and the board that signs the top rung.
 
 ## Summary
 
-- Decision governance is **1.4's decision-making at scale** — the ADR practice (the record), the RFC and review processes (the flow), and the decision rights (the clarity) that turn individual good decisions into an organization that decides well consistently.
-- The **ADR log is institutional memory** — the accumulated decisions with rationale and revisit triggers (1.4) prevent churn (re-litigation → re-score against the trigger — Vantora's one-meeting VP challenge), serve as compliance evidence (4.14), and map the *why* for successors.
-- **Decision rights prevent stall and wrong-decider** — the clarity of who's accountable (the enterprise-scale named-decider — 1.4), with escalation paths for the unresolvable, reflecting the org structure (Conway's law — 6.4/5.10).
-- **Process-matching prevents the process pathology** — lightweight for reversible, heavyweight for one-way-door (1.4's effort-to-reversibility) — so the governance accelerates decisions rather than drowning them in ceremony (6.1).
-- Good decision governance lets the organization **decide fast, coherently, and well at portfolio scale** — the decision infrastructure that keeps the AI program moving at the technology's pace, integrated with the EA and review-board machinery (6.1/6.9). The integration of AI into the existing enterprise systems is next: **enterprise integration patterns** (6.4).
+- An ADR records one architecturally significant decision; decision governance is the surrounding machinery — scope-based sign-off, timing enforcement, lifecycle hygiene — that keeps the log a working memory rather than a paperwork graveyard.
+- Four AI decision classes always earn records: approach choice (the 2.11 triage), model/provider selection, data-use decisions, and autonomy level — with the revisit trigger the most load-bearing line in a fast-moving portfolio.
+- The scope ladder assigns process to blast radius: tech leads sign team-local decisions, a named owner signs portfolio-visible ones after a timeboxed RFC, and the review board plus a sponsor signs one-way doors — with the ADR merged before any signature.
+- Decisions die by supersession: a new numbered record explains what changed and names its consumers' migration path, while the old record becomes an immutable, forward-pointing part of history.
+- Log health is measurable — contested-decision coverage, the stranger findability test, supersession hygiene — and the anti-patterns (laundering, post-hoc justification, minutes, orphans) are defeated at commitment points, not by policy memos. How the decided-upon systems connect to the rest of the enterprise is next: **enterprise integration patterns** ([6.4](chapter-04-enterprise-integration.md)).
 
 ---
 

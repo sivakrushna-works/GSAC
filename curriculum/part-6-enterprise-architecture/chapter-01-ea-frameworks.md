@@ -5,165 +5,199 @@
 | **Part** | 6 — Enterprise Architecture |
 | **Maturity level** | 3 — Engineer |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
-| **Prerequisites** | [1.1](../part-1-professional-foundation/chapter-01-from-engineer-to-architect.md); [1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md) |
+| **Estimated study time** | 2.5 hours (reading 40 min, exercise ~2 h) |
+| **Prerequisites** | [1.1](../part-1-professional-foundation/chapter-01-from-engineer-to-architect.md); [1.3](../part-1-professional-foundation/chapter-03-business-understanding.md); [1.4](../part-1-professional-foundation/chapter-04-tradeoff-analysis.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Use EA framework *concepts* — viewpoints, capability maps, current/target-state, roadmaps — without the ceremony that gives frameworks a bad name.
-2. Place GenAI initiatives in the enterprise architecture context: how the AI portfolio relates to business capabilities, the application landscape, and the technology estate.
-3. Build a capability-based view of where GenAI creates value, connecting AI initiatives to the business architecture rather than treating them as isolated tech projects.
-4. Navigate the EA function: what it governs, how AI initiatives interact with it, and how to work with (not around) it.
+1. Walk the TOGAF ADM — Preliminary Phase plus Phases A–H — at practitioner level: what each phase produces, and where AI-specific work (capability assessment, target architectures, the roadmap, implementation governance) lands in the cycle.
+2. Map an AI portfolio across the four architecture domains — business, data, application, technology — and build the AI-annotated capability map that anchors the portfolio in business value.
+3. Describe the Zachman Framework's interrogatives-by-perspectives grid and judge honestly when its rigor pays and when it is ceremony; know where ArchiMate fits and when to defer it.
+4. Engage a real EA function from inside its own vocabulary: route AI funding and review through the machinery it already runs, and shape the target state where AI needs new standards.
 
 ## Introduction
 
-Part 6 zooms out from the systems of Parts 3–5 to the *enterprise* they live in — the portfolio, the governance, the integration, the business case. This first chapter is enterprise architecture itself: the discipline of aligning technology to business strategy across the whole organization, which GenAI initiatives must operate within (they don't get a pass from the EA function's governance, integration standards, or portfolio logic). The chapter's stance is pragmatic (2.1's timeless-over-tools, EA edition): EA frameworks (TOGAF, Zachman, and their kin) have a reputation for heavyweight ceremony, but their *concepts* — viewpoints, capability maps, current-and-target-state, roadmaps — are genuinely useful for placing GenAI in the enterprise, and the architect's job is using the concepts without the ceremony.
-
-The framing: **GenAI is a portfolio within the enterprise architecture, not a set of isolated projects** — the AI initiatives relate to business capabilities, the application landscape, and the technology estate, and reasoning about them as a portfolio (where does AI create value across the business? how does it fit the target-state architecture?) is what elevates the architect from system-builder to enterprise-shaper.
+Part 6 changes altitude: from the systems of Parts 3–5 to the enterprise they live in — portfolio, governance, integration, business case. This chapter is enterprise architecture itself, and its stance is the one the rest of Part 6 leans on: use the framework **concepts without the ceremony**. But that advice is only usable by someone who knows what the ceremony contains. "Skip the ADM's documentation weight" means nothing to an architect who cannot name the ADM's phases, and an AI architect who cannot say which phase an AI roadmap belongs to will be told — by an EA function that can. So this chapter teaches the frameworks properly: the TOGAF ADM phase by phase, the four architecture domains with a worked AI-portfolio mapping, Zachman's grid and its honest use, and ArchiMate's place — and *then* cashes the concepts-without-ceremony stance by naming exactly which artifacts and disciplines to keep when you strip the process down.
 
 ## Business Motivation
 
-EA-level thinking is what turns a scattered collection of AI projects into a coherent AI strategy — the difference between an enterprise with forty disconnected GenAI pilots and one with a capability-aligned AI portfolio. Without it: AI initiatives are isolated tech projects, chosen by whoever had the enthusiasm (1.3's orphaned initiatives), duplicating effort (the sprawl anti-pattern of Parts 4–5, at the portfolio level), and disconnected from where the business actually creates value (1.3's KPI trees, un-anchored). With it: the AI portfolio is mapped to business capabilities (where does AI move the value chain?), sequenced by a roadmap (current-to-target-state), and governed as a portfolio (6.9) — the coherence that makes AI a strategic capability rather than a pile of experiments. The business case for EA-level thinking is the portfolio coherence: an enterprise that knows where AI creates value across its business capabilities, how the initiatives fit together, and how they move toward a target-state invests in AI strategically, while one without EA thinking invests in AI opportunistically and wonders why the pilots don't add up to a transformation. The architect who can do EA-level thinking (place AI in the business architecture, build the capability view, work with the EA function) operates at the strategic level where the biggest AI decisions are made.
+Framework literacy has a direct commercial payoff, and it runs through other people's machinery. In most large enterprises, significant technology investment is already funneled through an EA-shaped process — value cases before funding, architecture review before build, a standards catalog that procurement enforces. An AI program that can locate itself in that machinery ("our value cases are Phase A work; the roadmap you're asking for is Phase E–F; here is the Phase G evidence pack") gets funded and reviewed at the speed of the existing process. One that cannot gets a choice of two failure modes: a parallel AI track with its own funding and review path, which re-litigates every settled decision and collects enemies in the EA function; or submission to a process it cannot negotiate with, because negotiation requires the vocabulary. The opposite failure is just as expensive — Bellhaven's $700K lesson below is what full-ceremony adoption costs when the estate changes faster than its documentation. The literacy that avoids both costs a few evenings: the [TOGAF](https://www.opengroup.org/togaf) core is a free read, and this chapter is the AI-specific map of it.
 
 ## Theory
 
-### EA framework concepts (without the ceremony)
+### The TOGAF ADM — the shape of an enterprise transformation
 
-The genuinely useful concepts, stripped of the heavyweight process:
+TOGAF (The Open Group Architecture Framework) is the most widely adopted EA framework, and its core is the **Architecture Development Method (ADM)**: a cycle of phases that takes an organization from "why change" through "what the target looks like" to "how we migrate" and "how we govern the build." Two facts about the ADM that its reputation hides. First, it is explicitly **iterative** — the standard itself says to cycle at whatever scope fits, and running one giant waterfall lap around the circle is a misreading, not a requirement. Second, **Requirements Management sits at the center**, feeding every phase — requirements are expected to change mid-cycle, which matters for AI portfolios whose requirements churn faster than anything else in the estate.
 
-- **Viewpoints / architecture domains** — EA distinguishes business architecture (capabilities, processes, value streams), application architecture (the application landscape), data architecture (the data estate — 5.5), and technology architecture (the infrastructure — Part 5). The concept's value: reasoning about AI across these domains (the AI *capability* it enables, the *applications* it lives in, the *data* it consumes, the *technology* it runs on) rather than only the technology, which connects AI to business value (1.3).
-- **Capability maps** — a model of what the business *does* (its capabilities — "underwrite risk," "service claims," "acquire customers") independent of how; the concept's value for AI: mapping where GenAI enhances capabilities (which capabilities does AI make faster, better, cheaper?) is the capability-based value view that anchors AI in the business (1.3's value-chain position, formalized).
-- **Current-state and target-state** — the architecture as-is vs. the desired future; the concept's value for AI: the target-state includes the AI-enhanced future (what the architecture looks like with AI woven in), and the gap between current and target is the transformation the roadmap sequences.
-- **Roadmaps** — the sequenced path from current to target-state; the concept's value for AI: the AI adoption roadmap (6.8) sequences the initiatives toward the target-state, which is what makes AI adoption strategic (sequenced) rather than opportunistic (scattered).
+The phase walk, with the AI-specific work placed in each phase — this table is the chapter's working artifact, and the answer to the interview question "where does an AI roadmap live?" is in rows E and F:
 
-The ceremony to skip: the heavyweight documentation, the multi-year framework certification, the process-for-process's-sake — the concepts are useful, the ceremony often isn't, and the pragmatic architect uses the former without the latter (adapting to the enterprise's actual EA maturity — 5.1's conform).
+| ADM phase | What it produces | Where the AI work lands |
+|---|---|---|
+| **Preliminary** | Architecture principles, tailored method, governance structures | AI principles adopted as *architecture* principles (the responsible-AI posture of [2.8](../part-2-artificial-intelligence/chapter-08-responsible-ai.md) with enforcement teeth); the decision that AI is governed inside the EA machinery, not beside it |
+| **A — Architecture Vision** | Scoped vision, stakeholder map, business value proposition, Statement of Architecture Work | **AI capability assessment and value cases**: where AI could move the business, first-cut capability map, executive approval to proceed — [1.3](../part-1-professional-foundation/chapter-03-business-understanding.md)'s value analysis in ADM clothing |
+| **B — Business Architecture** | Baseline and target business architecture, gap analysis | Which capabilities AI reshapes and how the processes change around it — human-in-the-loop points, redesigned handoffs; the finished AI-annotated capability map |
+| **C — Information Systems Architectures** (data + application) | Target data architecture and target application architecture | The corpus and feature estate ([5.5](../part-5-cloud-infrastructure-platform/chapter-05-data-architecture.md)); where each AI system sits in the application landscape — extend an existing application or stand up a new one ([6.4](chapter-04-enterprise-integration.md)) |
+| **D — Technology Architecture** | Target technology architecture, technology standards | The AI platform ([5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)), model and vendor choices as *standards*, the inference estate and cloud posture ([5.1](../part-5-cloud-infrastructure-platform/chapter-01-cloud-fundamentals-ai.md)) |
+| **E — Opportunities & Solutions** | Work packages, **transition architectures**, build/buy/reuse decisions | The AI portfolio shaped into sequenced work packages: quick wins vs. platform foundations, consolidation of duplicate builds, vendor-vs-build calls |
+| **F — Migration Planning** | The costed, sequenced Implementation and Migration Plan | **The AI roadmap** ([6.8](chapter-08-legacy-modernization-ai-adoption.md)) — this, with E, is its ADM home: not a wish list but priced work packages with transition states between here and the target |
+| **G — Implementation Governance** | Architecture contracts, compliance reviews during build | The AI review board ([6.9](chapter-09-architecture-governance.md)); [eval](../../GLOSSARY.md) gates and model-risk evidence ([6.11](chapter-11-model-risk-management.md)) presented as compliance artifacts, not parallel paperwork |
+| **H — Architecture Change Management** | Ongoing change monitoring; the decision to start a new cycle | The watch list AI makes mandatory: new model classes, regulation ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)), vendor moves — any of which can reopen the target state years early |
+| **Requirements Management** (center) | Continuously reconciled requirements across all phases | Where AI's fast-moving requirements meet the estate's slow ones without either pretending the other doesn't exist |
 
-### The GenAI portfolio in the enterprise architecture
+Read the phase order as a discipline even when you produce none of the formal deliverables: **value before design (A before B–D), design before plan (B–D before E–F), plan before build, govern what's built (G), watch for change (H).** Most AI-program failures in Part 6's scope are phase-order violations wearing other names — a platform built before any value case is D-before-A; forty pilots with no sequencing is a portfolio that never reached E.
 
-Placing AI in the EA context:
+### The four architecture domains, with the AI portfolio mapped
 
-- **AI as capability enhancement** — GenAI initiatives map to the business capabilities they enhance (the capability map, AI-annotated: which capabilities does AI touch, and how does it move them — 1.3's KPI trees at the capability level); this is the value view that connects the AI portfolio to the business.
-- **AI in the application landscape** — the AI systems relate to the existing application landscape (they enhance existing applications, integrate with them — 6.4, or are new applications); the AI portfolio is part of the application architecture, not separate from it.
-- **AI on the technology estate** — the AI infrastructure (Part 5) is part of the technology architecture (the platform — 5.10, the cloud — 5.1); the AI technology fits the enterprise technology strategy.
-- **The AI portfolio view** — the whole set of AI initiatives seen as a portfolio (the classification register — 4.14, extended to the value and capability view): where they create value, how they relate, how they're sequenced — the coherence that makes AI strategic.
+TOGAF's Phases B–D organize the enterprise into four **architecture domains**: **business** (capabilities, processes, value streams), **data** (the information estate), **application** (the application landscape and its interfaces), and **technology** (the infrastructure everything runs on). The domains are a completeness check: an initiative described in only one of them is under-designed. AI initiatives fail this check in a characteristic way — described entirely in the technology domain ("we're deploying an LLM") with the other three left implicit. The worked mapping, for four Bellhaven Insurance initiatives:
 
-### Working with the EA function
+| Initiative | Business domain | Data domain | Application domain | Technology domain |
+|---|---|---|---|---|
+| Submission intake extraction | Underwrite risk — submission processing step redesigned; underwriter reviews, no longer re-keys | Broker document corpus; extraction ground-truth set | New intake service feeding the policy admin system's existing API | LLM extraction on the shared AI platform |
+| Customer service assistant | Service policies — deflection with escalation paths | Policy and product knowledge corpus, curated and versioned | Assistant embedded in the contact-center desktop, not a new destination | RAG stack on the platform |
+| Renewal pricing advisor | Retain customers — renewal conversation, adviser-mediated | Claims and pricing history via the feature platform | Advisory panel inside the existing renewal workbench | Classical scoring, batch |
+| Claims triage scorer | Handle claims — queue routing changes adjuster workflow | Claims history; adjuster outcomes as labels | Routing service inside the claims system | Classical model, nightly batch |
 
-The EA function's role and how AI interacts with it:
+Every row touches all four columns, and the columns are where the cross-domain questions surface: the assistant's *data*-domain row is where corpus governance lives; the triage scorer's *business*-domain row is where the workflow change — usually the hard part — stops being an afterthought.
 
-- **What EA governs** — the EA function governs the coherence of the enterprise architecture: the standards (technology standards, integration standards — 6.4), the target-state, the review of significant initiatives (6.9), the portfolio coherence; AI initiatives operate within this governance.
-- **Working with, not around** (1.8's influence, EA edition) — the AI architect works with the EA function (bringing AI into the target-state, conforming to the standards where they apply, engaging the review process — 6.9), not around it (the shadow-AI initiatives disconnected from the EA that become the un-governed sprawl); the integrate-don't-parallel lesson (2.8/4.14/5.10), at the EA level.
-- **AI's influence on the EA** — AI also *shapes* the EA (the target-state evolves to include AI, the standards adapt to AI's needs — the AI-specific technology standards, the AI governance — 6.9); the AI architect contributes to the EA's evolution, not just conforms to it.
+### The capability map — the business-architecture artifact you keep
+
+A **business capability map** models what the business *does* — "underwrite risk," "handle claims" — independent of org structure or systems. That independence is the point: departments reorganize and applications get replaced, but the enterprise still underwrites risk, which makes the capability map the most stable surface to pin an AI portfolio to. The **AI-annotated capability map** adds, per capability: where AI creates leverage, the KPI it would move, and the portfolio status — which makes gaps (capability with AI leverage, no initiative) and collisions (two initiatives, one capability) visible in a single view. Bellhaven's, abbreviated:
+
+| Capability | AI leverage | KPI it moves | Portfolio status |
+|---|---|---|---|
+| Acquire customers | Lead scoring; marketing content drafting | Cost per acquired policy | **Gap** — scored, unfunded |
+| Underwrite risk | Submission extraction; risk summarization | Quote turnaround time | Submission intake — live |
+| Price & quote | Pricing model refresh | Loss ratio | **Gap** — classical candidate |
+| Service policies | Assistant; correspondence drafting | Cost per contact | Assistant — pilot |
+| Handle claims | Triage scoring; document extraction | Claims cycle time | Triage scorer — build |
+| Retain customers | Renewal advisor | Retention rate | Renewal advisor — pilot |
+| Manage distribution | Broker portal Q&A | Broker satisfaction | **Gap** — deferred |
+
+This is the executive communication artifact ([1.5](../part-1-professional-foundation/chapter-05-communicating-architecture.md)): it presents the AI strategy in the business's own language, and the gap rows are next year's Phase A candidates.
+
+### Zachman — the grid, and when its rigor pays
+
+The **Zachman Framework** predates TOGAF and is a different kind of thing: not a method but an **ontology** — a classification grid with the six **interrogatives** as columns (*what* — data; *how* — function; *where* — network; *who* — people; *when* — time; *why* — motivation) and six **perspectives** as rows, descending from the executive's contextual view through business management, architect, engineer, and technician to the functioning enterprise itself. Each of the 36 cells is a distinct description of the enterprise; the grid's claim is that a complete architecture has an answer in every cell, at every altitude. It prescribes no phases, no sequence, no deliverables — which is both its limitation (Zachman alone cannot run a transformation; there is no equivalent of Phases E–F) and its use.
+
+The honest guidance: **the grid pays as a completeness probe, and costs as a work plan.** Filling 36 cells is ceremony almost everywhere — documentation produced because the grid has a slot, not because a decision needs it. But *interrogating* the grid against a material system finds real holes fast, and for AI systems the holes cluster predictably: the **who** column (who is accountable when the model decides? who approves an agent's action?) and the **why** column (what business rule justifies this decision, and can we produce it for a regulator?) are the cells AI portfolios most often leave empty — the same gaps [6.11](chapter-11-model-risk-management.md) formalizes as ownership and conceptual soundness. Use Zachman as a checklist for a few consequential rows and columns; reach for the full grid only where examination or due diligence genuinely demands cell-by-cell evidence.
+
+### ArchiMate, briefly
+
+**ArchiMate** is The Open Group's modeling *language* for enterprise architecture — a standardized notation whose layers (business, application, technology, plus strategy, motivation, and implementation extensions) mirror the domains above, letting one model express a capability realized by an application service running on a platform. It answers "how do I draw this consistently," not "what should I build" — the notation-and-views territory of [6.2](chapter-02-architecture-views-documentation.md), which covers where it fits in a documentation practice. The placement judgment for now: model in ArchiMate if the EA function already reads it; if not, C4-style diagrams and the tables above carry the same content, and adopting a notation before it has an audience is tooling ceremony.
+
+### Concepts without ceremony — cashed
+
+Stripped of the process weight, what survives is a **minimum artifact set** and a **phase discipline**. Keep four living artifacts: the *principles* (Preliminary), the *AI-annotated capability map* with its value cases (A/B), the *application landscape view* (C — the one baseline worth maintaining, as Bellhaven learned expensively), and the *roadmap with transition architectures* (E–F). Keep two disciplines: the phase order as a checklist, and Phase G/H as standing functions — review with evidence, watch for change. Skip: exhaustive baseline documentation, framework certification as a proxy for competence, and repository tooling ahead of readership. That is the whole stance — and note it required naming the phases to state.
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart TD
-    subgraph EA [Enterprise Architecture domains]
-        BIZ[Business architecture<br/>capabilities, value streams]
-        APP[Application architecture<br/>the application landscape]
-        DATA[Data architecture — 5.5]
-        TECH[Technology architecture — Part 5]
-    end
-    CAPMAP[Capability map<br/>AI-annotated: where AI enhances] --> BIZ
-    AIPORT[The GenAI portfolio] -.maps to.-> CAPMAP
-    AIPORT -.lives in.-> APP
-    AIPORT -.consumes.-> DATA
-    AIPORT -.runs on.-> TECH
-    CURRENT[Current state] --> ROADMAP[Roadmap — 6.8<br/>sequenced to target] --> TARGET[Target state<br/>AI woven in]
-    EAFUNC[EA function<br/>governs coherence, standards, review — 6.9] -.governs.-> EA & AIPORT
-    AIPORT -.shapes.-> TARGET
+    P[Preliminary<br/>AI principles; AI governed inside EA] --> A[A — Vision<br/>AI capability assessment, value cases]
+    A --> B[B — Business<br/>capabilities AI reshapes; capability map]
+    B --> C[C — Data + Application<br/>corpus/feature estate; landscape placement]
+    C --> D[D — Technology<br/>AI platform and standards]
+    D --> E[E — Opportunities & Solutions<br/>work packages, transition states]
+    E --> F[F — Migration Planning<br/>the AI roadmap — 6.8]
+    F --> G[G — Implementation Governance<br/>review board, eval gates as evidence — 6.9]
+    G --> H[H — Change Management<br/>model/regulation watch]
+    H -->|new cycle when the target moves| A
+    RM((Requirements<br/>management)) -.-> A & C & E & G
 ```
 
-Readings. **The capability map is the value-anchoring view** — annotating the business capability map with where AI enhances (which capabilities AI makes faster/better/cheaper — 1.3's value view at the capability level) is what connects the AI portfolio to the business, turning AI from isolated tech projects into capability enhancements with business value; the architect who builds this view operates at the strategic level. **AI is a portfolio across all EA domains** — it maps to capabilities (business), lives in applications (application), consumes data (data — 5.5), and runs on the technology (Part 5), so reasoning about AI across the EA domains (not just the technology) is what makes the AI strategy coherent. **And the AI architect both conforms to and shapes the EA** — conforming to the standards and governance (6.9, working-with-not-around), and shaping the target-state (AI woven into the enterprise's future architecture) — the two-way relationship (1.8's influence) that makes the AI architect an enterprise-shaper, not just a system-builder.
+Three readings. **The cycle is the map of Part 6**: A–B is this chapter's capability work, C–D spans [6.4](chapter-04-enterprise-integration.md)–[6.7](chapter-07-data-governance-knowledge.md)'s integration and estate chapters, E–F is [6.8](chapter-08-legacy-modernization-ai-adoption.md)'s adoption strategy, G is [6.9](chapter-09-architecture-governance.md)'s governance — the part's structure is an ADM lap whether or not an enterprise uses the name. **The H-to-A arrow is shorter for AI than for anything else in the estate** — a new model class can invalidate a Phase D standard in a quarter — so the change-management function AI portfolios need is a standing watch, not an annual review. And **the center is where the speed mismatch is managed**: AI requirements churning against a slow estate is not a defect to engineer away but the permanent condition Requirements Management exists to reconcile.
 
 ## Real-world Example
 
-**Bellhaven Insurance** (1.3, 2.1, 4.14, 5.1, 5.11) matured from scattered AI pilots to an EA-anchored AI portfolio, and the maturation is this chapter's arc. The early state was the scattered-pilots problem: the submission-intake platform (2.1), the customer assistant, the renewal advisor (2.8) — each a valuable initiative, but chosen opportunistically and disconnected from a portfolio view (the enterprise had AI *projects*, not an AI *strategy*). The EA-level response, led by an enterprise architect working with the AI architects, built the capability-based view: Bellhaven's capability map (underwrite, service, acquire, retain, handle claims — 1.3's value chain) was AI-annotated, showing where GenAI enhanced each capability (intake enhancing underwriting-submission-processing, the assistant enhancing customer-service, the renewal advisor enhancing retention-pricing) — which connected the AI portfolio to the business value (each initiative mapped to the capability it moved and the KPI — 1.3) and revealed the gaps (capabilities where AI could create value but no initiative existed — the strategic opportunities the scattered-pilots view had missed). The target-state architecture wove AI in (the AI-enhanced future architecture), and the roadmap (6.8) sequenced the portfolio toward it. Critically, the AI initiatives worked *with* the EA function (5.1's conform, EA edition): the platform (5.10) conformed to the enterprise technology architecture, the AI governance (4.14) integrated with the EA's governance (6.9), and the AI portfolio became part of the enterprise architecture rather than a shadow parallel to it. The AI architect's EA-review note: *"We had AI projects, not an AI strategy. The capability map changed that — annotating where AI enhances each business capability connected the portfolio to the value, revealed the gaps, and gave us a target-state to sequence toward. The frameworks' ceremony we skipped; the concepts — capability maps, target-state, roadmaps — turned the scattered pilots into a portfolio. That's EA-level thinking: AI as a coherent portfolio in the enterprise architecture, not a pile of experiments."*
+**Bellhaven Insurance** reached enterprise architecture the expensive way. Its first attempt was full-ceremony adoption: the CIO, alarmed that GenAI pilots were sprouting without coordination, sponsored a consultancy-led TOGAF program — eight architects into certification, and a complete baseline documentation of all four domains before any target-state work would begin. Nine months and roughly $700K later, the program had produced a 300-page baseline that was outdated in the sections written first, and the two pilots that had motivated it were still unreviewed and unfunded — queued "until the baseline completes." The new chief architect, Ana Whitfield, made the call that cost her: she killed the program, wrote off most of the engagement, and told the CIO to his face that the baseline would *never* complete, because the estate changed faster than it could be documented. She spent her first two quarters of political capital on that sentence. She kept exactly two artifacts from the wreckage: the half-finished capability map and the principles.
+
+The restart was ADM-shaped without ADM paperwork: a two-week Phase A pass — value cases and capability assessment — that got both pilots funded within the month; target-state *deltas* per domain instead of baselines; a one-page E/F roadmap with two transition states; Phase G through the review board that already existed. But the over-correction had its own price. Having skipped the application-landscape baseline entirely, the Phase E work missed that claims and underwriting were each building their own document-extraction service — discovered only when both landed in the platform team's intake queue, a full team-quarter written off in consolidation. Ana's fix was not more ceremony; it was one page — a landscape view added to the minimum set, with an owner. Bellhaven's EA practice today maintains four artifacts: principles, capability map, landscape view, roadmap. The failed program had produced forty.
 
 ## Hands-on Exercise
 
-**Build the capability-based AI portfolio view.** ~90 minutes. Analysis-primary, for an enterprise you know or a case study's company.
+**Build the EA placement kit for an AI portfolio.** ~2 hours, analysis-primary, for an enterprise you know or a [case-study](../../case-studies/README.md) company.
 
-1. **Capability map (30 min).** Build a simple business capability map (8–12 capabilities — what the business does, not how). AI-annotate it: for each capability, note whether/how GenAI could enhance it (faster/better/cheaper) and the KPI it would move (1.3).
-2. **The AI portfolio (25 min).** Map the enterprise's AI initiatives (real or hypothetical) to the capabilities. Identify: which capabilities have initiatives, which have AI opportunity but no initiative (the gaps — strategic opportunities), and how the initiatives relate (overlap, dependency).
-3. **Current-to-target (20 min).** Sketch the current-state (AI as-is) and the target-state (the AI-enhanced future architecture) for one capability area. State the gap the roadmap (6.8) would sequence.
-4. **EA function interaction (15 min).** Describe how the AI portfolio would work *with* the EA function: what standards it conforms to, how it engages the governance (6.9), and how it shapes the target-state — the working-with-not-around discipline.
+1. **Capability map (30 min).** Model 8–12 capabilities (what the business does, not its org chart). Annotate each: AI leverage, the KPI it would move, portfolio status (initiative or gap).
+2. **Domain mapping (25 min).** For three initiatives (real or from your map), fill a four-domain row each — business, data, application, technology — in the format of the Bellhaven table.
+3. **ADM placement drill (30 min).** Place each of these work items in its ADM phase, naming the artifact it belongs in: (a) an AI value case awaiting executive sign-off; (b) the corpus data architecture for a RAG system; (c) a build-vs-buy call on an extraction vendor; (d) a costed 18-month sequence of AI work packages; (e) an eval-gate report presented to the review board mid-build; (f) a watch item on a newly released model class that might obsolete a platform choice.
+4. **Roadmap page (35 min).** Write the one-page E/F roadmap for your portfolio: work packages, two transition architectures (what the estate looks like at each intermediate point and who operates it), rough costs.
 
 **Acceptance criteria:**
-- [ ] Capability map is AI-annotated with value (how AI enhances) and KPIs (1.3)
-- [ ] AI portfolio mapped to capabilities, with gaps (opportunity without initiative) identified
-- [ ] Current-to-target sketched for one area with the roadmap gap
-- [ ] EA-function interaction is working-with (conform, engage, shape), not working-around
+- [ ] Capability map has ≥8 capabilities, none named after a department, each annotated with leverage and KPI; ≥2 gaps identified
+- [ ] Domain mapping fills all four domains for every initiative — no technology-only rows
+- [ ] All six drill items placed correctly (key: A, C, E, F, G, H) with a named artifact each
+- [ ] Roadmap shows transition states an operator could run, not just a project list
 
 ## Enterprise Considerations
 
-EA-level AI thinking is where the AI architecture meets the enterprise's strategic and governance machinery. **The EA maturity varies** (5.1's conform): enterprises range from heavyweight EA functions (formal TOGAF-style practice) to lightweight or nascent ones — the AI architect adapts (using the concepts at the enterprise's maturity level, bringing EA thinking where it's absent, conforming where it's established), and the pragmatic use-the-concepts-skip-the-ceremony discipline serves both. **The capability view is a strategic communication tool** (1.5's communication, EA edition): the AI-annotated capability map is a powerful artifact for executive and board communication (where AI creates value across the business, in the business's own capability language — 1.3/1.5), which is how the AI architect communicates the AI strategy at the strategic level. **The portfolio view enables portfolio governance** (6.9, 6.10): the AI portfolio (mapped to capabilities, sequenced by roadmap) is what the governance (6.9) and the business-case/TCO (6.10) operate on — the portfolio view is the substrate for the strategic AI decisions. **And the AI architect's EA engagement is a career-level positioning** (Part 8): operating at the EA level (portfolio, capability, target-state, strategic governance) is the architect-to-principal progression (8.8), where the AI architect shapes the enterprise's AI strategy rather than building individual systems — the EA-level thinking this chapter builds is the strategic altitude the senior architect operates at.
+EA maturity varies more than any other function the AI architect meets, and the engagement strategy follows it. In a **formal TOGAF shop** (common in banking, insurance, government), fluency is the price of admission: submit Phase A-shaped value cases, expect Phase G contracts, and negotiate standards in Phase D vocabulary — the machinery is slower than the AI program wants, and the productive response is feeding it well-formed inputs, not routing around it. In a **nascent-EA enterprise**, the AI architect often becomes the de facto EA function for the AI estate — which means *bringing* the minimum artifact set, because nobody else will, and resisting the temptation to install ceremony the organization cannot sustain. Two constituencies deserve specific handling: **EA repository tools** (the enterprise may mandate one) are worth feeding with the four living artifacts and nothing speculative, since stale repository content is worse than absence; and **regulated-industry examinations** occasionally ask Zachman-shaped completeness questions — who owns this decision, where is its justification — for which the who/why probe above, done in advance on material systems, is cheap insurance ([6.11](chapter-11-model-risk-management.md) turns that probe into a regime).
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| EA framework use | Concepts (viewpoints, capability maps, target-state) | Full framework ceremony | Always — the concepts are useful, adapted to maturity | Never the ceremony for its own sake; heavyweight process only where the enterprise genuinely runs it |
-| AI portfolio view | Capability-mapped portfolio | Isolated project list | Always — the coherence that makes AI strategic | Never; isolated projects are the scattered-pilots anti-pattern |
-| EA function relationship | Work with (conform, engage, shape) | Work around (shadow AI) | Always — integrate-don't-parallel (2.8/4.14/5.10) | Never; shadow AI becomes the un-governed sprawl |
-| AI's EA role | Both conform and shape | Only conform | Always — the AI architect shapes the target-state too | Only-conform under-uses the architect's strategic influence (1.8) |
+| ADM engagement | Per-portfolio lightweight pass (days per phase) | Full-cycle enterprise iteration | Most AI programs — scope is one portfolio, speed matters | Enterprise-wide transformation with executive sponsorship and a standing EA function to run it |
+| Capability map depth | Level 1–2 (8–15 capabilities) | Level 3+ decomposition | Portfolio placement and executive communication — this chapter's uses | An initiative needs process-level redesign inside one capability (that capability only) |
+| Baseline documentation | Target-state deltas + landscape view only | Full four-domain baseline first | Estate changes faster than documentation — the AI default | The baseline itself is the deliverable: M&A due diligence, regulatory examination |
+| Zachman use | Targeted probe of a few cells (who/why on material systems) | Full-grid completeness audit | Standing hygiene — cheap, finds AI's characteristic gaps | Examination or due-diligence contexts that demand cell-by-cell evidence |
 
 ## Common Mistakes
 
-1. **AI as isolated projects** — a scattered collection of pilots disconnected from the business capabilities and each other (Bellhaven's early state); the capability-mapped portfolio view is the coherence that makes AI strategic.
-2. **Framework ceremony over concepts** — heavyweight EA process for its own sake, giving EA the bad name; use the concepts (capability maps, target-state, roadmaps), skip the ceremony (adapt to maturity).
-3. **Shadow AI around the EA function** — AI initiatives disconnected from the EA governance and standards, becoming the un-governed sprawl (2.8/4.14/5.10's integrate-don't-parallel, EA edition); work with the EA function.
-4. **AI disconnected from business capabilities** — technology-only AI thinking that never maps to where the business creates value (1.3's un-anchored initiatives); the AI-annotated capability map anchors AI in the business.
-5. **Only conforming, not shaping** — the AI architect conforming to the EA without contributing to its evolution (the AI-enhanced target-state, the AI standards); shape the EA too (1.8's influence).
-6. **No target-state for AI** — AI adopted opportunistically without a target-state to sequence toward, so the pilots don't add up to a transformation; the current-to-target and roadmap (6.8) make AI adoption strategic.
-7. **Ignoring EA maturity** — applying heavyweight EA to a lightweight-EA enterprise (or vice versa); adapt the concepts to the enterprise's actual maturity (5.1's conform).
+1. **Phases B–D before Phase A** — a target architecture (often a platform) designed and part-built with no approved value case; it dies at the first budget round, and the post-mortem calls it "the business wasn't ready" when it was a phase-order violation.
+2. **The ADM as one waterfall lap** — Bellhaven's nine-month baseline is the canonical form; the method is iterative by its own text, and the giant-lap reading is what earned EA its reputation.
+3. **The capability map drawn as the org chart** — capabilities named after departments; the next reorg invalidates the map, and turf disputes over box ownership replace value analysis. Capabilities describe what the business does, which survives both.
+4. **A roadmap with no transition architectures** — a sequenced project list that never designs the in-between states, so mid-migration the enterprise runs an architecture nobody designed, and operations inherits the gap.
+5. **Notation before audience** — ArchiMate tooling and repository licenses adopted before anyone reads models; the repository becomes write-only within a year, and the sunk cost then argues for more ceremony to justify it.
+6. **The special AI track** — AI funding and review routed outside the EA machinery because "AI moves too fast for it"; every release then becomes a Phase G exception, and the exception queue is slower than the process it bypassed.
 
 ## Best Practices
 
-1. **Use EA concepts, skip the ceremony** — viewpoints, capability maps, current/target-state, roadmaps, adapted to the enterprise's maturity; the concepts are useful, the ceremony often isn't.
-2. **Build the AI-annotated capability map** — where GenAI enhances each business capability, with the KPIs (1.3); the value-anchoring view that connects the AI portfolio to the business.
-3. **Reason about AI as a portfolio across the EA domains** — capabilities (business), applications, data (5.5), technology (Part 5); the coherence that makes AI strategic.
-4. **Work with the EA function** — conform to the standards, engage the governance (6.9), and shape the target-state (integrate-don't-parallel, EA edition — 1.8's influence).
-5. **Define the AI target-state and roadmap** — the AI-enhanced future architecture and the sequenced path to it (6.8); what makes AI adoption strategic rather than opportunistic.
-6. **Use the capability view for strategic communication** — the executive and board communication of the AI strategy in the business's capability language (1.5).
-7. **Operate at the EA altitude** — the portfolio, capability, target-state, strategic level where the biggest AI decisions are made (8.8's principal progression).
+1. **Learn the ADM well enough to place any piece of work in it** — "that's Phase A work; the roadmap comes after" is a scoping instrument, not trivia.
+2. **Keep the minimum artifact set living, with owners** — principles, AI-annotated capability map, landscape view, roadmap with transition states; four artifacts, current, beats forty, stale.
+3. **Anchor every initiative in a capability and a KPI before any domain design** — the A-before-B–D order enforced at initiative grain.
+4. **Write target-state deltas, not encyclopedic baselines** — with the one exception Bellhaven paid for: maintain the application landscape view, because duplicate builds hide in its absence.
+5. **Run the who/why probe on material AI systems** — Zachman's interrogatives applied where AI is weakest: accountability and justification cells, before an examiner asks.
+6. **Route AI funding and review through the existing EA machinery, and shape it where AI needs new standards** — the shape-the-EA move: conform to what applies, contribute the AI-specific standards ([5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)'s platform, [6.9](chapter-09-architecture-governance.md)'s review criteria) rather than forking the process.
+7. **Write the Phase H watch list down** — the model classes, regulations, and vendor moves that would reopen your target state, reviewed on a cadence; for AI estates the H-to-A loop is the shortest in the enterprise.
 
 ## Architecture Checklist
 
-For placing GenAI in the enterprise architecture:
+Before presenting an AI portfolio at the enterprise level:
 
-- [ ] The AI portfolio is mapped to the business capability map (AI-annotated with value and KPIs — 1.3)
-- [ ] AI reasoned about across the EA domains: capabilities, applications, data (5.5), technology (Part 5)
-- [ ] Gaps identified (capabilities with AI opportunity but no initiative — strategic opportunities)
-- [ ] Current-state and target-state (AI-enhanced) defined; the roadmap (6.8) sequences the gap
-- [ ] The AI portfolio works with the EA function (conforms to standards, engages governance — 6.9, shapes target-state)
-- [ ] EA concepts used pragmatically (skip the ceremony), adapted to the enterprise's EA maturity
-- [ ] The capability view used for strategic (executive/board) communication (1.5)
+- [ ] Every initiative names its business capability and the KPI it moves (Phase A/B anchoring)
+- [ ] Every initiative has a four-domain mapping — business, data, application, technology — with no empty columns
+- [ ] The AI-annotated capability map exists, is org-chart-free, and shows gaps as explicitly as initiatives
+- [ ] The roadmap is E/F-grade: costed work packages and transition architectures, not a wish list
+- [ ] Funding and review run through the EA machinery; any exception is explicit and temporary
+- [ ] The application landscape view exists and is owned — duplicate-build risk is visible
+- [ ] Who/why cells answered for material systems: decision ownership and business justification producible on demand
+- [ ] The Phase H watch list is written, with triggers that would reopen the target state
+- [ ] Notation matches audience: ArchiMate where the EA function reads it, simpler views where it doesn't ([6.2](chapter-02-architecture-views-documentation.md))
 
 ## Interview Questions
 
-1. *"How do you connect a set of GenAI initiatives to business strategy?"* — Strong answers build the AI-annotated capability map (where GenAI enhances each business capability, with KPIs — 1.3), reason about the AI portfolio across the EA domains, identify gaps (opportunity without initiative), and define the target-state and roadmap (6.8) — turning scattered pilots into a coherent, value-anchored portfolio (Bellhaven's arc).
-2. *"EA frameworks have a reputation for heavyweight ceremony. How do you use them for AI?"* — Strong answers use the *concepts* (viewpoints, capability maps, current/target-state, roadmaps) while skipping the ceremony, adapt to the enterprise's EA maturity (5.1's conform), and stress that the concepts genuinely help place AI in the enterprise while the process-for-process's-sake often doesn't.
-3. *"How should AI initiatives relate to the enterprise architecture function?"* — Strong answers give the working-with-not-around discipline (integrate-don't-parallel, EA edition — 2.8/4.14/5.10): conform to the standards, engage the governance (6.9), and *shape* the target-state (the AI-enhanced future) — the two-way relationship, not shadow AI disconnected from the EA.
-4. *"What makes an AI portfolio strategic rather than opportunistic?"* — Strong answers give the portfolio coherence: mapped to business capabilities (value-anchored — 1.3), sequenced by a roadmap toward a target-state (6.8), and governed as a portfolio (6.9) — the difference between forty disconnected pilots and a capability-aligned AI strategy that adds up to a transformation.
+1. *"Which ADM phase does an AI roadmap live in, and what must exist before it?"* — Strong answers place it in **E–F** (shaped into work packages and transition architectures in E, costed and sequenced in F) and name the prerequisites in phase order: Phase A value cases and vision, B–D target architectures across the four domains. A roadmap without the A-through-D work behind it is a project list wearing the name.
+2. *"Our EA function runs formal TOGAF and your AI program finds it slow. What do you do?"* — Strong answers refuse the parallel-track bait: feed the machinery well-formed inputs (A-shaped value cases, G-ready evidence packs), negotiate cadence rather than exemption, and shape the standards where AI genuinely needs new ones — noting that the exception queue of a bypassed process is slower than the process.
+3. *"TOGAF versus Zachman — what is each actually for?"* — Strong answers get the category difference right: TOGAF's ADM is a *method* (phases, deliverables, a transformation engine), Zachman is an *ontology* (interrogatives × perspectives, a completeness schema with no process); use the ADM's order to run change and Zachman's grid to probe material systems for empty cells — for AI, characteristically who and why.
+4. *"Walk me from forty scattered AI pilots to a strategic portfolio."* — Strong answers run the cycle: capability map with AI annotation (value anchoring and gap discovery), four-domain mapping per initiative (kills technology-only thinking and finds duplicates), target-state deltas, an E/F roadmap with transition states, and G/H as standing functions — Bellhaven's arc, minus its $700K first draft.
 
 ## Further Reading
 
-- TOGAF and the EA framework literature (the Open Group's TOGAF documentation) — read for the *concepts* (the architecture domains, the ADM's phases as a mental model, capability-based planning), not as a process to follow wholesale; the concepts-over-ceremony discipline.
-- Capability-based planning references (the business-capability-map literature) — the capability map concept this chapter centers, the most useful EA concept for anchoring AI in business value.
-- Gregor Hohpe, *The Software Architect Elevator* (re-linked from Part 1) — the architect operating across the organizational altitudes (the strategic EA level to the engine room), the through-line of the AI architect's EA engagement.
-- 1.3 Business Understanding (the value view) and 6.8 Legacy Modernization & AI Adoption Strategy (the roadmap) — the chapters this EA thinking connects.
+- **The TOGAF Standard** (The Open Group) — freely readable online; Part II (the ADM) is the load-bearing read, and it is shorter than its reputation. Read the phase chapters' "Objectives" and "Outputs" sections and skip the templates.
+- **John A. Zachman, "A Framework for Information Systems Architecture"** (IBM Systems Journal, 1987) — the original grid paper; short, and clearer about the ontology-not-method point than most secondhand accounts.
+- **The ArchiMate Specification** (The Open Group) — skim the layer structure now; return with [6.2](chapter-02-architecture-views-documentation.md) if your enterprise models in it.
+- **Ross, Weill & Robertson, *Enterprise Architecture as Strategy*** — the case that EA's product is a foundation for execution, not documentation; the best antidote to repository-first practice.
+- **Gregor Hohpe, *The Software Architect Elevator*** — the altitude-spanning role this chapter's literacy serves, from Part 1's reading list and worth re-reading at Part 6's altitude.
 
 ## Summary
 
-- Part 6 zooms out to the **enterprise architecture** GenAI operates within — the portfolio, governance, integration, and business case — and this chapter is EA itself: aligning AI to business strategy across the organization, using the framework **concepts** (viewpoints, capability maps, current/target-state, roadmaps) without the ceremony.
-- **GenAI is a portfolio, not isolated projects** — mapped to business capabilities (the AI-annotated capability map that anchors AI in value — 1.3), living across the EA domains (business, application, data, technology), sequenced toward a target-state.
-- **The capability map is the value-anchoring view** — annotating where AI enhances each business capability connects the portfolio to the business, reveals the gaps (opportunity without initiative), and gives executives the AI strategy in their own capability language (1.5).
-- **The AI architect works with and shapes the EA function** — conforming to standards and governance (6.9), and shaping the AI-enhanced target-state (integrate-don't-parallel, EA edition — 1.8) — the two-way relationship that makes the architect an enterprise-shaper.
-- **EA-level thinking makes AI strategic** — the portfolio coherence that turns scattered pilots into a capability-aligned transformation, at the strategic altitude the senior architect operates at (8.8). The views and documentation that communicate this architecture are next: **architecture views & documentation** (6.2).
+- EA framework literacy is the price of admission to the enterprise conversation: the **TOGAF ADM** runs value → design → plan → build-governance → change-watch (Preliminary, A–H, Requirements Management at center), and AI work has specific homes in it — capability assessment and value cases in **A**, target architectures across the domains in **B–D**, the AI roadmap in **E–F**, review evidence in **G**, the model-and-regulation watch in **H**.
+- The **four architecture domains** — business, data, application, technology — are a completeness check AI initiatives characteristically fail by living only in the technology column; the four-domain mapping is where workflow, corpus, and landscape questions surface.
+- The **AI-annotated capability map** anchors the portfolio in business value, exposes gaps and collisions, and speaks the executive's language; capabilities outlive org charts, which is why the map is pinned to them.
+- **Zachman** is an ontology, not a method: full-grid completion is ceremony, but the who/why probe on material AI systems finds the accountability and justification gaps that examiners and [6.11](chapter-11-model-risk-management.md) both hunt. **ArchiMate** is notation — adopt it where it has readers ([6.2](chapter-02-architecture-views-documentation.md)).
+- Concepts without ceremony, cashed: four living artifacts (principles, capability map, landscape view, roadmap with transition states), the phase order as discipline, and G/H as standing functions — Bellhaven's forty-artifact program failed where its four-artifact practice works.
 
 ---
 

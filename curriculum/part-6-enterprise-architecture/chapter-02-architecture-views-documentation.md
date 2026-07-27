@@ -5,161 +5,199 @@
 | **Part** | 6 — Enterprise Architecture |
 | **Maturity level** | 3 — Engineer |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise ~90 min) |
 | **Prerequisites** | [1.5 Communicating Architecture](../part-1-professional-foundation/chapter-05-communicating-architecture.md); [6.1](chapter-01-ea-frameworks.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Produce the architecture views enterprise GenAI systems need, from C4 and 4+1-style views to the enterprise-level views (capability, landscape, roadmap).
-2. Document for the enterprise audiences — engineers, security, executives, review boards — from one coherent model, at the enterprise scale.
-3. Extend 1.5's communication discipline to the enterprise-architecture level: the standards, the repository, and the views that a large organization needs.
-4. Keep enterprise architecture documentation true and useful, avoiding the twin failures of over-documentation and stale-documentation.
+1. Distinguish the system-communication problem ([1.5](../part-1-professional-foundation/chapter-05-communicating-architecture.md)) from the documentation-estate problem, and name the disciplines that only exist at estate scale: selection, ownership, freshness engineering.
+2. Apply the C4 model as an estate standard: what each level asserts, where each stops paying for its maintenance, and why level 3 and below rot fastest.
+3. Read ArchiMate at working literacy — the business, application, and technology layers — and judge when a queryable EA model repays its modeling staff.
+4. Design a docs-as-code practice around a **view catalog**: owners, freshness SLAs, same-PR gates, a generated-versus-authored split, and staleness detection ending in update or archive.
 
 ## Introduction
 
-This chapter scales 1.5's architecture communication from the individual system to the enterprise architecture — the views and documentation a large organization needs to understand, govern, and evolve its GenAI portfolio. 1.5 established the discipline (audience-artifact matching, C4, SCQA, diagrams-as-claims, the one-model-many-views principle); this chapter applies it at the enterprise scale, where the audiences include the EA function and review boards (6.9), the views include the enterprise-level ones (capability maps — 6.1, application landscapes, roadmaps), and the documentation lives in an enterprise repository with standards.
-
-The framing: **enterprise architecture documentation is 1.5's discipline at portfolio scale** — the same one-model-many-views, audience-matched, true-not-stale principles, applied to the enterprise architecture where the model spans the portfolio and the audiences span the organization, and the challenge is keeping it coherent and true at that scale.
+[1.5](../part-1-professional-foundation/chapter-05-communicating-architecture.md) solved a bounded problem: **one system, communicated to its stakeholders** — the architect is in the room, knows the audiences, and hand-crafts each artifact. This chapter's problem only looks similar. A portfolio runs many systems, documented by many authors for overlapping audiences, and the documentation must stay true across years of turnover — long after every original author has left. That is not a bigger communication problem; it is a different one: **the documentation estate**. The unit of design shifts from the diagram to the inventory of diagrams, and the hard questions shift with it: not "which artifact serves this audience" but *which views exist at all*, *who owns each*, and *what keeps each true*. The governing artifact is the **view catalog**; the working method is docs-as-code, which turns "living documentation" from a policy sentence into a CI outcome.
 
 ## Business Motivation
 
-Enterprise architecture documentation is what makes a large GenAI portfolio governable and evolvable — the shared understanding that lets an organization reason about, decide on, and change its AI architecture at the portfolio level. Without it: the portfolio is understood only in fragments (each team knows its system, nobody sees the whole), governance decisions (6.9) are made without a coherent view, and the portfolio can't be evolved coherently (the target-state — 6.1 — exists in someone's head, not in shared artifacts). The documentation failures are costly in both directions (1.5's twin failures, at scale): over-documentation (the heavyweight EA repository nobody reads, the ceremony of 6.1) wastes effort and goes stale; under-documentation (the portfolio understood only tribally) prevents portfolio-level reasoning and governance. The business case is the enterprise-scale version of 1.5's: the architecture documentation is how the portfolio gets governed (6.9 needs the views), decided on (the business case — 6.10 — needs the portfolio view), and evolved (the roadmap — 6.1/6.8 — needs the target-state artifacts) — the shared understanding that makes the AI portfolio a manageable enterprise asset rather than a fragmented set of tribal knowledge.
+Documentation costs run on two meters. The carrying cost is visible: every authored view consumes maintenance for as long as it exists, which is why estates that never say no to a view drown in their own diagrams. The staleness cost hides in other budgets: security reviews that extract the design interrogatively, on-call engineers debugging from diagrams that predate last quarter's migration, partner audits that take weeks because evidence must be assembled instead of indexed. The asymmetry that makes staleness the worse cost: a missing view announces itself, while a stale view is *believed* — documentation's authority with a rumor's accuracy, misleading exactly the people conscientious enough to read it. The business case is therefore a portfolio decision: hold fewer documentation liabilities, deliberately, each with an owner and a freshness mechanism. Estates that do answer audits in days and pass reviews on the first round.
 
-## Theory
+## Theory — running the documentation estate
 
-### The view hierarchy
+### What changes between one system and an estate
 
-Enterprise GenAI architecture needs views at multiple levels (1.5's C4, extended up to the enterprise views):
+1.5's craft assumes the author is present to explain and update the artifacts. At estate scale that assumption fails structurally — authors rotate, and a view's reader is usually someone its author never met. Three disciplines exist only at this scale:
 
-- **System-level views** (1.5) — C4 (context, container, component) and the data-flow, threat-model, and cost views for individual systems; the views 1.5 built, now the leaves of the enterprise view hierarchy.
-- **Landscape views** — the application landscape (how the AI systems relate to each other and the existing applications — 6.1's application architecture), showing the portfolio's shape and the integration (6.4); the view that reveals the portfolio's coherence (or sprawl).
-- **Capability views** (6.1) — the AI-annotated capability map (where AI enhances the business), the value-anchoring view for executive and board communication (1.5/6.1).
-- **Roadmap views** (6.1/6.8) — the current-to-target-state and the sequenced roadmap, the evolution view.
-- **Cross-cutting views** — the enterprise-level security architecture (6.5), the data architecture (5.5/6.7), the governance view (6.9) — the concerns that span the portfolio.
+- **Selection** — which views the estate carries at all. Depth follows materiality: full view sets where failure or examination would hurt, the minimum elsewhere.
+- **Ownership** — every authored view names an accountable person or role. A view without an owner does not have a freshness SLA; it has a staleness date that hasn't arrived yet.
+- **Freshness engineering** — mechanisms, not intentions: gates coupling updates to the changes that invalidate views, generation removing hand-maintenance, checks detecting drift.
 
-The hierarchy's discipline (1.5's altitude control, enterprise edition): each view at its level, for its audience, never mixing enterprise-landscape altitude with system-component altitude (the enterprise equivalent of 1.5's C4 altitude discipline).
+The view catalog records all three, which is why it — not any diagram — is the estate's governing artifact.
 
-### One model, enterprise-scale
+### C4 at estate scale — where each level stops paying
 
-1.5's one-model-many-views, at the enterprise scale:
+1.5 introduced C4 as altitude discipline for one system. At estate scale its four levels become an *economic* question: each has a change rate and a readership, and earns authored maintenance only while readership justifies change rate.
 
-- **The enterprise architecture model** — the coherent model of the portfolio (the systems, their relationships, their capability mappings, the target-state) from which the views derive; the enterprise-scale version of 1.5's single source of truth, spanning the portfolio.
-- **Derived views for enterprise audiences** — the executive capability view (6.1), the review-board governance view (6.9), the engineering landscape and integration views (6.4), the security architecture view (6.5) — all derived from the one model, so they're coherent (the enterprise equivalent of 1.5's no-forked-views, at portfolio scale where the forking risk is worse — many teams, many views).
-- **The repository and standards** — the enterprise architecture repository (where the model and views live), with the documentation standards (the notations, the templates, the review — 5.1's conform, the EA function's standards) that keep the enterprise documentation coherent; the enterprise-scale version of 1.5's versioned-artifacts, with the EA function's governance.
+- **Level 1 — Context**: the system as one box among users and neighbors. Changes only when scope changes; read by everyone — onboarding, review boards, adjacent teams. Cheapest truth, highest traffic. *Mandate for every system.*
+- **Level 2 — Container**: the deployable pieces and their interactions — the engineering workhorse, where GenAI containers (orchestrator, retrieval service, model gateway, eval service) appear. Changes at architecture cadence, and those changes surface in code review — which is what makes a same-PR update gate enforceable. *Mandate for material systems.*
+- **Level 3 — Component**: inside one container. The economics invert: component structure tracks code, which changes at sprint cadence, while readership shrinks to the owning team — who can read the code itself. Highest change rate, lowest external readership: **this is why level-3-and-below documentation rots fastest**. *Generate or omit*; author only where a container's internals are themselves a governed decision — a prompt-assembly pipeline whose stage order is a security control, say.
+- **Level 4 — Code**: never authored; tools produce it on demand.
 
-### Keeping it true and useful
+The estate rule in one line: **authored depth ends where readership ends.** 1.5's two GenAI markings — trust boundaries where untrusted content enters prompts, probabilistic edges where output quality is a distribution — become review-enforced standards here, because [threat models](../../GLOSSARY.md) and eval placement ([4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md)) are read off them by people who didn't draw them.
 
-The twin failures (1.5's, at enterprise scale) and their avoidance:
+### ArchiMate — reading literacy for the AI architect
 
-- **Against over-documentation** — the minimum-viable-enterprise-documentation (1.5's minimum true set, enterprise edition): the capability map, the landscape view, the roadmap, the cross-cutting views (security, data, governance), and the system-level views for the significant systems — kept true, not the exhaustive heavyweight repository nobody reads (6.1's ceremony).
-- **Against stale-documentation** — the enterprise documentation kept current (the model updated as the portfolio evolves, the views regenerated — the enterprise equivalent of 1.5's versioned-in-the-repo, with the update discipline at portfolio scale where staleness is the constant risk); the stale enterprise architecture (the target-state from three years ago, the landscape missing half the current systems) is worse than useless (it misleads governance and decisions).
-- **The living documentation** — the enterprise architecture documentation as a living artifact (updated with the portfolio, the model as the source of truth, the views derived and current), which is what makes it useful for the ongoing governance (6.9), decisions (6.10), and evolution (6.8) — not a point-in-time artifact that ossifies.
+[6.1](chapter-01-ea-frameworks.md) placed ArchiMate as notation to adopt only where it has readers; this section makes you one of those readers. Its core is three layers mirroring 6.1's domains: the **business layer** (actors, processes, services — "handle claims"), the **application layer** (components and the services they expose — "claims triage service"), and the **technology layer** (nodes, platforms — "the shared AI platform"). Typed relationships link them, and the verticals carry the meaning: an application service *serves* a business process; a component *realizes* a service and is *deployed on* technology. Reading a model is mostly following those verticals.
+
+What this buys a large EA practice: the model is **one typed graph**, and views are projections of it. Cross-layer questions become queries — "which business processes depend on the platform we're retiring?" is a traversal, not archaeology — and cross-view consistency holds by construction: the industrialized form of 1.5's one-model-many-views. That case prices its own limits. The payoff requires a maintained model, which requires modeling staff, and a model decays faster than diagrams because fewer people can repair it. **Do not adopt** when no staffed EA function will keep it true, when the audience reads C4 and tables instead, or when the landscape fits on one maintained page. Literacy and adoption are separate decisions — you must *read* your EA function's ArchiMate even if your teams never author any.
+
+### Docs-as-code — the freshness machinery
+
+Four mechanisms, in increasing order of leverage:
+
+1. **Repo residence.** System views live as text (Mermaid here; Structurizr DSL is the common alternative) in the system's repository — versioned, diffable, rendered by CI where readers look. A diagram that can be diffed can be reviewed.
+2. **Same-PR gates.** Couple the update to the change that invalidates the view: a pull request that adds a container, changes a cross-container protocol, or reroutes a data path must update the corresponding view *in that PR*, code diff and diagram diff reviewed together. This works only for code-coupled views — context, container, data-flow. Portfolio views are coupled to planning, so their mechanism is a cadence review pinned to the planning cycle.
+3. **The generated-versus-authored split.** Generate everything a tool can derive: deployment inventories from IaC, dependency graphs from build metadata, component views from code, model-and-eval status from the [model registry](../../GLOSSARY.md). Author only what carries *intent*: context, container, data-flow, capability, roadmap. The kinds must never blur — a generated view is never stale but asserts no intent (it cannot be wrong, so it cannot be a claim); an authored view is a set of claims and therefore needs an owner.
+4. **Staleness detection.** Every authored view carries a reviewed-on date; the catalog carries its SLA; CI flags breaches, plus cheap heuristics ("untouched for ninety days while its directory churned"). A flagged view has two exits — **updated or archived** — and archiving is legitimate maintenance. An estate that can only grow converges on mostly-stale.
+
+### The view catalog — worked example
+
+The catalog for Bellhaven Insurance's AI platform (the estate behind [6.1](chapter-01-ea-frameworks.md)'s portfolio). Every material view has a row; a view without a row does not officially exist.
+
+| View | Primary audience | Notation & home | Owner | Freshness SLA | Kind |
+|---|---|---|---|---|---|
+| AI-annotated capability map | Executives, board | ArchiMate business/motivation layers, EA repository | Chief architect | Each planning cycle (quarterly) | Authored |
+| Application landscape | EA function, engineering leads, review board | ArchiMate application layer, EA repository | EA function | 30 days after any system add/retire/replatform | Authored |
+| System context (C4 L1), per system | New joiners, review board, adjacent teams | Mermaid, system repo | Owning team lead | Same-PR on external-interface change | Authored |
+| Container view (C4 L2), material systems | Engineering, security, SRE | Mermaid, system repo | Owning team lead | Same-PR on boundary or protocol change | Authored |
+| Data-flow view (prompt and PII paths) | Security, privacy office | Mermaid DFD, system repo | Team authors; security architect reviews | Re-review at change thresholds ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)) | Authored |
+| Component views (C4 L3) | Owning team only | Generated from code | Build pipeline | Regenerated nightly; never hand-edited | Generated |
+| Deployment & inventory view | SRE, FinOps | Generated from IaC and cloud APIs | Platform team | Regenerated on deploy | Generated |
+| Model & eval status view | Review board ([6.9](chapter-09-architecture-governance.md)) | Generated from registry + eval store | Platform team | Regenerated on promotion | Generated |
+| Roadmap view (current → target) | Sponsors, strategy | One-pager derived from the [6.8](chapter-08-legacy-modernization-ai-adoption.md) roadmap | Chief architect | Each planning cycle | Authored |
+
+Three readings. Six of nine rows are authored — that number is the estate's real maintenance budget, and the catalog is where it is capped. The owner column is where freshness disputes get a name. And the catalog doubles as the audit index: when an examiner asks for the estate's documentation, this table is the response's first page.
 
 ## Architecture Perspective
 
+What row four of the catalog mandates, drawn once as the estate's reference standard — the container view of Bellhaven's customer-service [RAG](../../GLOSSARY.md) platform:
+
 ```mermaid
-flowchart TD
-    MODEL[(Enterprise architecture model<br/>the portfolio: systems, relationships,<br/>capabilities, target-state)]
-    MODEL --> CAP[Capability view — 6.1<br/>executives, board]
-    MODEL --> LAND[Landscape view<br/>engineering, integration — 6.4]
-    MODEL --> ROAD[Roadmap view — 6.8<br/>current → target]
-    MODEL --> XCUT[Cross-cutting views<br/>security 6.5, data 5.5/6.7, governance 6.9]
-    MODEL --> SYS[System-level views — 1.5<br/>C4, data-flow, threat, cost]
-    REPO[(EA repository + standards<br/>the EA function's — 6.1)] --> MODEL
-    LIVING[Living: updated with the portfolio,<br/>views derived + current] -.keeps true.-> MODEL
-    AUDIENCES[Enterprise audiences] -.each served by their view.-> CAP & LAND & ROAD & XCUT & SYS
+flowchart TB
+    AGT[Contact-center agent] -->|questions · HTTPS| UI[Assistant panel<br/>embedded in agent desktop]
+    UI -->|chat turns · REST| ORCH[Orchestrator<br/>session state, prompt assembly]
+    subgraph TRUST [Trust boundary — retrieved content enters prompts untrusted]
+        RET[Retrieval service<br/>hybrid search + reranking]
+        VDB[(Vector index<br/>policy & product corpus)]
+    end
+    ORCH -->|top-k query · gRPC| RET
+    RET -->|ranked chunks + ACL filter| ORCH
+    RET -->|ANN search| VDB
+    DOCS[(Policy document store)] -->|nightly delta · batch| ING[Ingestion pipeline<br/>chunking, embedding, ACL tags]
+    ING -->|embeddings · batch| VDB
+    ORCH -->|grounded prompt, probabilistic edge · HTTPS| GW[Model gateway<br/>routing, quotas, request logging]
+    GW -->|completion request| LLM[LLM provider<br/>external]
+    ORCH -->|draft answer + citations| GRD[Output guardrails<br/>policy checks, PII scan]
+    GRD -->|validated answer| UI
+    ORCH -.->|traces| TEL[(Telemetry & eval store<br/>golden sets, judge runs)]
 ```
 
-Readings. **The view hierarchy serves the enterprise audiences at their altitude** — executives get the capability view (6.1), review boards the governance view (6.9), engineers the landscape and system views, security the security architecture view (6.5) — each at its level, from the one model, the enterprise-scale version of 1.5's audience-artifact matching and altitude control. **The one-model-many-views is harder and more important at scale** — the forking risk (1.5) is worse at portfolio scale (many teams, many views, more drift), so the enterprise architecture model as the single source of truth (with the EA repository and standards — 6.1) is what keeps the enterprise views coherent, and the discipline that prevents the each-team-holds-a-different-architecture chaos (1.5's forked-views, at portfolio scale). **And the living-documentation discipline is the enterprise-scale challenge** — keeping the enterprise architecture model and views true as the portfolio evolves (the constant staleness risk at scale) is what makes the documentation useful for governance and decisions, versus the stale enterprise architecture that misleads (the target-state from three years ago) — the update discipline (1.5's versioned-artifacts, with the portfolio-scale update rigor).
+Every arrow carries payload and protocol; the trust boundary encloses where retrieved content enters prompt assembly; the gateway edge is marked probabilistic — 1.5's conventions, enforced in review rather than left to taste. The trust boundary is where [4.9](../part-4-enterprise-genai-systems/chapter-09-genai-security-threat-modeling.md)'s threat model attaches; the telemetry-and-eval container is where [6.9](chapter-09-architecture-governance.md)'s review evidence originates; the *why* behind each contested edge lives in the [ADR](../../GLOSSARY.md) log ([6.3](chapter-03-adrs-decision-governance.md)). The same-PR gate in practice: a pull request adding a tool-calling path from the orchestrator must show this diagram's diff in the same review, or it is rejected as an undocumented boundary change.
 
 ## Real-world Example
 
-**Bellhaven Insurance** (6.1's EA-anchored portfolio) built the enterprise architecture documentation for its AI portfolio, and the documentation is where 6.1's capability-mapped portfolio became the shared artifacts that governed and evolved it. The view hierarchy served the audiences: the AI-annotated capability map (6.1) for the executive committee and board (the AI strategy in the business's capability language — 1.5/6.1); the landscape view for the engineering and EA teams (how the intake platform, the assistant, the renewal advisor related to each other and the existing applications, with the integration — 6.4 — shown); the roadmap view (6.8) for the strategic planning (current-to-target, the sequenced initiatives); the cross-cutting security architecture (6.5) and data architecture (5.5/6.7) views for the security and data governance functions; and the system-level views (1.5) for the individual systems. The one-model-many-views discipline was the enterprise-scale challenge Bellhaven took seriously: the enterprise architecture model (the portfolio's systems, relationships, capability mappings, target-state) was the single source of truth in the EA repository (6.1's EA function's standards), and the views derived from it — which prevented the forking (1.5) that the earlier scattered-pilots era had suffered (each team's own diagrams, no coherent portfolio view). The living-documentation discipline was where Bellhaven learned the enterprise-scale lesson: the first version of the enterprise architecture documentation went stale within a year (the portfolio evolved, the model didn't update, the landscape view missed the new systems), and the correction was the update discipline (the model updated as part of the governance process — 6.9, the views regenerated, the documentation living not point-in-time). The enterprise architect's documentation note: *"At the enterprise scale, the challenge isn't drawing the views — it's keeping them true across a portfolio that's always changing, and coherent across a model many teams touch. One model, derived views, updated with the portfolio, at the altitude each audience needs. The stale enterprise architecture is worse than none — it misleads the governance. Living, coherent, audience-matched: that's 1.5's discipline at portfolio scale, and the scale makes it harder and more important."*
+Two years after its EA restart ([6.1](chapter-01-ea-frameworks.md)), **Bellhaven Insurance** ran nine AI delivery teams and kept its four portfolio artifacts true — but system documentation was every team's own affair: wiki pages, whiteboard photos, five notational dialects, one team's private ArchiMate model. The bill arrived twice in one quarter. A reinsurance partner's vendor-risk audit requested architecture documentation for the AI estate; assembling it took **five weeks** and surfaced three mutually contradictory container diagrams of the customer-service assistant, none current. Weeks later, a 2 a.m. incident on the renewal advisor ran ninety minutes long because the on-call engineer debugged from the wiki's diagram, which predated the feature-platform migration and showed a service that no longer existed.
+
+The first fix failed. Bellhaven ran a two-week **documentation sprint** — all teams, update everything — and it worked, for one quarter. Nothing structural had changed: no owners, no gates, no checks, so the trued views drifted again, and the next audit-readiness check found a third of them wrong. Cost of the lesson: a team-week times nine, purchasing one quarter of truth.
+
+The real fix was a decision with a price. Chief architect Ana Whitfield ruled that the estate would carry *fewer* views, each owned and gated: a catalog of about thirty authored views replaced the wiki's hundred and forty. The rest were archived — including the claims team's eighteen-month ArchiMate side-model, written off because it had exactly two readers, both on the claims team. She traded completeness for truth in public and spent real goodwill doing it; the platform team spent most of a quarter on the unglamorous machinery — render pipelines, same-PR gates, staleness checks wired to the catalog's SLAs. The next partner audit was answered in **four days**, from the catalog. Ana's retro line became the practice's motto: *"The wiki had an architecture per author. The catalog has one per system."*
 
 ## Hands-on Exercise
 
-**Build the enterprise view hierarchy.** ~90 minutes. For an enterprise's AI portfolio (real or a case study's).
+**Build the documentation estate for a three-system AI portfolio** (~90 min). Use systems you know or a [case-study](../../case-studies/README.md) company's.
 
-1. **The view hierarchy (35 min).** For a portfolio of 3–4 AI systems, sketch the view hierarchy: a capability view (6.1 — the executive altitude), a landscape view (how the systems relate — the engineering altitude), a roadmap view (current-to-target — the strategic altitude), and one cross-cutting view (security or data). Mark each view's audience and altitude.
-2. **One model, derived views (25 min).** Describe the enterprise architecture model the views derive from (the portfolio's systems, relationships, capability mappings, target-state). Show how two views (capability and landscape) derive from the one model coherently, and what would go wrong if they forked (1.5's forking, at scale).
-3. **The minimum true set (15 min).** For this portfolio, define the minimum-viable-enterprise-documentation (against over-documentation): which views are essential, kept true, vs. the exhaustive documentation to avoid.
-4. **The living discipline (15 min).** Design how the documentation stays true as the portfolio evolves: what updates the model (the governance process — 6.9), how the views regenerate, and the staleness risk you're guarding against.
+1. **View catalog (30 min).** At least eight rows with the worked example's columns; at least two rows generated, with sources named.
+2. **Reference container view (30 min).** A Mermaid C4-style container diagram of the portfolio's RAG system: every arrow labeled with payload and protocol, the trust boundary drawn where retrieved or user content enters prompts, at least one probabilistic edge marked.
+3. **Freshness gates (20 min).** For the container and data-flow views, write the same-PR trigger conditions (which code changes force which view update) and one staleness check implementable in CI.
+4. **ArchiMate memo (10 min).** A half-page adopt/don't-adopt recommendation for this portfolio, argued from readership and modeling staff, not notation features.
 
 **Acceptance criteria:**
-- [ ] View hierarchy has views at multiple altitudes (capability, landscape, roadmap, cross-cutting) with audiences marked
-- [ ] The one-model-derived-views discipline shown, with the forking risk at scale identified
-- [ ] The minimum true set defined against over-documentation
-- [ ] The living discipline keeps the documentation true as the portfolio evolves
+- [ ] Catalog has ≥8 rows; every authored row names an owner and a checkable SLA — a trigger or a date, never "kept current"
+- [ ] ≥2 catalog rows are generated, each naming its source of truth
+- [ ] Container diagram has zero unlabeled arrows, a drawn trust boundary, and a marked probabilistic edge
+- [ ] Gate triggers are stated as conditions a PR reviewer could detect; the CI check is concrete enough to implement
+- [ ] The ArchiMate memo takes a position and names the readership that decides it
 
 ## Enterprise Considerations
 
-Enterprise architecture documentation is governed by the EA function and serves the enterprise's strategic and governance machinery. **The EA repository and standards are the EA function's** (6.1): the enterprise architecture model and views live in the EA function's repository with its standards (notations, templates, review — 5.1's conform), so the AI architecture documentation conforms to the enterprise EA documentation practice (integrate-don't-parallel, documentation edition) rather than a parallel AI documentation silo. **The documentation is the governance and decision substrate** (6.9, 6.10): the review boards (6.9) govern from the views (the landscape, the security architecture, the system views), and the business-case/TCO decisions (6.10) use the portfolio view — so the documentation quality directly determines the governance and decision quality (the stale or fragmented documentation degrades both). **The audience range is the enterprise's full stakeholder set** (1.5/1.6): executives, board, review boards, security, data governance, engineering, compliance (4.14) — each served by their view at their altitude, and the enterprise architecture documentation is how the AI architecture communicates to the whole organization. **And the documentation is a compliance artifact** (4.14): the architecture views (the data-flow — 4.14, the security architecture — 6.5, the system documentation) are part of the compliance evidence (the auditable record of what the systems are and how they're governed — 4.14's evidence-from-engineering), so the enterprise architecture documentation serves the compliance function too.
+Large enterprises run two documentation worlds — an EA suite holding portfolio views, engineering repos holding system views — and the honest bridge is directional: every view has one authoritative home, and any other appearance is rendered from it, never re-drawn, because double-authoring guarantees divergence. In regulated estates the documentation doubles as **documentation-as-evidence** ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md)): approved data-flow and container views are examination artifacts — dated, versioned, review trail attached — and the catalog serves as the audit index, precisely the difference between Bellhaven's five-week scramble and its four-day response. Vendor and SaaS systems sit in the landscape but expose no code to generate from: contract for documentation rights and give vendor views catalog rows with their own refresh terms. Ownership follows the catalog's grain — the EA function owns the catalog and portfolio views, teams their system views, security the data-flow review — so a firing staleness check routes to a name, not a mailing list. The estate's quietest return is onboarding: a current context-plus-container pair per system converts a new engineer's first month from folklore acquisition into reading.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Documentation scope | Minimum true set (essential views, kept true) | Exhaustive repository | Always — the minimum true set is useful, the exhaustive one goes stale | Never the exhaustive-for-its-own-sake; ceremony only where genuinely governed |
-| View coherence | One model, derived views | Independent per-team views | Always at scale — the forking risk is worse (1.5) | Never; forked views are the each-team-different-architecture chaos |
-| Documentation currency | Living (updated with the portfolio) | Point-in-time | Always — the stale enterprise architecture misleads governance | Never; point-in-time enterprise architecture ossifies and misleads |
-| Repository | The EA function's (conform) | A parallel AI documentation silo | Always — integrate-don't-parallel (documentation edition) | Never; the parallel silo fragments the enterprise view |
+| Portfolio-view notation | ArchiMate in an EA repository | C4-style views + tables | A staffed EA function maintains the model and stakeholders read it | Readership is engineers and executives; notation without readers is ceremony ([6.1](chapter-01-ea-frameworks.md)) |
+| Component-level (L3) docs | Authored and maintained | Generated, or omitted | The container's internals are themselves a governed decision (a prompt pipeline that is a security control) | Default — highest change rate, lowest external readership |
+| Freshness mechanism | Same-PR gate | Cadence review | Views coupled to code boundaries: context, container, data-flow | Views coupled to planning: capability, landscape, roadmap |
+| Estate coverage | Deep view sets on material systems | Uniform shallow coverage | Default — depth follows materiality, as [6.11](chapter-11-model-risk-management.md) tiers validation | A uniform inventory is itself the deliverable: M&A due diligence, a regulator's estate census |
 
 ## Common Mistakes
 
-1. **Over-documentation** — the heavyweight exhaustive EA repository nobody reads and nobody keeps true (6.1's ceremony, documentation edition); the minimum-viable-enterprise-documentation kept true is what's useful.
-2. **Stale enterprise architecture** — the documentation not updated as the portfolio evolves (the target-state from three years ago, the landscape missing half the systems — Bellhaven's first-version lesson); worse than useless, it misleads governance — the living discipline is essential.
-3. **Forked views at scale** — each team's own diagrams, no coherent portfolio model, so nobody sees the whole (the scattered-pilots documentation); one model, derived views (1.5, at scale where the risk is worse).
-4. **Altitude mixing at the enterprise level** — mixing enterprise-landscape altitude with system-component altitude in one view (1.5's altitude discipline, enterprise edition); each view at its level for its audience.
-5. **The parallel AI documentation silo** — AI architecture documentation disconnected from the enterprise EA repository and standards; conform (5.1/6.1's EA function's standards), don't parallel.
-6. **Documentation as point-in-time, not living** — the enterprise architecture documented once and ossifying, not updated with the portfolio; the living discipline (updated via the governance process — 6.9) keeps it useful.
-7. **Ignoring the compliance role** — not recognizing the architecture views as compliance evidence (4.14); the enterprise architecture documentation serves the compliance function too.
+1. **The documentation sprint as the staleness cure** — Bellhaven's failed first fix: one quarter of truth, nothing structural changed, decay resumes the day it ends.
+2. **Double-authoring the same view in the EA tool and the repo** — done to satisfy both audiences, it guarantees the copies diverge and that an auditor eventually finds both.
+3. **Authored component diagrams for every container** — the estate's fastest-rotting artifact class, maintained for a readership that reads the code instead. Decoration with a maintenance bill.
+4. **"Living documentation" declared, not engineered** — a policy sentence with no owner column, no SLA, no check behind it. Freshness is a mechanism or it is a hope.
+5. **Presenting generated views as architecture** — a dependency dump asserts no intent; it cannot be wrong, so it cannot be a claim, and reviewers who accept it have reviewed nothing.
+6. **An estate that only grows** — no archive path, so stale views accumulate until readers cannot tell which are load-bearing. Bellhaven archived a hundred and ten views to make thirty true.
+7. **Portfolio views locked where responders can't reach them** — the landscape that exists only inside a licensed EA tool fails the 2 a.m. test; render views where their readers stand.
 
 ## Best Practices
 
-1. **Build the view hierarchy** — capability (executive), landscape (engineering), roadmap (strategic), cross-cutting (security/data/governance), system-level (1.5) — each at its altitude for its audience.
-2. **One model, derived views** — the enterprise architecture model as the single source of truth (in the EA repository — 6.1), views derived, coherent; the forking-prevention that matters more at scale (1.5).
-3. **Keep the minimum true set** — the essential views kept true, against the over-documentation ceremony; useful beats exhaustive.
-4. **Make it living** — the model updated with the portfolio (via the governance process — 6.9), the views regenerated and current; the stale enterprise architecture misleads.
-5. **Conform to the EA function's repository and standards** — integrate-don't-parallel (5.1/6.1), the AI documentation in the enterprise EA practice.
-6. **Serve every enterprise audience at their altitude** — executives, board, review boards, security, data, engineering, compliance — each their view (1.5/1.6).
-7. **Use the documentation as compliance evidence** — the architecture views (data-flow, security architecture, system documentation) as part of the compliance record (4.14).
+1. **Run the estate from the catalog** — every view has a row: audience, notation, home, owner, SLA, kind. No row, no view — and the catalog caps the authored count.
+2. **Mandate C4 to container level; generate below it** — authored depth ends where readership ends.
+3. **Gate boundary-coupled views in the same PR as the change** — the diagram diff beside the code diff is the cheapest review the estate will ever get.
+4. **Keep generated and authored views visibly distinct** — inventory from tools, intent from architects; label which is which.
+5. **Date every authored view and route staleness to its named owner** — an unowned view is staleness on a schedule.
+6. **Archive aggressively** — a flagged view is updated or archived within its SLA; a small true set beats a large stale one (1.5's rule, promoted to estate policy).
 
 ## Architecture Checklist
 
-For enterprise GenAI architecture documentation:
+For an AI portfolio's documentation estate:
 
-- [ ] View hierarchy built: capability (6.1), landscape, roadmap (6.8), cross-cutting (security 6.5, data 5.5/6.7, governance 6.9), system-level (1.5)
-- [ ] One enterprise architecture model as the single source of truth; views derived coherently (no forking at scale)
-- [ ] Each view at its altitude for its audience (altitude discipline, enterprise edition — 1.5)
-- [ ] The minimum true set kept (essential views, true), against over-documentation ceremony
-- [ ] Documentation is living: the model updated with the portfolio (via governance — 6.9), views current
-- [ ] Conforms to the EA function's repository and standards (5.1/6.1); no parallel AI silo
-- [ ] Serves the full enterprise audience set (executives to compliance)
-- [ ] Architecture views serve as compliance evidence (4.14)
+- [ ] A view catalog covers every material system; each row carries audience, owner, and a checkable freshness SLA
+- [ ] Context and container views are current per material system — labeled arrows, single altitude, trust boundaries and probabilistic edges marked
+- [ ] Component-level documentation is generated or explicitly justified, never hand-maintained by default
+- [ ] Same-PR gates cover context, container, and data-flow views; cadence reviews cover capability, landscape, and roadmap views
+- [ ] Generated and authored views are distinguishable at a glance
+- [ ] Staleness checks run in CI and route breaches to the owning name
+- [ ] Every view has one authoritative home; all other appearances are rendered from it
+- [ ] The catalog can serve as an audit index: views dated, versioned, review trail attached ([4.14](../part-4-enterprise-genai-systems/chapter-14-privacy-compliance-governance.md))
+- [ ] An archive path exists and has been used — the estate can shrink
 
 ## Interview Questions
 
-1. *"How do you document a GenAI portfolio for a large enterprise?"* — Strong answers build the view hierarchy (capability for executives, landscape for engineering, roadmap for strategy, cross-cutting for security/data/governance, system-level per 1.5), derive them from one model (the forking-prevention at scale), keep the minimum true set living, and conform to the EA function's repository (6.1) — 1.5's discipline at portfolio scale.
-2. *"What's the biggest documentation challenge at the enterprise scale?"* — Strong answers name keeping it true and coherent: the living-documentation discipline (updated with the always-changing portfolio, the stale enterprise architecture misleads governance) and the one-model-many-views (the forking risk worse at scale with many teams) — the scale making 1.5's discipline harder and more important (Bellhaven's stale-first-version lesson).
-3. *"How do you avoid the over-documentation that gives EA a bad name?"* — Strong answers give the minimum-viable-enterprise-documentation (the essential views kept true — capability, landscape, roadmap, cross-cutting, significant systems — against the exhaustive heavyweight repository), skip the ceremony (6.1), and keep it living (useful beats exhaustive) — 1.5's minimum true set at enterprise scale.
-4. *"Who are the audiences for enterprise AI architecture documentation, and how do you serve them?"* — Strong answers give the full stakeholder range (executives, board, review boards, security, data, engineering, compliance — 1.5/1.6) each served by their view at their altitude from the one model, and note the compliance role (the views as evidence — 4.14) — the enterprise-scale audience-artifact matching.
+1. *"Forty AI systems, and the architecture documentation is always stale. Fix it."* — Strong answers refuse the "more discipline" framing and build machinery: shrink the authored estate, then a view catalog with owners and SLAs, same-PR gates, generation for everything derivable, staleness checks with archive as a legitimate exit. Weak answers propose a documentation sprint.
+2. *"Which C4 levels would you standardize across an estate, and why?"* — Strong answers mandate context and container (slow change, wide readership, gateable) and generate-or-omit component and code (fastest change, narrowest readership — the rot argument), adding the GenAI markings as estate standards.
+3. *"Your EA function models in ArchiMate; your teams draw C4 in Mermaid. Problem?"* — Strong answers say no, if governed: portfolio views in the model, system views in the repos, names consistent across the seam, every view single-homed. The problem to hunt is double-authoring, not two notations — and the architect reads the EA model regardless.
+4. *"An auditor asks for your AI estate's architecture documentation by Friday. What determines whether that's easy?"* — Strong answers name indexing and freshness, not volume: a catalog that doubles as the evidence index, views dated and versioned, data-flow views re-reviewed at change thresholds. The five-weeks-versus-four-days difference was built before the request arrived.
 
 ## Further Reading
 
-- 1.5 Communicating Architecture (re-read) — the discipline this chapter scales to the enterprise; the audience-artifact matching, C4, diagrams-as-claims, and one-model-many-views that extend to portfolio scale.
-- The C4 model (c4model.com, re-linked from 1.5) — the system-level views that are the leaves of the enterprise view hierarchy; and the EA-level view frameworks (ArchiMate for the enterprise views, if the enterprise uses it).
-- Your enterprise's EA repository and documentation standards (internal, and 6.1's EA function) — the standards the AI documentation conforms to.
-- 6.1 EA Frameworks (the capability map and target-state) and 6.9 Architecture Governance (the governance the documentation serves) — the chapters this documentation connects.
+- **Simon Brown, the C4 model (c4model.com)** — re-read past the notation this time, for the guidance on which diagrams to keep, review, and skip.
+- **The ArchiMate Specification** (The Open Group) — the layer and relationship chapters are the reading-literacy core; an afternoon there lets you navigate any EA function's model.
+- **arc42 (arc42.org)** — a pragmatic, free documentation template; a useful quarry for what an authored system view set should contain.
+- **Clements et al., *Documenting Software Architectures: Views and Beyond*** — the deep treatment of stakeholder-driven view selection; its method is this chapter's catalog with two decades of rigor behind it.
 
 ## Summary
 
-- Enterprise architecture documentation is **1.5's communication discipline at portfolio scale** — the same one-model-many-views, audience-matched, true-not-stale principles, applied where the model spans the portfolio and the audiences span the organization.
-- The **view hierarchy** serves the enterprise audiences at their altitude: capability (executives — 6.1), landscape (engineering, integration — 6.4), roadmap (strategy — 6.8), cross-cutting (security 6.5, data 5.5/6.7, governance 6.9), and system-level (1.5) — each at its level from the one model.
-- **One model, derived views** is harder and more important at scale — the forking risk (1.5) is worse with many teams, so the enterprise architecture model as the single source of truth (in the EA function's repository — 6.1) keeps the views coherent.
-- The **living-documentation discipline** is the enterprise-scale challenge — keeping the model and views true as the portfolio always evolves, because the stale enterprise architecture misleads governance (worse than none — Bellhaven's lesson).
-- The documentation is the **governance and decision substrate** (6.9/6.10) and a **compliance artifact** (4.14) — served to the full enterprise audience, conforming to the EA function's standards (integrate-don't-parallel). The decision records that document the *why* behind the architecture are next: **ADRs & decision governance** (6.3).
+- [1.5](../part-1-professional-foundation/chapter-05-communicating-architecture.md) communicates one system to its stakeholders; this chapter runs the **documentation estate** — many systems, many audiences, kept true over years — through selection, ownership, and freshness engineering, governed by the **view catalog** (audience × view × notation × owner × freshness SLA).
+- **C4's estate economics**: mandate context and container; generate or omit component and code, which rot fastest — sprint-cadence change for readers who read the code. Authored depth ends where readership ends.
+- **ArchiMate** is a typed three-layer graph whose payoff — queryable impact analysis, consistency by construction — requires a staffed, maintained model; adopt it where that holds, keep reading literacy either way.
+- **Docs-as-code** supplies the freshness machinery: views in the repo, same-PR gates for code-coupled views, cadence reviews for planning-coupled ones, a strict generated-versus-authored split, staleness checks whose exits are update or archive.
+- A stale view is worse than a missing one because it is believed; Bellhaven's arc — five-week audit, failed sprint, thirty owned views instead of a hundred and forty — is the cost curve in miniature. The *why* behind the views is next: **ADRs & decision governance** ([6.3](chapter-03-adrs-decision-governance.md)).
 
 ---
 

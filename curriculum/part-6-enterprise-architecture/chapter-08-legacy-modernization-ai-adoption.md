@@ -5,160 +5,228 @@
 | **Part** | 6 — Enterprise Architecture |
 | **Maturity level** | 4 — Architect |
 | **Difficulty** | Advanced |
-| **Estimated study time** | 3 hours (reading 90 min, exercise 90 min) |
+| **Estimated study time** | 2 hours (reading 40 min, exercise 80 min) |
 | **Prerequisites** | [1.3 Business Understanding](../part-1-professional-foundation/chapter-03-business-understanding.md); [6.1](chapter-01-ea-frameworks.md); [6.4](chapter-04-enterprise-integration.md) |
 
 ## Learning Objectives
 
 After this chapter you will be able to:
 
-1. Sequence AI adoption in a legacy estate: the pilot-to-platform path, the build-vs-buy-vs-wait decisions, and the modernization the AI adoption drives.
-2. Make the AI adoption strategy: where to start, how to sequence, and how to move from scattered pilots to an AI-enabled enterprise.
-3. Handle the legacy reality: the modernization the AI needs, the isolation where modernization isn't warranted, and the AI-as-modernization-driver dynamic.
-4. Connect the adoption strategy to the EA target-state and roadmap, making AI adoption strategic rather than opportunistic.
+1. Apply the strangler fig to an AI-era estate: place the seam, move traffic in slices, and fund the retirement step most programs cut.
+2. Use AI in both modernization roles — the tool that recovers understanding and tests from legacy code, and the capability inserted at the seam — and say where LLM assistance is proven rather than asserted.
+3. Build the regression-parity safety net: characterization tests captured before behavior changes, and eval-gated non-inferiority when a model replaces a rules engine.
+4. Run a pilot-to-platform gate table, and pick the adoption operating model from the binding constraint.
 
 ## Introduction
 
-This chapter is the adoption strategy that sequences the AI portfolio (6.1) into the enterprise's legacy estate — the pilot-to-platform path, the build-vs-buy-vs-wait decisions, and the legacy modernization the AI adoption entangles with. 6.1 built the AI portfolio and its target-state; 6.4 built the integration (including the legacy isolation); this chapter builds the *strategy* — how the enterprise moves from where it is (the legacy estate, the scattered pilots) to where it wants to be (the AI-enabled target-state — 6.1), sequenced as a roadmap that makes AI adoption strategic.
+Chapter [6.4](chapter-04-enterprise-integration.md) built the integration machinery and deferred one decision to here: for a given legacy system, modernize it or isolate it behind an adapter. This chapter answers that, and the question it is entangled with — which pilots deserve to become platform capabilities.
 
-The framing: **AI adoption is a sequenced journey from pilots to platform, entangled with legacy modernization** — the sequencing (where to start, how to progress) makes AI adoption strategic (the roadmap toward the target-state — 6.1) rather than opportunistic (the scattered pilots — 6.1), and the legacy modernization (the AI needs modern data and integration, so the AI adoption drives the modernization) is the entanglement the strategy navigates.
+The two share an artifact. A strangler-fig migration needs an interceptor in front of the legacy system's traffic; an AI capability needs an anti-corruption layer between probabilistic output and a system of record. That is one piece of infrastructure with two consumers. Build it once, charge it to the first capability that needs it, and both programs get cheaper.
 
 ## Business Motivation
 
-The adoption strategy is what turns AI from scattered pilots into an enterprise transformation — the sequencing that determines whether the AI investment adds up to an AI-enabled enterprise or a pile of disconnected experiments. Without it: AI adoption is opportunistic (the scattered pilots — 6.1, chosen by enthusiasm — 1.3, disconnected from a roadmap), the pilots don't scale (the pilot-to-production gap — 1.7, no path to platform), and the legacy estate blocks the AI (the AI needs modern data and integration the legacy estate doesn't provide, and there's no modernization strategy) — the pilots that impressed and went nowhere. With it: AI adoption is sequenced (the roadmap toward the target-state — 6.1, the pilot-to-platform path), the successful pilots scale (the path to platform — 5.10, P16), and the legacy modernization is driven by the AI needs (the AI adoption driving the data and integration modernization the enterprise needed anyway — 6.7's forcing-function, modernization edition). The business case is the transformation one, sharpened by the pilots-don't-add-up reality: an enterprise with an AI adoption strategy (sequenced, pilot-to-platform, legacy-modernization-entangled) achieves the AI-enabled transformation (the pilots adding up to the target-state — 6.1), while one without wonders why the many pilots didn't transform the enterprise (the scattered-pilots-don't-add-up — 6.1) — the strategy is what makes the AI investment a transformation rather than a collection of experiments, and the architect who builds the adoption strategy operates at the strategic level (6.1's EA altitude) where the AI transformation is directed.
+**Pilot purgatory** costs more than it looks: eleven pilots, each declared successful, none in production. The spend is small, but each consumed the scarcest engineering weeks in the enterprise on the same first twenty percent, and the sponsor who funded eleven demos stops taking the twelfth meeting. The opposite failure is the multi-year rewrite promising parity at the end while regulation, products, and integrations keep moving.
 
-## Theory
+Between them sits the legacy estate. Legacy systems block AI capabilities for a reason that is rarely "old technology": there is **no seam** — no event, no queryable interface, no independent record of what the system does. A capability needing that data either re-keys it or reverse-engineers it, and neither survives review. The argument for building the seam first is amortization: the first capability pays for it and the next four inherit it, which turns modernization from a program justified on its own merits — a losing bid against revenue work — into infrastructure spread across a portfolio ([6.10](chapter-10-tco-business-case.md)). The gate table closes the loop from the other end: killing pilots early frees the funding the survivors need.
 
-### The pilot-to-platform path
+## Theory — modernization as a sequence of seams
 
-The sequenced progression:
+### The strangler fig, and the step programs skip
 
-- **Pilot** — the initial proof (the scoped pilot proving the value — 1.3's business case, the pilot demonstrating the capability); the start, but not the end (the pilot-to-production gap — 1.7, the pilot is the beginning of the journey, not the destination).
-- **Production** — the pilot taken to production (the production-grade system — Part 4, the pilot's demo becoming the reliable, governed, monitored system — 1.7's demo-to-production multiplier, the Part 4 industrialization).
-- **Platform** — the production systems built on a shared platform (5.10, P16 — the platform amortizing the infrastructure across the systems, the golden paths — 5.10, the sprawl-avoided); the platform that makes AI scale across the enterprise (the many systems on the shared platform — 5.10's culmination).
-- **Enterprise-enabled** — the AI woven into the enterprise (the target-state — 6.1, the AI-enhanced capabilities — 6.1, the AI a standard capability the enterprise builds with); the destination (the AI-enabled enterprise, the transformation).
+Fowler's pattern is well known and usually half-implemented. A new system grows around the edges of the old, an interceptor routes an increasing share of traffic to it, and the old system is removed when its last route is gone. Three facts the metaphor hides:
 
-The path's discipline: the sequenced progression (pilot → production → platform → enterprise-enabled), each stage building on the previous (the pilot proving value — 1.3, the production industrializing — Part 4, the platform amortizing — 5.10, the enterprise-enabling transforming — 6.1) — the sequencing that makes AI adoption a strategic journey.
+- **The interceptor is production infrastructure** — availability budget, latency cost, and an owner, for the whole migration.
+- **You pay for both systems at once**, so a case built on the end-state saving looks like a failure throughout.
+- **Retirement is the step that gets cut.** Funding runs out around eighty percent because the last routes are the ugly ones, and a half-strangled estate is worse than what you started with: the same legacy, plus routers nobody owns. Fund the deletion in the build's envelope, with a date and an owner, or do not start.
 
-### Build vs. buy vs. wait
+The seam is concrete: change data capture or an outbox on the legacy store, an anti-corruption layer turning legacy record shapes into domain events through [6.4](chapter-04-enterprise-integration.md)'s four stations, and the interceptor on the write path. That surface is also reads of legacy state as events and writes back through validation and provenance — exactly what an AI capability needs.
 
-The recurring adoption decision (1.4, adoption edition):
+### AI as modernization tool — the honest ledger
 
-- **Build** — building the AI capability in-house (the custom system — the differentiation, the control, the cost and time — 1.4's build); chosen where the capability is differentiating (the proprietary data and workflow — 2.2's moat, the differentiation the enterprise builds).
-- **Buy** — buying the AI capability (the vendor product, the SaaS — the speed, the lower cost, the less control and the lock-in — 7.10); chosen where the capability is commodity (the non-differentiating capability the enterprise buys rather than builds — 4.13's build-vs-buy, adoption edition).
-- **Wait** — deferring the AI adoption for a capability (the capability not yet mature, or not yet worth the investment — the wait); chosen where the capability isn't ready or worth it yet (the honest wait — not every capability is adopted now, the sequencing defers the not-yet-ready).
-- **The decision** (1.4) — the build-vs-buy-vs-wait matched to the capability (build the differentiating, buy the commodity, wait the not-yet-ready), the classical build-vs-buy with the wait option (the sequencing defers what isn't ready) — the adoption decision per capability, sequenced in the roadmap.
+This is [CS40](../../case-studies/cs40-legacy-code-modernization-factory.md)'s territory and deserves an honest accounting. What LLM assistance does reliably, and *why*:
 
-### Legacy modernization entanglement
+- **Comprehension** — summarizing what a module does, naming the rules implicit in its branches, tracing a field to where it is set. It works because checking is cheap: an engineer reads the summary against the code, and a wrong one is visible in minutes.
+- **Documentation recovery** — drafting the interface docs nobody wrote. Cheap to check, and the baseline is an empty file.
+- **Candidate test generation, in one direction only** — proposing characterization cases from observed inputs and outputs, admitted only when they run green against the *legacy* system. The model proposes; the legacy system disposes.
+- **Transformation where tests already exist** — CS40's agentic loop works because the tests are the verifier, which puts it in the cheap-to-verify corner of [3.8](../part-3-core-building-blocks-of-genai/chapter-08-agents-concepts.md)'s autonomy grid. Remove the tests and the same loop produces a proposal, not a modernization.
 
-The legacy reality the adoption navigates:
+Oversold: whole-system translation with correctness inferred from the translation itself, and "lines converted" as progress — it counts output, not *accepted* output. The rule is about order, not preference: **use AI to build the verifier before you use it to change behavior.**
 
-- **The AI needs modern foundations** — the AI needs modern data (5.5/6.7 — the governed, quality data the legacy estate may not provide) and modern integration (6.4 — the APIs and events the legacy estate may not expose); the AI adoption entangled with the modernization (the AI can't be built well on the un-modernized legacy foundations).
-- **AI as the modernization driver** (6.7's forcing-function, modernization edition) — the AI adoption drives the legacy modernization (the AI's need for modern data and integration creating the business case for the modernization the enterprise needed anyway — the data modernization — 6.7, the integration modernization — 6.4); the AI-as-modernization-driver dynamic (the AI adoption forcing the modernization).
-- **Isolate vs. modernize** (6.4) — the decision per legacy system: modernize it (where the AI needs it and the modernization is warranted — the strategic modernization) or isolate it (where the modernization isn't warranted — the anti-corruption layer isolating the AI from the legacy — 6.4, the isolate-now); the classical modernization decision (modernize the strategic, isolate the rest), sequenced.
+### AI as the new capability at the seam
+
+The second role inserts *at* the anti-corruption layer, never inside the legacy system: read domain events off the seam, write back through translate, validate, confidence-gate, and provenance-stamp. Two consequences follow.
+
+**The capability can ship before the legacy system is modernized at all**, which makes the decision tractable: *modernize where the capability needs the legacy system's behavior or schema to change; isolate where it only reads and writes across a boundary.* The tell that isolation has curdled into avoidance is an adapter accumulating translation rules.
+
+**A capability at the seam can run in shadow from day one** — same inputs, both outputs recorded, nothing committed. That lane is the mechanism the next section needs, and it is free once the seam exists.
+
+### Regression parity: characterization first, then eval-gated equivalence
+
+Capture behavior before changing it. Characterization tests — Feathers's term for tests that pin down what code *does* rather than what it should do — are the safety net. They are not [4.7](../part-4-enterprise-genai-systems/chapter-07-evaluation-systems.md)'s golden *sets*, which carry adjudicated truth; a golden *master* records only what the incumbent did, right or wrong. Three steps:
+
+1. **Record** production inputs and legacy outputs over a window reaching the seasonal and segment tail, not last Tuesday.
+2. **Replay** them through a sandboxed legacy instance and prove the replay reproduces the recording, *before any new code exists*. When it does not, you have found hidden state — and that discovery alone often justifies the exercise.
+3. **Bucket every output field** as exact-match, tolerance (rounding, timestamps), or known-divergence with a signed exception naming who accepted it. An un-bucketed field is an unowned risk that resurfaces during cutover.
+
+Then the inversion. When a model replaces a *rules* system, exact parity is the wrong gate: the new system is supposed to disagree where the old one was wrong. Substitute **eval-gated non-inferiority** — a golden set built from legacy outputs *plus* adjudicated truth on a sample, so the rules engine is a baseline rather than a label; a threshold on the agreed metric instead of zero divergence; and every divergence *class* adjudicated into better, neutral, or worse. A class adjudicated worse routes back to the rules path permanently rather than being tuned away under deadline. This is [champion–challenger](../../GLOSSARY.md) with a rules engine as incumbent, and the adjudication record is the evidence G2 demands.
+
+### The pilot-to-platform gate table
+
+A pilot earns platform funding by passing gates, not by impressing a steering committee.
+
+| # | Gate | Evidence it demands | Who signs | What it catches |
+|---|---|---|---|---|
+| **G1** | Measured value | Pre-registered metric on the named KPI tree ([1.3](../part-1-professional-foundation/chapter-03-business-understanding.md)); delta measured from a holdout, or a pre/post with its confound named | Business sponsor + finance partner | The demo that impressed and never had a metric |
+| **G2** | Eval coverage | Eval suite with golden sets and thresholds, judge calibration record, and the parity or non-inferiority result against the incumbent | Engineering lead + eval owner | Quality asserted from a happy-path demo |
+| **G3** | Security and data | Threat model, data classification and retention decision, identity and egress placement ([6.5](chapter-05-security-architecture-zero-trust.md)), privacy record | Security architect + privacy counsel | The pilot on a personal key over unclassified data |
+| **G4** | Unit economics at volume | Cost per successful outcome at pilot volume and projected at target volume, with the assumption whose failure breaks it ([4.11](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md)) | Platform lead + finance partner | Economical at 200 requests a day, ruinous at 20,000 |
+| **G5** | Owner and budget | Named accountable owner, on-call rota, funded budget line, decommissioning criteria | Portfolio board ([6.9](chapter-09-architecture-governance.md)) | The orphan in production nobody funds |
+
+Three rules keep it a gate rather than a form. **Thresholds are written before the pilot runs** — a gate rewritten mid-pilot is a governance exception with an approver and a date ([6.3](chapter-03-adrs-decision-governance.md)). **Failing G1 kills the pilot**, because extending one that cannot show value is how purgatory is built. And **gates are cheap on a platform, expensive alone**: G2's harness, G3's placement, and G4's telemetry come from paved-road infrastructure ([5.10](../part-5-cloud-infrastructure-platform/chapter-10-iac-platform-engineering.md)), so the first review takes a quarter and the fourth takes a week.
+
+### The adoption operating model, in one rule
+
+Three shapes recur at portfolio level: a **center of excellence** building the systems itself, a **federated** model where product teams build against central standards and a shared platform ([8.7](../part-8-professional-excellence/chapter-07-mentoring-building-teams.md)'s platform-plus-embedded shape, seen from the portfolio), and a **hybrid** — central platform and enablement, federated delivery — which is where most estates end up. The choice should follow the binding constraint. **Scarce skill and no platform → CoE**, because concentrating rare people is the only way the first three systems ship. **A platform in place and demand exceeding one team's throughput → federated**, because the central team has become the queue. The maturity signal is uncomfortable and reliable: **a CoE has succeeded exactly when its backlog becomes the bottleneck**, and its job then is to redistribute delivery rather than defend the queue.
 
 ## Architecture Perspective
 
 ```mermaid
 flowchart LR
-    PILOT[Pilot<br/>prove value — 1.3] --> PROD[Production<br/>industrialize — Part 4]
-    PROD --> PLATFORM[Platform<br/>amortize — 5.10, P16]
-    PLATFORM --> ENABLED[Enterprise-enabled<br/>target-state — 6.1]
-    ROADMAP[(Adoption roadmap<br/>sequenced toward target — 6.1)] -.sequences.-> PILOT & PROD & PLATFORM & ENABLED
-    DECISION{Build/buy/wait — 1.4} -.per capability.-> ROADMAP
-    LEGACY[(Legacy estate)] --> MODDEC{Modernize or isolate — 6.4}
-    MODDEC -->|AI needs it| MODERNIZE[Modernize<br/>AI drives it — 6.7]
-    MODDEC -->|not warranted| ISOLATE[Isolate<br/>anti-corruption layer — 6.4]
-    MODERNIZE & ISOLATE -.enable.-> ROADMAP
+    subgraph LEG [Legacy estate]
+        SOR[(System of record)]
+        RULES[Incumbent rules engine]
+    end
+    subgraph SEAM [The seam — built once, used twice]
+        CDC[CDC / outbox]
+        ACL[Anti-corruption layer<br/>translate · validate · gate ·<br/>stamp provenance — 6.4]
+        INT{Interceptor<br/>traffic in slices}
+    end
+    subgraph TOOL [AI as modernization tool — CS40]
+        COMP[Comprehension +<br/>doc recovery]
+        GEN[Candidate tests<br/>legacy is the oracle]
+    end
+    subgraph PAR [Regression parity]
+        GM[(Golden master<br/>recorded legacy I/O)]
+        ADJ[Divergence classes adjudicated<br/>better / neutral / worse]
+    end
+    subgraph NEW [AI as new capability]
+        AI[AI service on the platform]
+        SHD[Shadow lane<br/>nothing committed]
+    end
+    SOR --> CDC --> ACL --> AI
+    RULES --> GM
+    COMP --> GEN --> GM
+    AI --> SHD --> ADJ
+    GM --> ADJ
+    ADJ -->|non-inferior| INT
+    INT -->|migrated slices| AI
+    INT -->|remainder + worse classes| RULES
+    GATE[Gate table G1–G5] -.funds the move.-> AI
+    RET[Retirement: last route<br/>and interceptor deleted] -.dated, owned, funded.-> RULES
 ```
 
-Readings. **The pilot-to-platform path is the strategic sequencing** — the progression (pilot → production → platform → enterprise-enabled) sequenced toward the target-state (6.1) is what makes AI adoption strategic (the roadmap) rather than opportunistic (the scattered pilots — 6.1), and each stage builds on the previous (the pilot proving — 1.3, the production industrializing — Part 4, the platform amortizing — 5.10, the enterprise-enabling transforming — 6.1). **Build-vs-buy-vs-wait is the per-capability adoption decision** — the classical build-vs-buy (4.13, adoption edition) with the wait option (the sequencing defers the not-yet-ready), matched to the capability (build the differentiating — 2.2's moat, buy the commodity, wait the not-ready), sequenced in the roadmap — the adoption decisions that populate the sequenced journey. **And AI is the legacy-modernization driver** — the AI adoption entangled with the legacy modernization (the AI needs modern data — 5.5/6.7 and integration — 6.4), driving the modernization (the AI's needs creating the business case for the modernization the enterprise needed anyway — 6.7's forcing-function, modernization edition), with the modernize-vs-isolate decision per legacy system (6.4 — modernize the strategic, isolate the rest) — the AI adoption both needing and driving the modernization.
+The seam is drawn once and consumed twice — interceptor for the migration, anti-corruption layer for the capability — which is the amortization the business case rests on. The golden master is fed from two directions, and the AI-generated branch enters only after the legacy system validates it. Every arrow into the interceptor passes through adjudication, so no traffic slice moves on a demo. What the drawing forces is the unglamorous node: retirement is dated, owned, and funded, or this is a permanent two-system estate with extra hops.
 
 ## Real-world Example
 
-**Bellhaven Insurance** (the recurring EA-anchored portfolio — 6.1) built its AI adoption strategy, and the strategy is where 6.1's portfolio and target-state became the sequenced pilot-to-platform journey entangled with the legacy modernization. The pilot-to-platform path was the strategic sequencing: the submission-intake platform (2.1) started as a pilot (proving the value — 1.3's Tomás business case), went to production (Part 4's industrialization), and became the foundation for the platform (5.10 — the shared gateway, eval, observability the later systems built on — the platform amortizing across the intake, the assistant, the renewal advisor); the sequenced progression toward the AI-enabled target-state (6.1 — the AI woven into the underwriting, service, and retention capabilities). The build-vs-buy-vs-wait decisions were sequenced: the submission-intake (the differentiating capability — the proprietary submission data and underwriting workflow — 2.2's moat) was *built* (the differentiation), the general-purpose capabilities (the commodity — the document OCR — 2.1's trench coat, the general observability tooling) were *bought*, and some capabilities (the not-yet-mature — a fully-autonomous claims agent — 3.8's autonomy grid, not yet worth the risk) were *waited* (deferred in the roadmap) — the build-differentiating, buy-commodity, wait-not-ready, sequenced. The legacy modernization was the entanglement: the intake platform needed modern data (5.5/6.7 — the governed submission data the legacy submission systems didn't provide) and modern integration (6.4 — the APIs the legacy rating engine exposed via the anti-corruption layer), so the AI adoption drove the modernization (the data governance — 6.7, forced by the AI's needs — the forcing-function, the integration modernization — 6.4); and the modernize-vs-isolate decisions were made per legacy system (6.4 — the legacy submission database modernized where the AI needed it, the legacy rating engine isolated behind the anti-corruption layer where the modernization wasn't warranted — 6.4). And the strategy connected to the EA (6.1): the adoption roadmap sequenced the portfolio toward the target-state (6.1's roadmap), making the AI adoption strategic (the sequenced journey) rather than opportunistic (the scattered pilots the early era had been). The AI adoption lead's note: *"We moved from scattered pilots to a sequenced journey: pilot (prove value — 1.3), production (industrialize — Part 4), platform (amortize — 5.10), enterprise-enabled (the target-state — 6.1). Build the differentiating (the intake — our moat), buy the commodity, wait the not-ready. And the legacy modernization was entangled — the AI needed modern data and integration, so the AI adoption drove the modernization (the data governance forced by the AI's needs — 6.7), modernizing the strategic legacy and isolating the rest (6.4). The strategy is what turned the scattered pilots into a transformation — sequenced toward the target-state, entangled with the modernization the AI drove."*
+**Corvid Logistics** had eleven AI pilots and one production system — the customs-document extraction service whose integration [6.4](chapter-04-enterprise-integration.md) describes. The blocker for most of the rest was a surcharge-and-tariff rules engine inside the transport-management system: roughly four thousand rules accreted over twelve years, deciding which fuel, congestion, and handling charges attach to a booking.
+
+The first attempt was a modernization factory — coding agents pointed at the rule modules, €2.6M, three quarters. It delivered a modern surcharge service with a green generated test suite, written against the *translated* code. Run on live bookings, the new service disagreed with the legacy engine on about nine percent of them, and nobody could say which side was right, because no independent record of the legacy engine's behavior existed. Finance refused to sign: surcharge errors bill straight through to customers.
+
+Anneke Voss, who had led that integration, argued for cancelling it, and won at a price. Corvid wrote off €1.9M, the AI roadmap slipped two board cycles, and the modernization program's director resigned rather than run a project whose first deliverable was a test corpus. What Anneke funded instead took two quarters and had no demo in it: replay eighteen months of recorded bookings through a sandboxed legacy engine, record every input and output, build the characterization suite, then build the seam. The replay refused to reproduce until the team found why — the engine read a fuel-index table refreshed weekly out of band, so the same booking priced differently depending on when it was replayed. Every parity claim the first attempt might have made would have been noise.
+
+The second attempt inverted the roles. As a *tool*, agents read the rule modules, produced documentation that had never existed, and proposed characterization cases — admitted only when green against the legacy engine, lifting rule-path coverage from roughly sixty to eighty-five percent in six weeks. As a *capability*, the new surcharge classifier was inserted at the anti-corruption layer and ran in shadow for eight weeks, gated on non-inferiority. Two pricing analysts adjudicated the six divergence classes as four better, one neutral, one worse — project-cargo charters, routed permanently back to the rules path rather than tuned. The interceptor then moved traffic in slices, with the last rules path's retirement date inside the build's funding envelope.
+
+The gate table then met the eleven pilots: three passed, five were killed, three got a missing-evidence remit, and one product lead escalated the kill decision and lost. Anneke's summary to the board that had watched her cancel a €2.6M program: *"The modernization didn't start when we wrote the new system. It started when we could prove what the old one did."*
 
 ## Hands-on Exercise
 
-**Build the AI adoption strategy.** ~90 minutes. Analysis-primary, for an enterprise (real or a case study's).
+**Plan a seam-first modernization and gate a pilot portfolio.** ~80 minutes. Use your own estate or Corvid's surcharge engine above.
 
-1. **The pilot-to-platform sequencing (30 min).** For an enterprise's AI portfolio (6.1), sequence the pilot-to-platform path: which capabilities are pilots, which go to production, which build the platform, toward the target-state (6.1). Design the roadmap (the sequenced journey).
-2. **Build-vs-buy-vs-wait (25 min).** For 5–6 AI capabilities, make the build-vs-buy-vs-wait decision (1.4): build the differentiating (2.2's moat), buy the commodity, wait the not-ready. Justify each and sequence them in the roadmap.
-3. **Legacy modernization (20 min).** For the AI adoption, identify the legacy modernization it needs (the modern data — 5.5/6.7, the modern integration — 6.4), and the modernize-vs-isolate decisions per legacy system (6.4). Show the AI-as-modernization-driver dynamic (the AI driving the modernization — 6.7).
-4. **The strategic connection (15 min).** Connect the adoption roadmap to the EA target-state and roadmap (6.1), making the AI adoption strategic (the sequenced journey toward the target-state) rather than opportunistic.
+1. **Place the seam (20 min).** Pick one legacy system on a funded capability's critical path. Draw where change data capture or an outbox attaches, what the anti-corruption layer translates into which domain events, and where the interceptor sits. Mark which parts serve the migration and which serve the capability.
+2. **Modernize or isolate (15 min).** Decide for four legacy systems using the behavior-or-schema-change test, one sentence each. For every "isolate," name the condition that would flip it.
+3. **The parity plan (25 min).** For the system in step 1: define the recording window and why it is representative, state how you will prove replay fidelity, and bucket at least eight output fields. Specify the equivalence gate; if non-inferiority, name the metric, threshold, adjudicators, and the route for a class that comes out worse.
+4. **Gate the portfolio (20 min).** Take five pilots through G1–G5, recording pass, fail, or the missing evidence with the signer named. Recommend proceed, kill, or remit.
 
 **Acceptance criteria:**
-- [ ] The pilot-to-platform path sequenced as a roadmap toward the target-state (6.1)
-- [ ] Build-vs-buy-vs-wait decisions made per capability (build differentiating, buy commodity, wait not-ready) and sequenced
-- [ ] The legacy modernization identified (the AI's needs), with modernize-vs-isolate per system (6.4) and the AI-as-driver dynamic
-- [ ] The adoption roadmap connected to the EA target-state (6.1), making the adoption strategic
+- [ ] The seam diagram shows one build serving both the migration and the capability, and names the interceptor's owner
+- [ ] Every isolate decision carries its reversal condition
+- [ ] The parity plan proves replay fidelity *before* new code exists, and every listed field is bucketed
+- [ ] The equivalence gate names its adjudicators and what happens to a "worse" divergence class
+- [ ] At least one pilot is killed with the failed gate named — a portfolio where all five proceed has not been gated
+- [ ] Every G4 projection names the assumption that breaks it
 
 ## Enterprise Considerations
 
-AI adoption strategy is a strategic enterprise-transformation concern, deeply connected to the EA and the business strategy. **It's an EA and business-strategy concern** (6.1, 1.3): the AI adoption strategy is part of the enterprise's technology and business strategy (the AI-enabled target-state — 6.1, the business value — 1.3), so the AI architect builds it with the EA function and the business leadership (the adoption strategy as a strategic artifact — 6.1's EA altitude, the business case — 1.3/6.10) — the adoption strategy operates at the strategic level. **The modernization entanglement is a major program** (6.4, 6.7): the legacy modernization the AI drives is often a major enterprise program (the data modernization — 6.7, the integration modernization — 6.4, the legacy replacement), with its own cost, timeline, and risk (1.7), so the AI adoption strategy and the modernization strategy are entangled programs (the AI adoption driving and depending on the modernization) that the enterprise sequences together. **The change management is significant** (1.8, 8.7): the AI adoption is an organizational transformation (the AI woven into the capabilities — 6.1, the workflows changed, the people affected — 1.8's adoption dynamics, the replacement fear — 1.8), so the adoption strategy includes the change management (the organizational adoption — 1.8, the team-building — 8.7) — the adoption is organizational as much as technical. **And the sequencing is a portfolio-governance concern** (6.9, 6.10): the adoption roadmap (the sequenced portfolio) is governed as a portfolio (6.9, the business case and TCO — 6.10), so the adoption strategy feeds the portfolio governance (the roadmap sequenced, the initiatives governed, the investment directed — 6.9/6.10).
+Ownership of the seam is the first political problem, and Conway's law predicts it: the legacy system's owner has no incentive to build the interface that enables their system's replacement. The workable arrangement funds the seam from the AI portfolio, staffs it jointly, and gives the legacy owner a veto on write paths only. Vendor contracts need a matching correction, because modernization suppliers price and report in lines converted: contract on output that is accepted, merged, and green against the characterization suite. In regulated estates, replacing a rules engine with a model changes the artifact's governance class the moment the AI path carries decisions, so [6.11](chapter-11-model-risk-management.md)'s inventory and validation obligations attach — produce the adjudication record in the format validation reads. The change management is equally specific: the people whose judgment the rules engine encodes are the only credible adjudicators, and the people who maintain the legacy system are being asked to help kill it.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Adoption approach | Sequenced (pilot-to-platform, roadmap) | Opportunistic (scattered pilots) | Always — the sequenced journey transforms; the scattered pilots don't add up (6.1) | Never opportunistic; the scattered pilots are the don't-add-up anti-pattern |
-| Capability sourcing | Build (differentiating) | Buy (commodity) | The capability is differentiating (2.2's moat, the proprietary data/workflow) | The capability is commodity (buy, faster, cheaper — with the lock-in weighed — 7.10) |
-| Not-ready capability | Wait (defer in the roadmap) | Adopt now | The capability isn't mature or worth it yet (the honest wait) | Never force the not-ready; the wait sequences it for later |
-| Legacy system | Modernize (AI needs it) | Isolate (anti-corruption layer — 6.4) | The AI needs it and the modernization is warranted (strategic) | The modernization isn't warranted; isolate now, modernize later or never |
+| Legacy system treatment | Modernize | Isolate behind an adapter | The capability needs the system's behavior or schema to change, and the system has years of life left | It only reads and writes across a boundary — accepting adapter rules that accumulate and need review for creeping avoidance |
+| Equivalence gate | Exact regression parity | Non-inferiority with adjudicated divergence | Deterministic logic replaces deterministic logic; any divergence is a defect | A model replaces judgment-shaped rules and is meant to disagree — at the cost of scarce expert adjudication time |
+| Migration shape | Strangler fig, traffic in slices | Scheduled cutover | Change is continuous and the interceptor's cost and lifespan are affordable | The system is small or frozen, and the interceptor costs more than the overlap it removes |
+| Operating model | CoE builds the systems | Federated teams build on a platform | Skill is the binding constraint and no platform exists — accepting that the CoE becomes a queue | The platform exists and central throughput is the bottleneck — accepting quality variance across teams |
 
 ## Common Mistakes
 
-1. **Opportunistic adoption** — the scattered pilots chosen by enthusiasm (1.3), disconnected from a roadmap, that don't add up to a transformation (6.1's don't-add-up); sequence the adoption (pilot-to-platform, toward the target-state — 6.1).
-2. **The pilot-to-production gap** — the pilots that impressed and went nowhere (1.7's demo-to-production, no path to platform); sequence the pilot-to-platform path (the pilot is the beginning, not the end).
-3. **Build-vs-buy confusion** — building the commodity (over-investing in the non-differentiating) or buying the differentiating (forfeiting the moat — 2.2); build the differentiating, buy the commodity (1.4/4.13).
-4. **Forcing the not-ready** — adopting a not-yet-mature capability (the autonomous agent not yet worth the risk — 3.8), instead of waiting; the wait sequences the not-ready for later.
-5. **AI on un-modernized legacy** — building the AI on the un-modernized legacy foundations (the un-governed data — 6.7, the un-exposed integration — 6.4), so the AI is built poorly; the AI needs modern foundations, and drives the modernization (6.7's forcing-function).
-6. **Modernize-everything or isolate-everything** — modernizing all the legacy (the over-modernization) or isolating all of it (the never-modernize); modernize the strategic, isolate the rest (6.4), per system.
-7. **Adoption disconnected from the EA** — the adoption strategy disconnected from the EA target-state and roadmap (6.1); connect it (the adoption strategic, sequenced toward the target-state).
+1. **Generating the tests from the translated code.** The suite goes green and proves only that the translation agrees with itself — Corvid's €1.9M version of the lesson.
+2. **The strangler fig with no retirement funding.** Budget ends near eighty percent, the awkward routes stay, and the estate pays for two systems plus an unowned router.
+3. **Pilot purgatory, diagnosed by what never happens.** Eleven successful pilots, none in production, not one ever killed. If nothing has failed a gate, they are not gates.
+4. **Modernizing the loudest system first.** The system engineers hate goes ahead of the one on a funded capability's critical path, because complaint volume is easier to hear than dependency.
+5. **Failing a better system for divergence.** The AI path disagrees precisely where the rules engine was wrong, the parity gate reads that as a defect, and the worse system survives with a cleaner test report.
+6. **Counting unit economics at pilot volume.** Costs that round to nothing at 200 requests a day decide the business case at 20,000.
+7. **The permanent CoE.** The team that was right at three systems is the bottleneck at thirty, and the metric it reports as success — demand for its services — is the signal to dissolve.
 
 ## Best Practices
 
-1. **Sequence the pilot-to-platform path** — pilot (prove — 1.3), production (industrialize — Part 4), platform (amortize — 5.10), enterprise-enabled (the target-state — 6.1); the sequenced journey that transforms.
-2. **Make the build-vs-buy-vs-wait decisions per capability** — build the differentiating (2.2's moat), buy the commodity, wait the not-ready (1.4/4.13); sequenced in the roadmap.
-3. **Drive the legacy modernization with the AI needs** — the AI's need for modern data (5.5/6.7) and integration (6.4) as the business case for the modernization the enterprise needed anyway (6.7's forcing-function, modernization edition).
-4. **Modernize the strategic legacy, isolate the rest** — the modernize-vs-isolate per system (6.4 — modernize where the AI needs it, isolate behind the anti-corruption layer where it doesn't).
-5. **Connect the adoption to the EA target-state** — the adoption roadmap sequenced toward the target-state (6.1), making the adoption strategic (the sequenced journey) rather than opportunistic.
-6. **Include the change management** — the organizational adoption (1.8's dynamics, the replacement fear), the team-building (8.7); the adoption is organizational as much as technical.
-7. **Govern the adoption as a portfolio** — the roadmap governed (6.9), the business case and TCO (6.10); the adoption feeding the portfolio governance.
+1. **Build the seam once and charge it to the first capability**, arguing the amortization in the business case.
+2. **Capture behavior before changing it** — record, prove replay fidelity, bucket every output field.
+3. **Use AI to build the verifier before you use it to change behavior**, reserving agentic transformation for code that already has one.
+4. **Gate pilots on pre-registered evidence with named signers**, and treat a kill as a successful gate outcome.
+5. **Adjudicate divergence classes with the people whose judgment the legacy system encodes**, routing "worse" classes back permanently.
+6. **Fund the deletion in the build's envelope**, so the interceptor is temporary by construction.
+7. **Pick the operating model from the binding constraint**, revisiting it when the constraint moves rather than when the org chart does.
 
 ## Architecture Checklist
 
-For the AI adoption strategy:
+Before signing off a modernization or an AI adoption sequence:
 
-- [ ] The pilot-to-platform path sequenced as a roadmap toward the target-state (6.1)
-- [ ] Build-vs-buy-vs-wait decisions made per capability (build differentiating, buy commodity, wait not-ready — 1.4/4.13) and sequenced
-- [ ] The legacy modernization the AI needs identified; the AI-as-modernization-driver leveraged (6.7's forcing-function)
-- [ ] Modernize-vs-isolate decisions made per legacy system (6.4 — modernize strategic, isolate rest)
-- [ ] The adoption roadmap connected to the EA target-state and roadmap (6.1); the adoption strategic, not opportunistic
-- [ ] The change management included (the organizational adoption — 1.8, the team-building — 8.7)
-- [ ] The adoption governed as a portfolio (6.9, business case and TCO — 6.10)
+- [ ] The seam is designed once and named — CDC/outbox, anti-corruption layer, interceptor — with an owner and an availability budget
+- [ ] Every legacy system in scope has a modernize-or-isolate decision, each "isolate" carrying its reversal condition
+- [ ] Characterization tests are recorded from legacy behavior, with replay fidelity proven before new code exists
+- [ ] Every output field is bucketed exact-match / tolerance / signed divergence, with the exception owner named
+- [ ] Where a model replaces rules, the gate is non-inferiority with adjudicated divergence classes
+- [ ] AI-generated tests enter the suite only after passing against the legacy system
+- [ ] Retirement of the interceptor and the last legacy route has a date, an owner, and a budget line
+- [ ] Every pilot seeking platform funding has G1–G5 evidence with named signers, registered before the pilot ran
+- [ ] G4's economics are projected at target volume with the breaking assumption stated
+- [ ] The operating model matches the binding constraint, with a written review trigger
 
 ## Interview Questions
 
-1. *"How do you sequence AI adoption in an enterprise?"* — Strong answers give the pilot-to-platform path (pilot → production → platform → enterprise-enabled, toward the target-state — 6.1), the build-vs-buy-vs-wait decisions per capability (build differentiating, buy commodity, wait not-ready — 1.4/4.13), and the legacy modernization entanglement (the AI needs and drives the modernization — 6.7), connected to the EA roadmap (6.1) — the sequenced journey that transforms.
-2. *"When do you build vs. buy an AI capability?"* — Strong answers give the differentiating-vs-commodity (build the differentiating — the proprietary data and workflow, the moat — 2.2/4.13, buy the commodity — faster, cheaper, with the lock-in weighed — 7.10), plus the wait option (defer the not-yet-ready — 3.8's autonomy grid), sequenced in the roadmap.
-3. *"How does AI adoption relate to legacy modernization?"* — Strong answers give the entanglement (the AI needs modern data — 5.5/6.7 and integration — 6.4) and the AI-as-driver (the AI adoption driving the modernization the enterprise needed anyway — 6.7's forcing-function), with the modernize-vs-isolate per legacy system (6.4 — modernize strategic, isolate rest behind the anti-corruption layer).
-4. *"Why do enterprises end up with scattered AI pilots that don't transform anything?"* — Strong answers give the opportunistic-adoption anti-pattern (the pilots chosen by enthusiasm — 1.3, disconnected from a roadmap, that don't add up — 6.1's don't-add-up), the pilot-to-production gap (1.7), and the fix (the sequenced pilot-to-platform journey toward the target-state — 6.1, the adoption strategy that turns pilots into transformation).
+1. *"You have a four-thousand-rule legacy engine nobody understands. Where does AI help, and in what order?"* — Strong answers put comprehension and characterization capture first, validate generated tests against the legacy system as oracle, and reserve agentic transformation for code that already has a verifier. Weak answers start with the translation.
+2. *"Your team wants to replace a rules engine with a model. What's the release gate?"* — Strong answers refuse exact parity, propose non-inferiority against an adjudicated golden set, classify divergences rather than count them, and name the adjudicators and the route for a class that comes out worse.
+3. *"Eleven pilots, one production system. What do you do on Monday?"* — Strong answers write the gate table, apply it retroactively, and expect to kill most of the portfolio. They name a signer per gate, because a gate without a signature is a status report.
+4. *"When is isolating a legacy system right, and when is it avoidance?"* — Strong answers use the behavior-or-schema-change test, and name the tell for avoidance: an adapter accumulating translation rules is a system being modernized badly, one case at a time.
 
 ## Further Reading
 
-- 6.1 EA Frameworks (the target-state and roadmap) and 1.3 Business Understanding (the value and business case) — the strategic context this adoption strategy operates within.
-- 6.4 Enterprise Integration (the legacy isolation and the anti-corruption layer) and 6.7 Data Governance (the data modernization) — the modernization the AI adoption drives.
-- The legacy-modernization literature (the strangler-fig pattern and the modernization-strategy references) — the classical modernization approaches this chapter applies to the AI-driven modernization.
-- 8.8 Operating as a Principal Architect — the strategic altitude the adoption strategy operates at.
+- Martin Fowler, "StranglerFigApplication" (martinfowler.com) — the anchor for this chapter's migration shape, and worth reading for how much weight the retirement step carries.
+- Martin Fowler's bliki, "BranchByAbstraction" (martinfowler.com) — the in-codebase sibling of the interceptor.
+- Michael Feathers, *Working Effectively with Legacy Code* — the origin of seams and characterization tests.
+- Eric Evans, *Domain-Driven Design* — the anti-corruption layer in its original form, which [6.4](chapter-04-enterprise-integration.md) adapts to the AI boundary.
+- [CS40](../../case-studies/cs40-legacy-code-modernization-factory.md) and the [evaluation checklist](../../checklists/evaluation-checklist.md) — the transformation pipeline, and the eval discipline G2 asks for.
 
 ## Summary
 
-- AI adoption is a **sequenced journey from pilots to platform** — pilot (prove — 1.3), production (industrialize — Part 4), platform (amortize — 5.10), enterprise-enabled (the target-state — 6.1) — the sequencing that makes AI adoption strategic (the roadmap) rather than opportunistic (the scattered pilots that don't add up — 6.1).
-- **Build-vs-buy-vs-wait** is the per-capability adoption decision (1.4/4.13, adoption edition) — build the differentiating (2.2's moat), buy the commodity, wait the not-ready — sequenced in the roadmap.
-- **AI is the legacy-modernization driver** — the AI adoption entangled with the modernization (the AI needs modern data — 5.5/6.7 and integration — 6.4), driving the modernization the enterprise needed anyway (6.7's forcing-function, modernization edition), with modernize-vs-isolate per legacy system (6.4).
-- The adoption strategy **connects to the EA target-state and roadmap** (6.1), making AI adoption strategic — and includes the **change management** (the organizational transformation — 1.8/8.7) and the **portfolio governance** (6.9/6.10).
-- The strategy is what **turns scattered pilots into an enterprise transformation** — the sequenced journey toward the target-state, entangled with the modernization the AI drives, at the strategic altitude the senior architect operates at (8.8). The governance that oversees this portfolio and its decisions is next: **architecture governance** (6.9).
+- A strangler-fig interceptor and an AI capability's anti-corruption layer are one piece of infrastructure with two consumers; building the **seam once** makes both programs affordable.
+- As a **tool**, AI is strong at comprehension, documentation recovery, and proposing tests the legacy system then validates — and oversold at whole-system translation whose correctness is inferred from itself. As a **capability**, it inserts at the seam, shipping before the legacy system changes and running in shadow from day one.
+- **Modernize where the capability needs the legacy system's behavior or schema to change; isolate where it only reads and writes across a boundary** — watching for the adapter whose growing rule count means isolation has become avoidance.
+- The safety net is **characterization tests recorded before anything changes**, replay fidelity proven first, every field bucketed. When a model replaces rules the gate becomes **non-inferiority with adjudicated divergence classes**.
+- The **G1–G5 gate table** — value, eval coverage, security and data, unit economics at volume, owner and budget — converts a pilot portfolio into platform funding, and killing pilots is what makes it real.
+- The **operating model follows the binding constraint**: CoE while skill is scarce, federated once the central queue is the bottleneck. The boards and standards holding these gates in place are next: **architecture governance** ([6.9](chapter-09-architecture-governance.md)).
 
 ---
 
