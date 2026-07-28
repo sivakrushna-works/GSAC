@@ -21,13 +21,13 @@ After this chapter you will be able to:
 
 Every pattern here buys money or milliseconds by spending something else. Cascades trade latency on escalated requests, caches trade freshness, tiering trades quality variance, batching trades interactivity, compaction trades context you may later need. The chapter's spine is therefore not the catalog but the two disciplines around it: **optimize only what you have measured, and gate every lever on evals**.
 
-The failure this prevents is specific. A team ships a saving, the spend graph falls, and three weeks later support tickets reveal that a similarity threshold has been returning last quarter's policy answer to this quarter's question. Nothing alerted, because cost dashboards do not measure correctness. A cost pattern applied without an eval gate is a quality regression waiting to be discovered by users — the most expensive detector you can build.
+The failure this prevents is specific. A team ships a saving, the spend graph falls, and three weeks later support tickets reveal a similarity threshold returning last quarter's policy answer to this quarter's question. Nothing alerted, because cost dashboards do not measure correctness. A cost pattern applied without an eval gate is a quality regression waiting to be discovered by users — the most expensive detector you can build.
 
 ## Business Motivation
 
 Unit cost decides which features exist: a workflow whose per-request economics do not close never ships, so these patterns move the boundary of the buildable, and a platform team's [TCO](../../GLOSSARY.md) case is usually written in them ([6.10](../part-6-enterprise-architecture/chapter-10-tco-business-case.md)).
 
-The counterweight is that each pattern has a *failure price*, rarely modelled. A false cache hit costs a wrong answer delivered confidently, plus the trust it was carrying. A cascade whose escalation rate drifts upward pays both models on most requests — worse economics than the frontier model alone, at worse tail latency. A tier downgrade that fails on one minority class costs rework, human correction, and a quality reputation earned over a year. None of these appears on a spend graph; all appear in evals, audits, and paired metrics, which is why every pattern below carries a measurement precondition. And unbounded spend on a shared gateway ends in the CFO's blunt instrument: a freeze that taxes every team for one team's leak.
+The counterweight is that each pattern has a *failure price*, rarely modelled. A false cache hit costs a wrong answer delivered confidently, plus the trust it was carrying. A cascade whose escalation rate drifts upward pays both models on most requests — worse economics than the frontier model alone, at worse tail latency. A tier downgrade failing on one minority class costs rework, human correction, and a quality reputation earned over a year. None of these appears on a spend graph; all appear in evals, audits, and paired metrics. And unbounded spend on a shared gateway ends in the CFO's blunt instrument: a freeze that taxes every team for one team's leak.
 
 ## Theory — The Cost & Performance Pattern Catalog
 
@@ -35,49 +35,49 @@ Each pattern carries one element beyond the standard form: **Measurement** — w
 
 ### Pattern: Model Tiering/Routing
 
-- **Context** — task classes of unequal difficulty (classification, extraction, routing beside open-ended drafting) all served by one model chosen for the hardest of them.
-- **Problem** — one model for everything is priced for the hardest task and billed on every request; one cheap model for everything fails the hard tail invisibly.
-- **Forces** — the per-class quality floor against per-class unit cost; the eval work to prove a downgrade safe against the spend it saves; routing tables that go stale on every model release.
-- **Solution** — define classes, build a suite per class, bake off candidates per class, route deterministically by class label — never by the model's claim about its own difficulty. Unclassified traffic defaults to the expensive tier: fail expensive, not wrong.
-- **Structure** — request → class label (rule or small classifier) → tier → response; cost and quality panels paired per class.
-- **Measurement** — precondition: spend attributed per class ([4.10](../part-4-enterprise-genai-systems/chapter-10-observability.md)) and a suite per class. Working: down-tier share rises, per-class eval scores hold, **cost per successful task** falls. Failing: cost per *call* falls while retries and human edits rise — the saving moved downstream rather than existing.
-- **Consequences** — the largest headline saving and the most eval work per unit saved; permanent quality variance, since the weaker tier sets your reputation on its class; a misrouted class raises no error, only slightly worse answers indefinitely. The table needs an owner and a re-run trigger per model release.
-- **Known uses** — every major provider ships a small/mid/large family behind one API, making a tier change a parameter rather than a migration; LiteLLM and OpenRouter make per-class routing and fallback declarative; the RouteLLM project publishes a trained strong/weak router. Worked instance (fictional): Vantora's 60% of frontier traffic moved down a tier at measured parity (4.11).
-- **Related** — Cascade with Escalation (the dynamic sibling); Reasoning-Effort Budgeting (the second axis); champion–challenger ([7.11](chapter-11-predictive-scoring-patterns.md)) as its promotion discipline.
+- **Context** — task classes of unequal difficulty (classification, extraction, routing, open-ended drafting) all served by one model chosen for the hardest.
+- **Problem** — that model is priced for the hardest task and billed on every request, while the cheap-model-everywhere alternative fails the hard tail invisibly.
+- **Forces** — the per-class quality floor against per-class unit cost; the eval work proving a downgrade safe against the spend it saves; routing tables that go stale on every model release.
+- **Solution** — a suite and a bake-off per class, then deterministic routing by class label, never by the model's claim about its own difficulty; unclassified traffic defaults to the expensive tier — fail expensive, not wrong.
+- **Structure** — request → class label (rule or small classifier) → tier → response, with cost and quality panels paired per class.
+- **Measurement** — precondition: spend attributed per class ([4.10](../part-4-enterprise-genai-systems/chapter-10-observability.md)) and a suite per class. Working: down-tier share rises, per-class eval scores hold, **cost per successful task** falls. Failing: cost per *call* falls while retries and human edits rise.
+- **Consequences** — the biggest headline saving and the most eval work per unit saved; permanent quality variance, since the weaker tier sets your reputation on its class; a misrouted class raises no error, only worse answers indefinitely.
+- **Known uses** — every major provider ships a small/mid/large family behind one API, so a tier change is a parameter rather than a migration; LiteLLM and OpenRouter make per-class routing and fallback declarative; the RouteLLM project publishes a trained strong/weak router. Worked instance (fictional): Vantora's 60% of frontier traffic moved down a tier at measured parity (4.11).
+- **Related** — Cascade with Escalation; Reasoning-Effort Budgeting (the second axis); champion–challenger ([7.11](chapter-11-predictive-scoring-patterns.md)) as its promotion discipline.
 
 ### Pattern: Cascade with Escalation
 
 - **Context** — a class where most instances are easy but difficulty is unknowable before the attempt: support answers, extraction over messy scans, small code fixes.
 - **Problem** — static tiering needs a difficulty predictor at request time; you rarely have one, but you can judge an *answer* cheaply once it exists.
-- **Forces** — blended cost pulls toward trying cheap first; tail latency pulls back, since an escalated request pays both calls end to end. An uncalibrated checker trades false accepts (a cheap wrong answer shipped) against false escalates (the saving evaporates).
-- **Solution** — attempt on the cheap tier; a bounded check (schema validity, verifier rubric, self-consistency, calibrated confidence) decides accept or escalate *once*, logging both attempts with the score. Keep depth at two — three-stage cascades multiply tail latency faster than they save.
+- **Forces** — blended cost pulls toward trying cheap first while tail latency pulls back, since an escalated request pays both calls; an uncalibrated checker trades false accepts (a cheap wrong answer shipped) against false escalates (the saving evaporates).
+- **Solution** — attempt on the cheap tier; a bounded check (schema validity, verifier rubric, self-consistency, calibrated confidence) decides accept or escalate *once*, logging both attempts. Keep depth at two — three-stage cascades multiply tail latency faster than they save.
 - **Structure** — request → cheap tier → check → accept │ escalate → strong tier → respond.
-- **Measurement** — precondition: a checker validated against human labels on a sample. Signals: escalation rate, quality on the escalated slice, **and quality on the accepted slice** — the false-accept audit is the one teams skip and the only one catching silent degradation; plus p95 latency including the escalated tail, and blended cost per *resolved* request.
-- **Consequences** — cost tracks actual rather than assumed difficulty, but escalated requests pay roughly both calls in money and latency, so the arithmetic turns negative at a modest escalation rate — and that rate drifts as traffic changes. The checker is now a component with its own evals and owner.
+- **Measurement** — precondition: a checker validated against human labels on a sample. Signals: escalation rate, quality on the escalated slice, **and quality on the accepted slice** — the false-accept audit is the one teams skip and the only one catching silent degradation; plus blended cost per *resolved* request.
+- **Consequences** — cost tracks actual rather than assumed difficulty, but escalated requests pay roughly both calls in money and latency, so the arithmetic turns negative at a modest escalation rate, and that rate drifts as traffic changes. The checker becomes a component with its own evals and owner.
 - **Known uses** — the published FrugalGPT work (Chen, Zaharia, Zou, 2023) documents cheap-first cascades with a scored accept/escalate decision; RouteLLM ships the strong/weak decision as open source; verify-then-escalate is standard where a grounded cheap answer is checked before reaching a customer. Worked instance (fictional): Corvid's customs-extraction ladder (1.4).
 - **Related** — Model Tiering/Routing (use it where class predicts difficulty); dual-model verification ([7.6](chapter-06-safety-guardrail-patterns.md)) — the checker is never the drafter.
 
 ### Pattern: Prefix Cache Alignment
 
 - **Context** — repeated calls sharing a long stable head: system prompt, tool definitions, a few-shot block, one document read many times.
-- **Problem** — the stable head is re-processed and re-billed on every call, and assembly that interleaves volatile content — a timestamp, a user ID, a retrieved chunk — into that head destroys reuse entirely.
-- **Forces** — authoring convenience (the user's name reads better at the top) against byte-stability; cache lifetime against arrival rate, since a prefix expiring between calls never repays its write.
+- **Problem** — the stable head is re-processed and re-billed on every call, and assembly that interleaves volatile content (a timestamp, a user ID, a retrieved chunk) into that head destroys reuse entirely.
+- **Forces** — authoring convenience against byte-stability; cache lifetime against arrival rate, since a prefix expiring between calls never repays its write.
 - **Solution** — order every prompt stable-first, volatile-last; freeze the head's bytes; put the cache boundary below the largest stable block; make assembly deterministic and *test that property* as you would a schema.
 - **Structure** — `[system + tools + examples: cached]` → `[retrieved evidence]` → `[user turn]`.
-- **Measurement** — precondition: telemetry separating cached from uncached input [tokens](../../GLOSSARY.md). Working: cached-input ratio rising, time-to-first-token falling on cached paths. The only pattern whose success needs no quality metric — a hit returns the same computation, not a similar one.
-- **Consequences** — cost and prefill latency fall together with no staleness and no quality risk: the cheapest, safest lever there is. Its weakness is fragility, not danger — one interpolated timestamp above the boundary silently zeroes the ratio, and low-traffic features pay write overhead for hits that never arrive.
-- **Known uses** — the major providers bill repeated prefix tokens at a reduced rate, via explicit cache breakpoints or automatic prefix matching and subject to a short idle lifetime; self-hosted engines (vLLM, SGLang) reuse KV-cache prefixes across requests for the same effect on your own hardware. Worked instance (fictional): Vantora's cache ratio moving from 12% to 71% on restructuring alone (4.11).
-- **Related** — Prompt Compression (trims what caching cannot reuse); Semantic Caching (the other cache — opposite risk profile, routinely confused with this one).
+- **Measurement** — precondition: telemetry separating cached from uncached input [tokens](../../GLOSSARY.md). Working: cached-input ratio rising, time-to-first-token falling on cached paths. The only pattern here whose success needs no quality metric — a hit returns the same computation, not a similar one.
+- **Consequences** — cost and prefill latency fall together with no staleness and no quality risk: the cheapest, safest lever there is. Its weakness is fragility rather than danger — one interpolated timestamp above the boundary silently zeroes the ratio, and low-traffic features pay write overhead for hits that never arrive.
+- **Known uses** — the major providers bill repeated prefix tokens at a reduced rate, through explicit cache breakpoints or automatic prefix matching and subject to a short idle lifetime; self-hosted engines (vLLM, SGLang) reuse KV-cache prefixes across requests for the same effect. Worked instance (fictional): Vantora's cache ratio moving from 12% to 71% on restructuring alone (4.11).
+- **Related** — Prompt Compression; Semantic Caching (the other cache — opposite risk profile, routinely confused with this one).
 
 ### Pattern: Semantic Caching
 
 - **Context** — a query distribution repetitive in *meaning* but not in bytes: policy Q&A, FAQ-shaped support traffic, product questions asked fifty ways.
 - **Problem** — near-duplicate questions each pay a full generation, and exact-match caching almost never hits on natural language.
-- **Forces** — one knob moves two metrics the same way: loosening the similarity threshold raises hit rate *and* false-hit rate. Reuse fights freshness; shared reuse fights isolation, since two users with different permissions must never share an answer ([7.7](chapter-07-knowledge-data-patterns.md)).
-- **Solution** — embed the normalized query, serve the nearest neighbour above a threshold. Derive that threshold by replaying real query logs and labelling the near-misses — never from intuition or a library default. Keys carry tenant and permission set; TTLs follow volatility class; corpus publication invalidates.
+- **Forces** — one knob moves two metrics the same way, since loosening the similarity threshold raises hit rate *and* false-hit rate; reuse fights freshness; shared reuse fights isolation, as two users with different permissions must never share an answer ([7.7](chapter-07-knowledge-data-patterns.md)).
+- **Solution** — embed the normalized query and serve the nearest neighbour above a threshold derived by replaying real query logs and labelling the near-misses — never from intuition or a library default. Keys carry tenant and permission set; TTLs follow volatility class; corpus publication invalidates.
 - **Structure** — request → embed → lookup ≥ threshold → hit (serve, log) │ miss (generate, store); a standing sample of hits is re-generated and compared.
-- **Measurement** — precondition: a labelled replay set including pairs a human calls "the same question" and pairs a human calls "dangerously similar". Signals: **hit rate and false-hit rate together**, the second from that standing audit; plus the age distribution of answers actually served.
-- **Consequences** — the largest per-hit saving, since the whole call disappears — and the only pattern that can serve a *wrong* answer with full confidence, invisibly to every cost dashboard. It does not apply to personalized, account-specific, or time-sensitive answers, and a permission-blind key is a data leak dressed as an optimization. The audit is a permanent operating cost.
+- **Measurement** — precondition: a labelled replay set including the pairs a human calls "the same question" and those a human calls "dangerously similar". Signals: **hit rate and false-hit rate together**, the second from that standing audit, plus the age distribution of answers served.
+- **Consequences** — the largest per-hit saving, since the whole call disappears, and the only pattern that can serve a *wrong* answer with full confidence, invisibly to every cost dashboard. It does not apply to personalized or time-sensitive answers, a permission-blind key is a data leak dressed as an optimization, and the audit is a permanent operating cost.
 - **Known uses** — GPTCache implements embedding-similarity response caching as an open-source library; semantic-cache helpers ship in mainstream vector tooling; gateway layers (LiteLLM, Portkey) expose exact and similarity-based response caching as configuration. Worked instance (fictional): Vantora's policy-FAQ cache, re-thresholded after a default proved too loose.
 - **Related** — Prefix Cache Alignment; the freshness pipeline (7.7), whose publish events invalidate this cache.
 
@@ -86,12 +86,12 @@ Each pattern carries one element beyond the standard form: **Measurement** — w
 - **Context** — prompts that have accreted rules, unauditioned examples, fixed-k retrieval, and unbounded history until input tokens dominate the bill.
 - **Problem** — every token is billed on every call and re-processed in prefill; past a point, accreted context also degrades attention on what matters.
 - **Forces** — the instinct that more context is safer against measured quality; retrieval recall against token cost; history fidelity against compaction loss; a summarizer's compute against the tokens it saves.
-- **Solution** — three moves, in order. **Delete**: audition each rule and example against the suite; what does not earn its tokens goes. **Threshold**: score-gate retrieval instead of fixed-k. **Compact**: summarize old turns behind a rolling window, keeping the last N verbatim and pinned facts structured. Never compress evidence spans a citation must point at ([7.2](chapter-02-rag-patterns.md)).
+- **Solution** — three moves in order. **Delete**: audition each rule and example against the suite. **Threshold**: score-gate retrieval instead of fixed-k. **Compact**: summarize old turns behind a rolling window, keeping the last N verbatim and pinned facts structured. Never compress evidence spans a citation must point at ([7.2](chapter-02-rag-patterns.md)).
 - **Structure** — prompt = `[stable head, cached]` + `[thresholded evidence]` + `[compacted history]` + `[turn]`, each segment budgeted.
 - **Measurement** — precondition: token counts broken out *per prompt segment*, not per request. Signals: tokens per segment falling, eval score held, TTFT down. Compaction's failure signal is behavioural — clarifying questions or users repeating themselves mean the summarizer dropped something load-bearing.
-- **Consequences** — usually the rare lever improving cost, latency, and quality together. But compaction is lossy and its loss is silent; the summarizer adds a call and a failure mode; over-trimming appears not as an error but as a model asking for what it was already told.
+- **Consequences** — usually the rare lever improving cost, latency, and quality together; but compaction is lossy and its loss is silent, the summarizer adds a call and a failure mode, and over-trimming appears not as an error but as a model asking for what it was already told.
 - **Known uses** — LLMLingua (Microsoft Research) compresses prompts using a small model; summarizing conversation memory ships in mainstream orchestration frameworks; coding agents compact history automatically near the context window. Worked instance (fictional): Vantora's 4K few-shot block pruned to 1.2K on eval evidence (4.11).
-- **Related** — Prefix Cache Alignment (compress *below* the cache boundary, or you break both levers).
+- **Related** — Prefix Cache Alignment — compress *below* the cache boundary, or you break both levers.
 
 ### Pattern: Reasoning-Effort Budgeting
 
@@ -101,7 +101,7 @@ Each pattern carries one element beyond the standard form: **Measurement** — w
 - **Solution** — route effort as a per-class parameter, not a global default: minimal or disabled for extraction, classification, and routing; generous only where the bake-off shows it pays. Cap maximum output, and re-run the comparison at every model upgrade, because defaults move.
 - **Structure** — class → one routing record of (tier, effort budget, max output).
 - **Measurement** — precondition: telemetry separating thinking tokens from answer tokens per class. Signals: accuracy per class at each effort setting, p50/p95 thinking tokens, latency variance as an SLO of its own. Failing: thinking tokens growing on a class whose accuracy is flat.
-- **Consequences** — often the fastest large saving on a reasoning-heavy estate, since the change is a parameter rather than an architecture. It promotes latency variance to a first-class problem — the model, not you, decides the request's duration — and hidden chains cannot serve as audit evidence, leaving behavioural evals the only ground truth (2.6).
+- **Consequences** — often the fastest large saving on a reasoning-heavy estate, since the change is a parameter rather than an architecture; it promotes latency variance to a first-class problem, and hidden chains cannot serve as audit evidence, leaving behavioural evals the only ground truth (2.6).
 - **Known uses** — the major providers expose per-request effort or thinking-budget controls alongside their reasoning models and bill thinking tokens at output rates; their guidance consistently recommends matching effort to task difficulty rather than defaulting high.
 - **Related** — Model Tiering/Routing (this is its second axis); Cascade with Escalation (escalate to *more thought*, not only a bigger model).
 
@@ -110,10 +110,10 @@ Each pattern carries one element beyond the standard form: **Measurement** — w
 - **Context** — work with nobody waiting: nightly re-embedding, corpus enrichment, backfills, eval runs, periodic reporting.
 - **Problem** — latency-tolerant volume runs on the interactive path, paying interactive prices, consuming the same rate limits, and eating the interactive tail's headroom when a large job lands.
 - **Forces** — turnaround time against unit price; deadline against queue depth; the simplicity of one path against the economics of two.
-- **Solution** — declare a lane per workload against its true deadline. Anything that can wait hours submits asynchronously; batch takes separate credentials and quota so it cannot starve interactive; job units are idempotent, retried per item, with an explicit partial-results contract ([4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md)).
+- **Solution** — declare a lane per workload against its true deadline; anything that can wait hours submits asynchronously, batch takes separate credentials and quota so it cannot starve interactive, and job units are idempotent with an explicit partial-results contract ([4.6](../part-4-enterprise-genai-systems/chapter-06-orchestration-workflows.md)).
 - **Structure** — job → batch lane (async submit → poll or callback) → results store; interactive lane isolated by quota and priority.
-- **Measurement** — precondition: classify each workload's real deadline by asking who waits and until when; the answer is usually "nobody, and never". Signals: token share in the batch lane, completion inside the promised window, and the one that decides whether the lane works — **interactive p99 unchanged while a large batch runs**.
-- **Consequences** — a discount on work that never needed speed, plus rate-limit relief for the interactive lane. In exchange you inherit a job system (submission, polling, partial failure, retention) and an SLA in hours; a batched workload cannot be poked at interactively, so its failures arrive in bulk, later.
+- **Measurement** — precondition: classify each workload's real deadline by asking who waits and until when — usually "nobody, and never". Signals: token share in the batch lane, completion inside the promised window, and the one that decides whether the lane works — **interactive p99 unchanged while a large batch runs**.
+- **Consequences** — a discount on work that never needed speed, plus rate-limit relief for the interactive lane; in exchange you inherit a job system (submission, polling, partial failure, retention), an SLA in hours, and failures that arrive in bulk rather than in a debuggable single request.
 - **Known uses** — the major providers offer asynchronous batch endpoints priced below their synchronous equivalents for work returned within a stated turnaround window; self-hosted stacks (vLLM, TGI) raise throughput per GPU through continuous batching; preemptible and spot compute suits offline jobs ([5.2](../part-5-cloud-infrastructure-platform/chapter-02-compute-for-ai.md)).
 - **Related** — orchestration lanes (4.6); Batch Scoring (7.11 — the classical cousin).
 
@@ -122,10 +122,10 @@ Each pattern carries one element beyond the standard form: **Measurement** — w
 - **Context** — many teams, tenants, and features sharing one gateway, plus agent loops with no natural stopping point.
 - **Problem** — advisory budgets drift and runaways surface on the invoice; one tenant or one looping agent can consume a quota everyone depends on.
 - **Forces** — hard bounds against legitimate bursts; rejecting against degrading (no answer versus a cheaper one); central enforcement against team autonomy.
-- **Solution** — enforce at the gateway: spend and token quotas per key, tenant, and feature, rolling up to a fleet breaker ([4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md)). Each feature declares its over-budget behaviour in writing — reject clearly, degrade to a cheaper tier, or divert to the batch lane. Anomaly alerts watch unit cost, cached ratio, and model mix; showback puts each team's bill on its own dashboard.
+- **Solution** — enforce at the gateway with spend and token quotas per key, tenant, and feature, rolling up to a fleet breaker ([4.4](../part-4-enterprise-genai-systems/chapter-04-agent-architectures-production.md)); each feature declares its over-budget behaviour in writing — reject clearly, degrade to a cheaper tier, or divert to the batch lane — with anomaly alerts on unit cost, cached ratio, and model mix.
 - **Structure** — request → gateway (identify tenant/feature → check budget → allow │ degrade │ reject) → model; spend events → attribution store → alerts and showback.
 - **Measurement** — precondition: every call labelled with tenant, feature, and version (4.10). Signals: budget utilization per tenant, rejection and degradation rates — a rise means an attack, a bug, or a wrong budget, all three wanting a human — and time-to-detect a cost anomaly.
-- **Consequences** — spend becomes bounded and attributable, and a runaway meets a wall instead of an invoice. Enforcement is a user-visible failure mode needing product design; budgets set once and never revisited throttle legitimate growth. Note what this pattern does *not* do: it never reduces unit cost. It caps blast radius.
+- **Consequences** — spend becomes bounded and attributable and a runaway meets a wall instead of an invoice; enforcement is a user-visible failure mode needing product design, and budgets never revisited throttle legitimate growth. Note what this pattern does *not* do: it never reduces unit cost. It caps blast radius.
 - **Known uses** — gateway and proxy products expose per-key virtual budgets and rate limits (LiteLLM's virtual keys are the common open-source implementation); providers offer account-level spend limits and usage tiers; cloud budget services cover the infrastructure half. Worked instance (fictional): Vantora's per-tenant gateway quotas (4.11).
 - **Related** — the gateway ([7.9](chapter-09-platform-multitenancy-patterns.md)); agent governors (4.4).
 
@@ -159,11 +159,11 @@ Two readings. **The eval gate sits inside the loop, not at the end** — every l
 
 ## Real-world Example
 
-**Vantora Systems** (fictional, US SaaS — 4.11) ran its efficiency programme in the order above, and the order is why it worked. It opened with three weeks of *not optimizing*: extending the gateway's cost plane to break out cached versus uncached input tokens, tokens per prompt segment, and spend per task class.
+**Vantora Systems** (fictional, US SaaS — 4.11) ran its efficiency programme in the order above, opening with three weeks of *not optimizing*: extending the gateway's cost plane to break out cached versus uncached input tokens, tokens per prompt segment, and spend per task class.
 
-**Prefix Cache Alignment** came first — request IDs and a formatted timestamp sat above the few-shot block, pinning the cache ratio at 12%; restructuring stable-first raised it to 71% and cut input cost 34% in a week, with zero eval movement. **Prompt Compression** followed: a 4K example block auditioned down to 1.2K, mostly near-duplicates; history compaction shipped only after the clarifying-question rate held flat for two weeks. **Reasoning-Effort Budgeting** was the surprise — the classification path had inherited a reasoning model at a generous default, and minimal effort removed a quarter of its output tokens with no accuracy change. **Batch Lanes** moved eval runs and re-embedding off the interactive path, accepted on interactive p99 during a full corpus re-embed rather than on the invoice. **Model Tiering/Routing** came fifth, six weeks of bake-offs to move 60% of frontier traffic down a tier at parity — the headline 34% off model spend, earned last.
+**Prefix Cache Alignment** came first — request IDs and a timestamp sat above the few-shot block, pinning the cache ratio at 12%; restructuring stable-first raised it to 71% and cut input cost 34% in a week, with zero eval movement. **Prompt Compression** followed: a 4K example block auditioned down to 1.2K, and history compaction shipped only after the clarifying-question rate held flat for two weeks. **Reasoning-Effort Budgeting** was the surprise — the classification path had inherited a reasoning model at a generous default, and minimal effort removed a quarter of its output tokens with no accuracy change. **Batch Lanes** moved eval runs and re-embedding off the interactive path, accepted on interactive p99 during a full re-embed rather than on the invoice. **Model Tiering/Routing** came fifth, six weeks of bake-offs to move 60% of frontier traffic down a tier at parity — the headline 34% off model spend, earned last.
 
-**Semantic Caching** was the one that bit. Launched on the policy-FAQ class at a library default threshold, it hit 41% and looked excellent for eleven days, until an audit sample showed two distinct questions about refund windows collapsing onto one cached answer. The threshold was re-derived from a labelled replay of six weeks of queries; hit rate settled at 23%, and the re-generation audit became a permanent line item. Adaeze's note to the team: *"The cache wasn't wrong because the threshold was wrong. It was wrong because we shipped a lever whose failure mode nothing on our dashboards could see."* Estate total: 58% cost reduction, no measured quality loss, one near-miss that changed the launch checklist.
+**Semantic Caching** was the one that bit. Launched on the policy-FAQ class at a library default threshold, it hit 41% and looked excellent for eleven days, until an audit sample showed two distinct questions about refund windows collapsing onto one cached answer. Re-derived from a labelled replay of six weeks of queries, hit rate settled at 23% and the re-generation audit became a permanent line item. Adaeze's note to the team: *"The cache wasn't wrong because the threshold was wrong. It was wrong because we shipped a lever whose failure mode nothing on our dashboards could see."* Estate total: 58% cost reduction, no measured quality loss, one near-miss that changed the launch checklist.
 
 ## Hands-on Exercise
 
@@ -171,7 +171,7 @@ Two readings. **The eval gate sits inside the loop, not at the end** — every l
 
 1. **Instrument before deciding (20 min).** Produce four numbers: cost per task class, cached-input ratio, tokens per prompt segment, and thinking tokens per class where a reasoning model is in play. Where a number is unavailable, write what you would add to get it — that gap is the finding.
 2. **Apply lever 1 (15 min).** Restructure one prompt stable-first and re-measure; report the cached-ratio and TTFT deltas.
-3. **Price a risky lever (20 min).** Choose semantic caching or a cascade. Write its measurement plan *before* any design: both paired metrics, the audit's sample size and cadence, its owner, and the threshold at which you switch the lever off.
+3. **Price a risky lever (20 min).** Choose semantic caching or a cascade and write its measurement plan *before* any design: both paired metrics, the audit's sample size and cadence, its owner, and the threshold at which you switch the lever off.
 4. **Write the sequencing memo (20 min).** Order every applicable lever by risk, one sentence each on what it trades away, and name the lever you are deliberately *not* pulling.
 
 **Acceptance criteria:**
@@ -183,24 +183,23 @@ Two readings. **The eval gate sits inside the loop, not at the end** — every l
 
 ## Enterprise Considerations
 
-These are platform capabilities, not per-team code: routing, both caches, effort defaults, lanes, and budgets belong at the gateway (7.9), where the false-hit audit runs once for everyone and per-tenant attribution already exists. Cache design is also a data-protection question — a key ignoring tenant or permission set is an isolation failure that happens to save money, and an auditor finds it before a monitor does (7.7). Commitment economics shift the arithmetic: under provisioned throughput, unused capacity is already paid for, so the levers optimize against a different baseline, and FinOps and architecture model it jointly (4.11). Every lever needs an owner and a review cadence — routing tables go stale on model releases, thresholds drift with traffic, budgets set at launch throttle growth two quarters later.
+These are platform capabilities, not per-team code: routing, both caches, effort defaults, lanes, and budgets belong at the gateway (7.9), where the false-hit audit runs once for everyone and per-tenant attribution already exists. Cache design is also a data-protection question — a key ignoring tenant or permission set is an isolation failure that happens to save money, and an auditor finds it before a monitor does (7.7). Commitment economics shift the arithmetic: under provisioned throughput, unused capacity is already paid for, so the levers optimize against a different baseline (4.11). And every lever needs an owner and a review cadence — routing tables go stale on model releases, thresholds drift with traffic, budgets set at launch throttle growth two quarters later.
 
 ## Trade-offs
 
 | Decision | Option A | Option B | Choose A when… | Choose B when… |
 |----------|----------|----------|----------------|----------------|
-| Lever order | By risk (prefix cache → compression → effort → lanes → tiering → cascade → semantic cache) | By headline saving (tiering or semantic cache first) | Always — the safe levers land in days and fund the eval-heavy ones | Never; the biggest number is the most eval-expensive and riskiest to ship early |
-| Difficulty handling | Model Tiering/Routing (static, by class) | Cascade with Escalation (dynamic, by result) | Class reliably predicts difficulty; tail latency is tight | Difficulty is unpredictable per request and a validated cheap checker exists |
-| Repetition handling | Prefix Cache Alignment | Semantic Caching | Always first — no staleness, no quality risk, no audit cost | Meaning genuinely repeats, answers tolerate staleness, and the audit is funded |
-| Reasoning spend | Effort routed per class | One global effort default | Classes differ in difficulty — nearly always | Only one task class exists and its bake-off justified the setting |
-| Over-budget behaviour | Degrade (cheaper tier or batch lane) | Reject with a clear error | The degraded answer is still useful and the drop is disclosed | A wrong-tier answer would mislead; clean failure is the honest outcome |
+| Lever order | By risk (cache alignment → compression → effort → lanes → tiering → cascade → semantic cache) | By headline saving (tiering or semantic cache first) | Always — safe levers land in days and fund the eval-heavy ones | Never; the biggest number is the most eval-expensive to earn |
+| Difficulty handling | Model Tiering/Routing (static, by class) | Cascade with Escalation (dynamic, by result) | Class predicts difficulty; tail latency is tight | Difficulty is unpredictable and a validated cheap checker exists |
+| Repetition handling | Prefix Cache Alignment | Semantic Caching | Always first — no staleness, no quality risk, no audit cost | Meaning genuinely repeats, staleness is tolerable, audit funded |
+| Over-budget behaviour | Degrade (cheaper tier or batch lane) | Reject with a clear error | The degraded answer is still useful and the drop is disclosed | A wrong-tier answer would mislead; clean failure is honest |
 
 ## Common Mistakes
 
 1. **Optimizing before measuring** — a lever chosen from a diagram rather than from cost-per-class and cached-ratio numbers; the usual result is effort spent on the second-largest driver.
 2. **Shipping a cost lever without an eval gate** — the saving is celebrated, the regression is found by users, and the rollback costs more than the lever saved.
 3. **Watching hit rate without false-hit rate** — semantic caching's signature failure, with the cost graph looking perfect throughout.
-4. **Cascades that escalate too often** — past a modest rate you pay both models on most requests at worse tail latency than the frontier model alone.
+4. **Cascades that escalate too often** — past a modest rate you pay both models on most requests, at worse tail latency than the frontier model alone.
 5. **Volatile content above the cache boundary** — one interpolated timestamp zeroes the cheapest lever there is; make assembly determinism a test.
 6. **Compaction without a behavioural signal** — a summarizer that drops a constraint surfaces as clarifying questions, never as an error.
 7. **Reasoning defaults left untouched** — a deliberating model on a classification path, billed at output rates for thought nobody reads (2.6).
@@ -224,22 +223,22 @@ For applying the cost & performance patterns:
 - [ ] Prompt trims and compaction eval-gated, with a behavioural signal watching for lost context
 - [ ] Reasoning effort routed per class; thinking tokens broken out and p95 monitored
 - [ ] Batch lanes isolated by quota and acceptance-tested on interactive p99 during a large job
-- [ ] Tiering decisions bake-off-justified per class, with an owner and a re-run trigger on model releases
+- [ ] Tiering bake-off-justified per class, with an owner and a re-run trigger on model releases
 - [ ] Cascade checkers validated against human labels; the accepted slice audited, not just the escalated one
 - [ ] Semantic cache threshold derived from labelled log replay; audit staffed; keys partitioned by tenant and permission set
 - [ ] Budgets enforced at the gateway per key/tenant/feature, with a written over-budget behaviour and fleet breakers
 
 ## Interview Questions
 
-1. *"Your inference bill needs to come down 40%. What do you do first?"* — Strong answers refuse to name a lever first: instrument cost per task class, cached-token ratio, and per-segment tokens, then pull prefix alignment and compression while tiering bake-offs run. Weak answers open with "switch to a cheaper model".
+1. *"Your inference bill needs to come down 40%. What do you do first?"* — Strong answers refuse to name a lever first: instrument cost per task class, cached-token ratio, and per-segment tokens, then pull cache alignment and compression while tiering bake-offs run. Weak answers open with "switch to a cheaper model".
 2. *"How would you know your semantic cache is hurting you?"* — Strong answers name the paired metric immediately, describe the standing re-generation audit and its cadence, and note that the failure is invisible on cost dashboards by construction; senior answers add permission-partitioned keys and per-volatility TTLs.
-3. *"When is a cascade worse than just using the expensive model?"* — Strong answers do the arithmetic: escalated requests pay both calls, so above a modest escalation rate the cascade loses on cost and always loses on tail latency; they name checker miscalibration as the drift mechanism.
+3. *"When is a cascade worse than just using the expensive model?"* — Strong answers do the arithmetic: escalated requests pay both calls, so above a modest escalation rate the cascade loses on cost and always on tail latency; they name checker miscalibration as the drift mechanism.
 4. *"Your reasoning-model bill tripled with flat traffic. Diagnose it."* — Strong answers separate thinking tokens from answer tokens per class, look for a class that inherited a generous effort default or a model upgrade that moved it, and route effort per class rather than swapping models (2.6).
 
 ## Further Reading
 
 - [4.11 Cost Engineering](../part-4-enterprise-genai-systems/chapter-11-cost-engineering.md) and [4.12 Latency & Performance](../part-4-enterprise-genai-systems/chapter-12-latency-performance.md) — the lever mechanics this family formalizes; 4.10 is the telemetry substrate all eight patterns assume.
-- Your providers' pricing, prompt-caching, batch-API, and reasoning-effort documentation — the only trustworthy source for current rates, cache lifetimes, and turnaround windows. Date-stamp what you use and re-read quarterly.
+- Your providers' pricing, prompt-caching, batch-API, and reasoning-effort documentation — the only trustworthy source for current rates, cache lifetimes, and turnaround windows; date-stamp what you use and re-read quarterly.
 - Chen, Zaharia, Zou, *FrugalGPT* (2023) and the RouteLLM project — the published treatments of cascades and learned routing.
 - GPTCache and LLMLingua — open-source reference implementations of semantic caching and prompt compression, worth reading for their documented failure modes.
 - The [architecture review checklist](../../checklists/architecture-review-checklist.md) — its cost section is this chapter's gate at design time.
@@ -249,7 +248,7 @@ For applying the cost & performance patterns:
 - **Every pattern trades something away**: cascades trade tail latency, caches trade freshness, tiering trades quality variance, batching trades interactivity, compaction trades context. The trade belongs in the decision record beside the saving.
 - **Measure before optimizing, in four dimensions** — cost per task class, cached-token ratio, tokens per prompt segment, thinking tokens per class.
 - **Pair the metrics**: hit rate with false-hit rate, escalation rate with quality on the escalated *and* accepted slices, cost per call with cost per successful task.
-- **Sequence by risk, not headline saving** — prefix alignment, compression, effort budgets, batch lanes, then tiering, cascade, and semantic caching last, with budget enforcement always on as a bound.
+- **Sequence by risk, not headline saving** — cache alignment, compression, effort budgets, batch lanes, then tiering, cascade, and semantic caching last, with budget enforcement always on as a bound.
 - A cost lever without an eval gate is a defect with a discount, and its detector of last resort is a customer. The platform patterns hosting all eight levers are next (7.9).
 
 ---
